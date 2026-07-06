@@ -37,7 +37,10 @@ app.use('/api/settings', settingsRouter);
 function setStaticCacheHeaders(res, filePath) {
   const noCacheExt = ['.html', '.js', '.css'];
   if (noCacheExt.includes(path.extname(filePath))) {
-    res.setHeader('Cache-Control', 'no-cache');
+    // no-store (not just no-cache) — Cloudflare treats a bare "no-cache" as
+    // "cache at the edge, just revalidate" and substitutes its own browser
+    // TTL, which defeats the point. no-store is unambiguous: never cache.
+    res.setHeader('Cache-Control', 'no-store');
   } else {
     res.setHeader('Cache-Control', 'public, max-age=604800'); // 7 days
   }

@@ -120,7 +120,11 @@
       "Bash(curl -s -b 'C:\\\\Users\\\\hp\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\c--Users-hp-Downloads-Claude-Design-v2--Infuso-\\\\c53dae2c-ad54-40b1-9839-501b7e65e5c8\\\\scratchpad\\\\prod_cookies.txt' -X PUT https://infuso.pk/api/admin/products/cmr95zrx40000lemohv7vb3jh -H 'Content-Type: application/json' -d '{\"category\":\"UNISEX\"}' --max-time 10 -o /dev/null -w '%{http_code}\\\\n')",
       "Bash(rm -f ~/.ssh/infuso_ci_deploy ~/.ssh/infuso_ci_deploy.pub)",
       "Bash(git update-index *)",
-      "Bash(ssh -i ~/.ssh/infuso_ci_deploy -o StrictHostKeyChecking=accept-new -o BatchMode=yes root@187.77.115.5 \"whoami\")"
+      "Bash(ssh -i ~/.ssh/infuso_ci_deploy -o StrictHostKeyChecking=accept-new -o BatchMode=yes root@187.77.115.5 \"whoami\")",
+      "Bash(curl -s \"https://api.github.com/repos/tayyab2020/Infuso/actions/runs/28804882693\")",
+      "Bash(curl -s \"https://api.github.com/repos/tayyab2020/Infuso/actions/runs/28804882693/jobs\")",
+      "Bash(ssh -i ~/.ssh/infuso_ci_deploy -o StrictHostKeyChecking=accept-new -o BatchMode=yes root@187.77.115.5 \"deploy\")",
+      "Bash(curl -sI https://infuso.pk/products/aether.png --max-time 10)"
     ],
     "additionalDirectories": [
       "C:\\Users\\hp\\.ssh"
