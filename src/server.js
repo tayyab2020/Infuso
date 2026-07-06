@@ -8,10 +8,14 @@ const ordersRouter = require('./routes/orders');
 const adminRouter = require('./routes/admin');
 const faqsRouter = require('./routes/faqs');
 const settingsRouter = require('./routes/settings');
+const deployWebhookRouter = require('./routes/deployWebhook');
 
 const app = express();
 
-app.use(express.json());
+// Captures the raw request body alongside the parsed JSON so the deploy
+// webhook can verify GitHub's HMAC signature (which is computed over the
+// exact raw bytes, not the re-serialized parsed object).
+app.use(express.json({ verify: (req, res, buf) => { req.rawBody = buf; } }));
 app.use(session({
   secret: process.env.SESSION_SECRET || 'dev-only-secret-change-me',
   resave: false,
@@ -29,6 +33,7 @@ app.use('/api/orders', ordersRouter);
 app.use('/api/admin', adminRouter);
 app.use('/api/faqs', faqsRouter);
 app.use('/api/settings', settingsRouter);
+app.use('/api/deploy-webhook', deployWebhookRouter);
 
 // ---- Static sites ----
 // Customer storefront (the existing design, unchanged filename).
