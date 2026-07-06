@@ -20,6 +20,7 @@
             <th></th>
             <th>Slug</th>
             <th>Name</th>
+            <th>Category</th>
             <th>Price</th>
             <th>Stock</th>
             <th>Active</th>
@@ -27,7 +28,7 @@
           </tr>
         </thead>
         <tbody id="products-body">
-          <tr><td colspan="7" class="hint">Loading…</td></tr>
+          <tr><td colspan="8" class="hint">Loading…</td></tr>
         </tbody>
       </table>
     </div>
@@ -45,6 +46,14 @@
             <div class="field"><label>Price (PKR)</label><input id="edit-price" type="number" min="0" required /></div>
             <div class="field"><label>Compare-at / original price (PKR)</label><input id="edit-priceOld" type="number" min="0" placeholder="Leave blank for no strikethrough" /></div>
             <div class="field"><label>Stock</label><input id="edit-stock" type="number" min="0" /></div>
+            <div class="field">
+              <label>Category</label>
+              <select id="edit-category">
+                <option value="UNISEX">Unisex</option>
+                <option value="MEN">Men</option>
+                <option value="WOMEN">Women</option>
+              </select>
+            </div>
             <div class="field"><label style="display:flex; align-items:center; gap:8px; text-transform:none; font-weight:400; font-size:13px;"><input type="checkbox" id="edit-active" style="width:auto;" checked /> Active (visible on storefront)</label></div>
           </div>
         </fieldset>

@@ -10,14 +10,21 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum ProductCategory {
+  MEN
+  WOMEN
+  UNISEX
+}
+
 model Product {
-  id       String  @id @default(cuid())
-  slug     String  @unique
+  id       String          @id @default(cuid())
+  slug     String          @unique
   name     String
   price    Int
   priceOld Int?
-  stock    Int     @default(100)
-  active   Boolean @default(true)
+  stock    Int             @default(100)
+  active   Boolean         @default(true)
+  category ProductCategory @default(UNISEX)
 
   // Images — all optional; storefront falls back to its hardcoded path when null.
   imageUrl               String?

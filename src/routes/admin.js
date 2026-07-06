@@ -99,6 +99,7 @@ const PRODUCT_TEXT_FIELDS = [
 const PRODUCT_IMAGE_FIELDS = [
   'imageUrl', 'hoverImageUrl', 'editorialTallImageUrl', 'editorialWideImageUrl',
 ];
+const PRODUCT_CATEGORIES = ['MEN', 'WOMEN', 'UNISEX'];
 
 router.get('/products', requireAdmin, async (req, res) => {
   const products = await prisma.product.findMany({ orderBy: { createdAt: 'asc' } });
@@ -106,13 +107,16 @@ router.get('/products', requireAdmin, async (req, res) => {
 });
 
 router.post('/products', requireAdmin, async (req, res) => {
-  const { slug, name, price, priceOld, stock, active } = req.body || {};
+  const { slug, name, price, priceOld, stock, active, category } = req.body || {};
   if (typeof slug !== 'string' || !slug.trim() || typeof name !== 'string' || !name.trim() ||
       !Number.isInteger(price) || price < 0) {
     return res.status(400).json({ error: 'slug, name, and a non-negative integer price are required.' });
   }
   if (priceOld !== undefined && priceOld !== null && (!Number.isInteger(priceOld) || priceOld < 0)) {
     return res.status(400).json({ error: 'priceOld must be a non-negative integer or null.' });
+  }
+  if (category !== undefined && !PRODUCT_CATEGORIES.includes(category)) {
+    return res.status(400).json({ error: `category must be one of: ${PRODUCT_CATEGORIES.join(', ')}` });
   }
 
   const data = {
@@ -122,6 +126,7 @@ router.post('/products', requireAdmin, async (req, res) => {
     priceOld: priceOld === null || priceOld === undefined ? null : priceOld,
     stock: Number.isInteger(stock) && stock >= 0 ? stock : 0,
     active: active !== false,
+    category: category || 'UNISEX',
   };
   for (const key of PRODUCT_TEXT_FIELDS) {
     const v = optionalText(req.body[key]);
@@ -143,8 +148,14 @@ router.post('/products', requireAdmin, async (req, res) => {
 });
 
 router.put('/products/:id', requireAdmin, async (req, res) => {
-  const { name, price, priceOld, stock, active } = req.body || {};
+  const { name, price, priceOld, stock, active, category } = req.body || {};
   const data = {};
+  if (category !== undefined) {
+    if (!PRODUCT_CATEGORIES.includes(category)) {
+      return res.status(400).json({ error: `category must be one of: ${PRODUCT_CATEGORIES.join(', ')}` });
+    }
+    data.category = category;
+  }
   if (name !== undefined) {
     if (typeof name !== 'string' || !name.trim()) return res.status(400).json({ error: 'name must be a non-empty string.' });
     data.name = name.trim();

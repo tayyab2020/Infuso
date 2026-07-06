@@ -11,7 +11,7 @@ router.get('/', async (req, res) => {
   const products = await prisma.product.findMany({
     where: { active: true },
     select: {
-      slug: true, name: true, price: true, priceOld: true, stock: true,
+      slug: true, name: true, price: true, priceOld: true, stock: true, category: true,
       imageUrl: true, hoverImageUrl: true, editorialTallImageUrl: true, editorialWideImageUrl: true,
       tagline: true, topNote: true, heartNote: true, baseNote: true, description: true,
       inspiredBy: true, editorialLine: true, editorialStory: true,

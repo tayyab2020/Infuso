@@ -202,7 +202,10 @@
     <sc-for list="{{ products }}" as="p" hint-placeholder-count="3">
       <section data-role="sec" data-idx="{{ p.idx }}" data-label="{{ p.name }}" class="product-section" style="position:relative; min-height:100vh; display:grid; grid-template-columns:1fr 1fr; align-items:center; overflow:hidden; background:{{ p.bg }};">
         <div class="reveal" data-reveal style="order:{{ p.copyOrder }}; padding:0 6vw; max-width:560px; justify-self:{{ p.copyJustify }}; position:relative; z-index:2;">
-          <div style="font-family:'Cormorant Garamond', serif; font-style:italic; font-size:20px; color:{{ p.accent }};">{{ p.no }}</div>
+          <div style="display:flex; align-items:center; gap:14px;">
+            <div style="font-family:'Cormorant Garamond', serif; font-style:italic; font-size:20px; color:{{ p.accent }};">{{ p.no }}</div>
+            <div style="font-family:'Jost'; font-size:10px; letter-spacing:0.2em; color:rgba(230,226,218,0.55); border:1px solid rgba(230,226,218,0.25); border-radius:20px; padding:4px 12px;">{{ p.categoryLabel }}</div>
+          </div>
           <div style="margin-top:4px; font-family:'Jost'; font-weight:300; font-size:clamp(46px,5vw,80px); letter-spacing:0.08em; color:#f0ebe2;">{{ p.name }}</div>
           <div style="margin-top:10px; font-family:'Cormorant Garamond', serif; font-style:italic; font-size:19px; color:rgba(230,226,218,0.6);">{{ p.tagline }}</div>
           <div style="margin-top:22px; font-family:'Jost'; font-weight:300; font-size:16px; line-height:1.75; color:rgba(230,226,218,0.62);">{{ p.desc }}</div>
@@ -249,7 +252,10 @@
             </div>
             <div style="order:{{ e.sideOrder }}; display:flex; flex-direction:column; gap:2.5vw;">
               <div style="padding:0 2vw;">
-                <div style="font-family:'Cormorant Garamond',serif; font-style:italic; font-size:20px; color:{{ e.accent }};">{{ e.no }}</div>
+                <div style="display:flex; align-items:center; gap:14px;">
+                  <div style="font-family:'Cormorant Garamond',serif; font-style:italic; font-size:20px; color:{{ e.accent }};">{{ e.no }}</div>
+                  <div style="font-family:'Jost'; font-size:10px; letter-spacing:0.2em; color:rgba(230,226,218,0.55); border:1px solid rgba(230,226,218,0.25); border-radius:20px; padding:4px 12px;">{{ e.categoryLabel }}</div>
+                </div>
                 <div style="margin-top:4px; font-family:'Jost'; font-weight:300; font-size:clamp(36px,3.6vw,56px); letter-spacing:0.08em;">{{ e.name }}</div>
                 <div style="margin-top:14px; font-family:'Cormorant Garamond',serif; font-style:italic; font-size:22px; color:rgba(230,226,218,0.72);">{{ e.line }}</div>
                 <div style="margin-top:16px; font-family:'Jost'; font-weight:300; font-size:15px; line-height:1.7; color:rgba(230,226,218,0.55); max-width:420px;">{{ e.story }}</div>
@@ -279,7 +285,8 @@
                 <img class="boxcard-boxed" src="{{ b.boxed }}" alt="{{ b.name }} boxed" style="position:absolute; inset:0; width:100%; height:100%; object-fit:contain; padding:2% 0%; display:block;" />
               </div>
               <div style="margin-top:20px; font-family:'Jost'; font-weight:300; font-size:24px; letter-spacing:0.1em;">{{ b.name }}</div>
-              <div style="margin-top:6px; font-family:'Jost'; font-weight:300; font-size:15px; color:{{ b.accent }};">{{ b.tagline }}</div>
+              <div style="margin-top:6px; font-family:'Jost'; font-size:9.5px; letter-spacing:0.2em; color:rgba(230,226,218,0.5);">{{ b.categoryLabel }}</div>
+              <div style="margin-top:8px; font-family:'Jost'; font-weight:300; font-size:15px; color:{{ b.accent }};">{{ b.tagline }}</div>
               <div style="margin-top:16px; display:flex; align-items:center; justify-content:center; gap:18px;">
                 <div style="display:flex; align-items:baseline; gap:10px;">
                   <span style="font-family:'Jost'; font-weight:300; font-size:12px; text-decoration:line-through; color:rgba(230,226,218,0.4);">{{ b.priceOld }}</span>
@@ -499,19 +506,19 @@ class Component extends DCLogic {
 
   _data() {
     return [
-      { id: 'aether', name: 'AETHER', no: 'No. 01', idx: 3, img: 'products/aether.png', box: 'products/aether_box.png',
+      { id: 'aether', name: 'AETHER', no: 'No. 01', idx: 3, img: 'products/aether.png', box: 'products/aether_box.png', category: 'UNISEX',
         accent: 'rgba(150,220,235,0.85)', bg: 'radial-gradient(120% 90% at 22% 42%, #14262c 0%, #0a0e11 60%, #08090b 100%)',
         heroBg: 'linear-gradient(165deg, #17323a 0%, #08090b 78%)',
         tagline: 'cold air over stone', top: 'Sea Mineral', heart: 'Iris · Smoke', base: 'Amber Resin',
         desc: 'Clear and mineral at the first breath, warming through iris and a wisp of smoke, drying to a quiet resin that stays close to the skin.',
         inspired: 'INSPIRED BY L’IMMENSITÉ · LOUIS VUITTON', floatDur: '8s', par: '20px' },
-      { id: 'aria', name: 'ARIA', no: 'No. 02', idx: 4, img: 'products/aria.png', box: 'products/aria_box.png',
+      { id: 'aria', name: 'ARIA', no: 'No. 02', idx: 4, img: 'products/aria.png', box: 'products/aria_box.png', category: 'WOMEN',
         accent: 'rgba(195,170,235,0.9)', bg: 'radial-gradient(120% 90% at 78% 42%, #1b1a26 0%, #0d0c12 60%, #08090b 100%)',
         heroBg: 'linear-gradient(165deg, #251f38 0%, #08090b 78%)',
         tagline: 'light through open air', top: 'Bergamot', heart: 'White Fruit', base: 'Soft Musk',
         desc: 'A bright, luminous fruit accord suspended over clean musk — airy and effortless, the scent of light moving through an open window.',
         inspired: 'INSPIRED BY ERBA PURA · XERJOFF', floatDur: '9s', par: '-18px' },
-      { id: 'oudor', name: 'OUDOR', no: 'No. 03', idx: 5, img: 'products/oudor.png', box: 'products/oudor_box.png',
+      { id: 'oudor', name: 'OUDOR', no: 'No. 03', idx: 5, img: 'products/oudor.png', box: 'products/oudor_box.png', category: 'MEN',
         accent: 'rgba(220,175,120,0.9)', bg: 'radial-gradient(120% 90% at 22% 42%, #241e17 0%, #12100b 60%, #08090b 100%)',
         heroBg: 'linear-gradient(165deg, #342414 0%, #08090b 78%)',
         tagline: 'warmth after dark', top: 'Saffron', heart: 'Oud · Incense', base: 'Amber · Woods',
@@ -547,6 +554,8 @@ class Component extends DCLogic {
       base: live.baseNote || p.base,
       desc: live.description || p.desc,
       inspired: live.inspiredBy || p.inspired,
+      category: live.category || p.category,
+      categoryLabel: { MEN: 'Men', WOMEN: 'Women', UNISEX: 'Unisex' }[live.category || p.category] || 'Unisex',
     };
   }
 
@@ -570,12 +579,14 @@ class Component extends DCLogic {
         line: 'Warmth after dark.', story: 'Laid among agarwood, ember and resin against black stone — deep, smoky and opulent.', tallOrder: 1, sideOrder: 2 },
     ].map((e) => {
       const live = this.state.liveProducts[e.id] || {};
+      const merged = D.find((p) => p.id === e.id) || {};
       return {
         ...e,
         tall: live.editorialTallImageUrl || e.tall,
         wide: live.editorialWideImageUrl || e.wide,
         line: live.editorialLine || e.line,
         story: live.editorialStory || e.story,
+        categoryLabel: merged.categoryLabel,
       };
     });
     const S = this.state.liveSettings;
@@ -700,6 +711,7 @@ class Component extends DCLogic {
 
       boxes: D.map((p, i) => ({
         name: p.name, bottle: p.img, boxed: p.box, accent: p.accent, tagline: p.tagline, price: PKR(this.priceFor(p.id)), priceOld: PKR(this.priceOldFor(p.id)),
+        categoryLabel: p.categoryLabel,
         delay: 'd' + (i + 1), add: () => this.add(p.id),
       })),
 

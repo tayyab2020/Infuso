@@ -13,11 +13,13 @@ function renderProductRow(p) {
   const priceHtml = p.priceOld
     ? `<span style="text-decoration:line-through; color:var(--muted); font-size:11px;">${money(p.priceOld)}</span> ${money(p.price)}`
     : money(p.price);
+  const categoryLabel = { MEN: 'Men', WOMEN: 'Women', UNISEX: 'Unisex' }[p.category] || 'Unisex';
   return `
     <tr data-id="${p.id}">
       <td><img class="thumb" src="${p.imageUrl || ''}" alt="" onerror="this.style.visibility='hidden'" /></td>
       <td>${escapeHtml(p.slug)}</td>
       <td>${escapeHtml(p.name)}</td>
+      <td>${categoryLabel}</td>
       <td>${priceHtml}</td>
       <td>${p.stock}</td>
       <td><input type="checkbox" class="active-input" ${p.active ? 'checked' : ''} style="width:auto;" /></td>
@@ -76,6 +78,7 @@ function resetPanelFields() {
   document.getElementById('edit-price').value = '';
   document.getElementById('edit-priceOld').value = '';
   document.getElementById('edit-stock').value = 100;
+  document.getElementById('edit-category').value = 'UNISEX';
   document.getElementById('edit-active').checked = true;
   TEXT_FIELDS.filter((f) => f !== 'name').forEach((field) => {
     document.getElementById('edit-' + field).value = '';
@@ -114,6 +117,7 @@ function openEditPanel(p) {
   document.getElementById('edit-price').value = p.price;
   document.getElementById('edit-priceOld').value = p.priceOld != null ? p.priceOld : '';
   document.getElementById('edit-stock').value = p.stock;
+  document.getElementById('edit-category').value = p.category || 'UNISEX';
   document.getElementById('edit-active').checked = !!p.active;
   document.getElementById('edit-tagline').value = p.tagline || '';
   document.getElementById('edit-inspiredBy').value = p.inspiredBy || '';
@@ -175,6 +179,7 @@ document.getElementById('edit-form').addEventListener('submit', async (e) => {
       price: Number(document.getElementById('edit-price').value),
       stock: Number(document.getElementById('edit-stock').value),
       active: document.getElementById('edit-active').checked,
+      category: document.getElementById('edit-category').value,
     };
     const priceOldRaw = document.getElementById('edit-priceOld').value;
     payload.priceOld = priceOldRaw === '' ? null : Number(priceOldRaw);
