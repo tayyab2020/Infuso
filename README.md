@@ -65,6 +65,12 @@ Then visit:
 
 - **Checkout is cash-on-delivery only** — no payment gateway is integrated. Placing an order collects name/phone/address/city and creates a `PENDING` order for the admin to confirm.
 - **Guest checkout only** — no customer accounts/login, matching the original single-page cart flow.
-- **Product presentation** (images, taglines, colors, notes, gradients) stays hardcoded in the storefront's own script, exactly as designed. Only **price and stock** are live from the database — that's the data an admin actually needs to manage day-to-day. Renaming/restyling a product still means editing the HTML; changing its price or inventory is done from `/admin/products.html`.
+- **Product content** (images, tagline, notes, description, category, editorial copy, price/stock) is fully editable from `/admin/products.html`, along with FAQs and site-wide settings (logo, social links, bank transfer details, email wording) from `/admin/faqs.html` and `/admin/settings.html`. Any field an admin hasn't set yet falls back to the storefront's original hardcoded copy, so nothing ever renders empty.
 - **Sessions** use `express-session`'s default in-memory store — fine for local use/single instance, but sessions won't survive a server restart and won't work across multiple instances. Swap in a persistent store (e.g. `connect-pg-simple`) before any real production deployment.
 - Deleting a product that already has orders is blocked (foreign key) — use the **Active** checkbox to hide it from the storefront instead.
+
+## Deployment
+
+Runs in production on a Hostinger VPS (Ubuntu 24.04, Node 20, PostgreSQL 16, Nginx as a TLS-terminating reverse proxy in front of the app, PM2 keeping the process alive across crashes/reboots).
+
+**Auto-deploy:** pushing to `main` triggers `deploy.sh` on the server automatically via a GitHub webhook (`Settings → Webhooks` in the repo) hitting `POST /api/deploy-webhook`, verified with an HMAC signature (`DEPLOY_WEBHOOK_SECRET` in `.env`). The script does `git fetch` + `git reset --hard origin/main`, `npm install`, `prisma generate`, `prisma migrate deploy`, then `pm2 restart infuso` — no manual SSH needed for routine deploys.
