@@ -1,0 +1,114 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>INFUSO Admin · Settings</title>
+<link rel="stylesheet" href="admin.css">
+</head>
+<body>
+  <div class="admin-main">
+    <h1>Settings</h1>
+    <p class="page-sub">Branding, social links, bank transfer details and email wording used across the storefront.</p>
+
+    <form id="settings-form">
+      <div class="card">
+        <fieldset>
+          <legend>Branding</legend>
+          <div class="form-grid">
+            <div class="field">
+              <label>Logo</label>
+              <div class="image-slot">
+                <img class="thumb-lg" id="preview-logoUrl" src="" style="background:#0d1013;" />
+                <input type="file" accept="image/png,image/jpeg,image/webp" data-target="logoUrl" />
+              </div>
+            </div>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>Checkout</legend>
+          <div class="form-grid">
+            <div class="field"><label>Delivery charge (PKR)</label><input id="s-deliveryCharge" type="number" min="0" placeholder="280" /></div>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>Social &amp; contact</legend>
+          <div class="form-grid">
+            <div class="field"><label>Facebook URL</label><input id="s-facebookUrl" type="url" placeholder="https://facebook.com/..." /></div>
+            <div class="field"><label>Instagram URL</label><input id="s-instagramUrl" type="url" placeholder="https://instagram.com/..." /></div>
+            <div class="field"><label>Contact email</label><input id="s-contactEmail" type="email" placeholder="sales@infuso.pk" /></div>
+            <div class="field"><label>WhatsApp number (digits only, with country code)</label><input id="s-whatsappNumber" placeholder="923316841320" /></div>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>Bank transfer</legend>
+          <div class="form-grid">
+            <div class="field"><label>Account holder name</label><input id="s-bankAccountName" /></div>
+            <div class="field"><label>Bank name</label><input id="s-bankName" /></div>
+            <div class="field"><label>Account number</label><input id="s-bankAccountNumber" /></div>
+            <div class="field"><label>IBAN</label><input id="s-bankIban" /></div>
+            <div class="field">
+              <label>Payment QR code</label>
+              <div class="image-slot">
+                <img class="thumb-lg" id="preview-bankQrImageUrl" src="" />
+                <input type="file" accept="image/png,image/jpeg,image/webp" data-target="bankQrImageUrl" />
+              </div>
+            </div>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>Order emails</legend>
+          <div class="form-grid">
+            <div class="field span-2 hint">Use <code>{{customerName}}</code> anywhere in the intro text and it'll be replaced with the customer's name.</div>
+            <div class="field"><label>Sender name</label><input id="s-mailFromName" placeholder="INFUSO" /></div>
+            <div class="field"><label>Sender address</label><input id="s-mailFromAddress" type="email" placeholder="sales@infuso.pk" /></div>
+            <div class="field"><label>COD email subject</label><input id="s-codEmailSubject" placeholder="Your INFUSO order is confirmed" /></div>
+            <div class="field span-2"><label>COD email intro message</label><textarea id="s-codEmailIntro" placeholder="Hi {{customerName}}, thank you for your order..."></textarea></div>
+            <div class="field"><label>Bank transfer email subject</label><input id="s-bankEmailSubject" placeholder="Complete your INFUSO payment — bank transfer details" /></div>
+            <div class="field span-2"><label>Bank transfer email intro message</label><textarea id="s-bankEmailIntro" placeholder="Hi {{customerName}}, thank you for your order..."></textarea></div>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>Section copy</legend>
+          <div class="form-grid">
+            <div class="field"><label>House — eyebrow</label><input id="s-houseEyebrow" placeholder="BRAND INTRODUCTION" /></div>
+            <div class="field span-2"><label>House — body</label><textarea id="s-houseBody"></textarea></div>
+            <div class="field span-2 hint">The House heading ("More Than Perfume. It's Presence.") keeps its two-tone styling in code and isn't editable here.</div>
+
+            <div class="field"><label>Editorial — eyebrow</label><input id="s-editorialEyebrow" placeholder="CAMPAIGN · SS26" /></div>
+            <div class="field"><label>Editorial — heading</label><input id="s-editorialHeading" placeholder="Three moods, in still life." /></div>
+            <div class="field span-2"><label>Editorial — body</label><textarea id="s-editorialBody"></textarea></div>
+
+            <div class="field"><label>Discovery Set — eyebrow</label><input id="s-discoveryEyebrow" placeholder="PRESENTED IN GLASS & STONE" /></div>
+            <div class="field"><label>Discovery Set — heading</label><input id="s-discoveryHeading" placeholder="The Discovery Set" /></div>
+            <div class="field span-2"><label>Discovery Set — body</label><textarea id="s-discoveryBody"></textarea></div>
+
+            <div class="field"><label>FAQ — eyebrow</label><input id="s-faqEyebrow" placeholder="QUESTIONS" /></div>
+            <div class="field"><label>FAQ — heading</label><input id="s-faqHeading" placeholder="Frequently Asked Questions" /></div>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>Footer</legend>
+          <div class="form-grid">
+            <div class="field span-2"><label>Copyright text</label><input id="s-footerCopyright" placeholder="© 2026 INFUSO" /></div>
+          </div>
+        </fieldset>
+
+        <div class="btn-row">
+          <button type="submit" class="btn accent">Save settings</button>
+        </div>
+        <div id="save-error" class="error-msg" style="display:none;"></div>
+        <div id="save-success" class="success-msg" style="display:none;"></div>
+      </div>
+    </form>
+  </div>
+
+  <script src="admin.js"></script>
+  <script src="settings.js"></script>
+</body>
+</html>

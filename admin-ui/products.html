@@ -1,0 +1,119 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>INFUSO Admin · Products</title>
+<link rel="stylesheet" href="admin.css">
+</head>
+<body>
+  <div class="admin-main">
+    <h1>Products</h1>
+    <p class="page-sub">Prices, stock, images and all storefront copy for each fragrance.</p>
+
+    <div class="card">
+      <div class="btn-row" style="margin-bottom:16px;">
+        <button type="button" class="btn accent" id="add-new-btn">+ Add product</button>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th></th>
+            <th>Slug</th>
+            <th>Name</th>
+            <th>Price</th>
+            <th>Stock</th>
+            <th>Active</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="products-body">
+          <tr><td colspan="7" class="hint">Loading…</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card" id="edit-panel" style="display:none;">
+      <h2 id="edit-panel-title">Edit product</h2>
+      <form id="edit-form">
+        <input type="hidden" id="edit-id" />
+
+        <fieldset>
+          <legend>Basics</legend>
+          <div class="form-grid">
+            <div class="field"><label>Slug</label><input id="edit-slug" placeholder="e.g. ambra" required /></div>
+            <div class="field"><label>Name</label><input id="edit-name" placeholder="e.g. AMBRA" required /></div>
+            <div class="field"><label>Price (PKR)</label><input id="edit-price" type="number" min="0" required /></div>
+            <div class="field"><label>Compare-at / original price (PKR)</label><input id="edit-priceOld" type="number" min="0" placeholder="Leave blank for no strikethrough" /></div>
+            <div class="field"><label>Stock</label><input id="edit-stock" type="number" min="0" /></div>
+            <div class="field"><label style="display:flex; align-items:center; gap:8px; text-transform:none; font-weight:400; font-size:13px;"><input type="checkbox" id="edit-active" style="width:auto;" checked /> Active (visible on storefront)</label></div>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>Hero &amp; collection copy</legend>
+          <div class="form-grid">
+            <div class="field"><label>Tagline</label><input id="edit-tagline" placeholder="e.g. cold air over stone" /></div>
+            <div class="field"><label>Inspired by</label><input id="edit-inspiredBy" placeholder="e.g. INSPIRED BY L'IMMENSITÉ · LOUIS VUITTON" /></div>
+            <div class="field"><label>Top note</label><input id="edit-topNote" /></div>
+            <div class="field"><label>Heart note</label><input id="edit-heartNote" /></div>
+            <div class="field"><label>Base note</label><input id="edit-baseNote" /></div>
+            <div class="field span-2"><label>Description</label><textarea id="edit-description"></textarea></div>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>Editorial section</legend>
+          <div class="form-grid">
+            <div class="field span-2"><label>Editorial line (short)</label><input id="edit-editorialLine" placeholder="e.g. Cold air over stone." /></div>
+            <div class="field span-2"><label>Editorial story</label><textarea id="edit-editorialStory"></textarea></div>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>Images</legend>
+          <div class="form-grid">
+            <div class="field">
+              <label>Bottle image (hero &amp; collection)</label>
+              <div class="image-slot">
+                <img class="thumb-lg" id="preview-imageUrl" src="" />
+                <input type="file" accept="image/png,image/jpeg,image/webp" data-target="imageUrl" />
+              </div>
+            </div>
+            <div class="field">
+              <label>Hover image (discovery set)</label>
+              <div class="image-slot">
+                <img class="thumb-lg" id="preview-hoverImageUrl" src="" />
+                <input type="file" accept="image/png,image/jpeg,image/webp" data-target="hoverImageUrl" />
+              </div>
+            </div>
+            <div class="field">
+              <label>Editorial tall image</label>
+              <div class="image-slot">
+                <img class="thumb-lg" id="preview-editorialTallImageUrl" src="" />
+                <input type="file" accept="image/png,image/jpeg,image/webp" data-target="editorialTallImageUrl" />
+              </div>
+            </div>
+            <div class="field">
+              <label>Editorial wide image</label>
+              <div class="image-slot">
+                <img class="thumb-lg" id="preview-editorialWideImageUrl" src="" />
+                <input type="file" accept="image/png,image/jpeg,image/webp" data-target="editorialWideImageUrl" />
+              </div>
+            </div>
+          </div>
+        </fieldset>
+
+        <div class="btn-row">
+          <button type="submit" class="btn accent" id="save-btn">Save changes</button>
+          <span id="cancel-edit" class="hint" style="cursor:pointer;">Cancel</span>
+        </div>
+        <div id="edit-error" class="error-msg" style="display:none;"></div>
+        <div id="edit-success" class="success-msg" style="display:none;"></div>
+      </form>
+    </div>
+  </div>
+
+  <script src="admin.js"></script>
+  <script src="products.js"></script>
+</body>
+</html>

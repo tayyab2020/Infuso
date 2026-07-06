@@ -1,0 +1,11 @@
+node_modules/
+.env
+*.log
+
+/generated/prisma
+
+# Runtime admin-uploaded images (recreated automatically by src/middleware/upload.js)
+/public/uploads/
+
+# Orphaned raw source images from early design work — not referenced by the app
+/uploads/

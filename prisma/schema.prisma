@@ -1,0 +1,149 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Product {
+  id       String  @id @default(cuid())
+  slug     String  @unique
+  name     String
+  price    Int
+  priceOld Int?
+  stock    Int     @default(100)
+  active   Boolean @default(true)
+
+  // Images — all optional; storefront falls back to its hardcoded path when null.
+  imageUrl               String?
+  hoverImageUrl          String?
+  editorialTallImageUrl  String?
+  editorialWideImageUrl  String?
+
+  // Text content — all optional; storefront falls back to its hardcoded copy when null/empty.
+  tagline        String?
+  topNote        String?
+  heartNote      String?
+  baseNote       String?
+  description    String? @db.Text
+  inspiredBy     String?
+  editorialLine  String?
+  editorialStory String? @db.Text
+
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+  orderItems OrderItem[]
+}
+
+model Faq {
+  id        String   @id @default(cuid())
+  question  String
+  answer    String   @db.Text
+  order     Int      @default(0)
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model SiteSettings {
+  id String @id @default("singleton")
+
+  // Branding
+  logoUrl String?
+
+  // Social / contact
+  facebookUrl    String?
+  instagramUrl   String?
+  contactEmail   String?
+  whatsappNumber String?
+
+  // Checkout
+  deliveryCharge Int? @default(280)
+
+  // Bank transfer
+  bankAccountName   String?
+  bankName          String?
+  bankAccountNumber String?
+  bankIban          String?
+  bankQrImageUrl    String?
+
+  // Mail (text-only — HTML layout stays in src/orderEmails.js)
+  mailFromName     String?
+  mailFromAddress  String?
+  codEmailSubject  String?
+  codEmailIntro    String? @db.Text
+  bankEmailSubject String?
+  bankEmailIntro   String? @db.Text
+
+  // Section intro copy
+  houseEyebrow     String?
+  houseHeading     String?
+  houseBody        String? @db.Text
+  editorialEyebrow String?
+  editorialHeading String?
+  editorialBody    String? @db.Text
+  discoveryEyebrow String?
+  discoveryHeading String?
+  discoveryBody    String? @db.Text
+  faqEyebrow       String?
+  faqHeading       String?
+
+  // Footer
+  footerCopyright String?
+
+  updatedAt DateTime @updatedAt
+}
+
+enum OrderStatus {
+  PENDING
+  CONFIRMED
+  SHIPPED
+  DELIVERED
+  CANCELLED
+}
+
+enum PaymentMethod {
+  COD
+  BANK_TRANSFER
+}
+
+model Order {
+  id            String        @id @default(cuid())
+  orderNumber   String        @unique
+  customerName  String
+  customerEmail String        @default("")
+  phone         String
+  address       String
+  city          String
+  notes         String?
+  status        OrderStatus   @default(PENDING)
+  paymentMethod PaymentMethod @default(COD)
+  deliveryCharge Int          @default(280)
+  totalAmount   Int
+  items         OrderItem[]
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+}
+
+model OrderItem {
+  id          String  @id @default(cuid())
+  order       Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  orderId     String
+  product     Product @relation(fields: [productId], references: [id])
+  productId   String
+  quantity    Int
+  unitPrice   Int
+  productName String
+}
+
+model AdminUser {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  createdAt    DateTime @default(now())
+}

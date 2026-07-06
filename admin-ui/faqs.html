@@ -1,0 +1,65 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>INFUSO Admin · FAQs</title>
+<link rel="stylesheet" href="admin.css">
+</head>
+<body>
+  <div class="admin-main">
+    <h1>FAQs</h1>
+    <p class="page-sub">Questions shown in the storefront's FAQ accordion, in order.</p>
+
+    <div class="card">
+      <table>
+        <thead>
+          <tr>
+            <th style="width:70px;">Order</th>
+            <th>Question</th>
+            <th>Answer</th>
+            <th>Active</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="faqs-body">
+          <tr><td colspan="5" class="hint">Loading…</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card" id="edit-panel" style="display:none;">
+      <h2 id="edit-panel-title">Edit FAQ</h2>
+      <form id="edit-form">
+        <input type="hidden" id="edit-id" />
+        <div class="form-grid cols-1">
+          <div class="field"><label>Question</label><input id="edit-question" required /></div>
+          <div class="field"><label>Answer</label><textarea id="edit-answer" required></textarea></div>
+          <div class="field" style="max-width:120px;"><label>Order</label><input id="edit-order" type="number" value="0" /></div>
+          <div class="field"><label style="display:flex; align-items:center; gap:8px; text-transform:none; font-weight:400; font-size:13px;"><input type="checkbox" id="edit-active" style="width:auto;" /> Active</label></div>
+        </div>
+        <div class="btn-row" style="margin-top:6px;">
+          <button type="submit" class="btn accent">Save changes</button>
+          <span id="cancel-edit" class="hint" style="cursor:pointer;">Cancel</span>
+        </div>
+        <div id="edit-error" class="error-msg" style="display:none;"></div>
+      </form>
+    </div>
+
+    <div class="card">
+      <h2>Add FAQ</h2>
+      <form id="add-form">
+        <div class="form-grid cols-1">
+          <div class="field"><label>Question</label><input id="new-question" required /></div>
+          <div class="field"><label>Answer</label><textarea id="new-answer" required></textarea></div>
+          <div class="field" style="max-width:120px;"><label>Order</label><input id="new-order" type="number" value="0" /></div>
+        </div>
+        <button type="submit" class="btn" style="margin-top:6px;">Add</button>
+      </form>
+      <div id="add-error" class="error-msg" style="display:none;"></div>
+    </div>
+  </div>
+
+  <script src="admin.js"></script>
+  <script src="faqs.js"></script>
+</body>
+</html>
