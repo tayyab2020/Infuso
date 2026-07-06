@@ -1,0 +1,32 @@
+name: Deploy to production
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: SSH in and run the server-side deploy script (with retries)
+        env:
+          SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          HOST: ${{ secrets.DEPLOY_HOST }}
+          USER: ${{ secrets.DEPLOY_USER }}
+        run: |
+          mkdir -p ~/.ssh
+          echo "$SSH_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+
+          for attempt in 1 2 3 4 5; do
+            echo "--- Attempt $attempt/5 ---"
+            if ssh -o StrictHostKeyChecking=accept-new -o ConnectTimeout=15 -i ~/.ssh/deploy_key "$USER@$HOST" "deploy"; then
+              echo "Deploy succeeded on attempt $attempt."
+              exit 0
+            fi
+            echo "Attempt $attempt failed (likely a transient network block on the runner's IP). Retrying in 15s..."
+            sleep 15
+          done
+
+          echo "All attempts failed."
+          exit 1

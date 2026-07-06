@@ -109,7 +109,18 @@
       "Bash(node --check src/routes/deployWebhook.js)",
       "Bash(rm -rf .github/workflows/deploy.yml)",
       "Bash(rmdir .github/workflows .github)",
-      "Bash(openssl rand *)"
+      "Bash(openssl rand *)",
+      "Bash(curl -s -o /dev/null -w \"site: %{http_code}\\\\n\" https://infuso.pk/ --max-time 10)",
+      "Bash(ssh infuso 'cd /var/www/infuso && node -e \" *)",
+      "Bash(curl -s -o /dev/null -w \"webhook endpoint \\(expect 401, no signature\\): %{http_code}\\\\n\" -X POST https://infuso.pk/api/deploy-webhook --max-time 10)",
+      "Bash(git commit *)",
+      "Bash(curl -s https://infuso.pk/admin/products.js --max-time 10)",
+      "Bash(curl -sI https://infuso.pk/admin/products.js --max-time 10)",
+      "Bash(node -e \"let d='';process.stdin.on\\('data',c=>d+=c\\);process.stdin.on\\('end',\\(\\)=>console.log\\(JSON.parse\\(d\\).find\\(p=>p.slug==='aether'\\).category\\)\\)\")",
+      "Bash(curl -s -b 'C:\\\\Users\\\\hp\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\c--Users-hp-Downloads-Claude-Design-v2--Infuso-\\\\c53dae2c-ad54-40b1-9839-501b7e65e5c8\\\\scratchpad\\\\prod_cookies.txt' -X PUT https://infuso.pk/api/admin/products/cmr95zrx40000lemohv7vb3jh -H 'Content-Type: application/json' -d '{\"category\":\"UNISEX\"}' --max-time 10 -o /dev/null -w '%{http_code}\\\\n')",
+      "Bash(rm -f ~/.ssh/infuso_ci_deploy ~/.ssh/infuso_ci_deploy.pub)",
+      "Bash(git update-index *)",
+      "Bash(ssh -i ~/.ssh/infuso_ci_deploy -o StrictHostKeyChecking=accept-new -o BatchMode=yes root@187.77.115.5 \"whoami\")"
     ],
     "additionalDirectories": [
       "C:\\Users\\hp\\.ssh"

@@ -73,4 +73,4 @@ Then visit:
 
 Runs in production on a Hostinger VPS (Ubuntu 24.04, Node 20, PostgreSQL 16, Nginx as a TLS-terminating reverse proxy in front of the app, PM2 keeping the process alive across crashes/reboots).
 
-**Auto-deploy:** pushing to `main` triggers `deploy.sh` on the server automatically via a GitHub webhook (`Settings → Webhooks` in the repo) hitting `POST /api/deploy-webhook`, verified with an HMAC signature (`DEPLOY_WEBHOOK_SECRET` in `.env`). The script does `git fetch` + `git reset --hard origin/main`, `npm install`, `prisma generate`, `prisma migrate deploy`, then `pm2 restart infuso` — no manual SSH needed for routine deploys.
+**Auto-deploy:** pushing to `main` runs `.github/workflows/deploy.yml`, which SSHes into the server (a dedicated deploy key, locked via `authorized_keys` to only ever run `deploy.sh`, regardless of what command is sent) and retries the connection a few times to ride out occasional connectivity blips before failing. `deploy.sh` does `git fetch` + `git reset --hard origin/main`, `npm install`, `prisma generate`, `prisma migrate deploy`, then `pm2 restart infuso`. Progress is visible in the repo's **Actions** tab.
