@@ -102,7 +102,9 @@
       "Bash(ssh-keygen -t ed25519 -f ~/.ssh/infuso_ci_deploy -C \"github-actions-deploy\" -N \"\")",
       "Bash(CI_PUB=$\\(cat ~/.ssh/infuso_ci_deploy.pub\\) *)",
       "Bash(ssh -i ~/.ssh/infuso_ci_deploy -o StrictHostKeyChecking=accept-new -o BatchMode=yes root@187.77.115.5 \"whoami; rm -rf /\")",
-      "Bash(cat ~/.ssh/infuso_ci_deploy)"
+      "Bash(cat ~/.ssh/infuso_ci_deploy)",
+      "Bash(curl -s \"https://api.github.com/repos/tayyab2020/Infuso/actions/runs?per_page=1\")",
+      "Bash(curl -s \"https://api.github.com/repos/tayyab2020/Infuso/actions/runs/28800584572/jobs\")"
     ],
     "additionalDirectories": [
       "C:\\Users\\hp\\.ssh"

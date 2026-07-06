@@ -37,6 +37,11 @@
     .boxcard:hover .boxcard-bottle { opacity:0; }
     .boxcard:hover .boxcard-boxed { opacity:1; }
     image-slot { display:block !important; width:100% !important; height:100% !important; }
+    .category-badge {
+      font-family:'Jost'; font-size:10px; letter-spacing:0.2em; white-space:nowrap;
+      color:rgba(240,235,226,0.92); border:1px solid rgba(240,235,226,0.4); border-radius:20px;
+      padding:4px 12px; background:rgba(8,9,11,0.45); backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px);
+    }
 
     /* ── Responsive ── */
     .nav-hamburger { flex-shrink:0; }
@@ -154,7 +159,10 @@
         </div>
       </sc-for>
       <div class="hero-text-block" style="position:absolute; left:6vw; bottom:200px; max-width:440px; opacity:{{ heroTextOpacity }}; transition:opacity 320ms ease;">
-        <div style="font-family:'Jost'; font-size:12px; letter-spacing:0.22em; color:{{ heroActive.accent }};">{{ heroActive.noNum }} — {{ heroActive.note }}</div>
+        <div style="display:flex; align-items:center; gap:14px;">
+          <div style="font-family:'Jost'; font-size:12px; letter-spacing:0.22em; color:{{ heroActive.accent }};">{{ heroActive.noNum }} — {{ heroActive.note }}</div>
+          <div class="category-badge">{{ heroActive.categoryLabel }}</div>
+        </div>
         <div style="margin-top:10px; font-family:'Jost'; font-weight:300; font-size:clamp(38px,4.2vw,58px); letter-spacing:0.06em; color:#f0ebe2;">{{ heroActive.name }}</div>
         <div style="margin-top:16px; font-family:'Jost'; font-weight:300; font-size:15px; line-height:1.7;"><span style="color:{{ heroActive.accent }};">{{ heroActive.tagline }}</span> <span style="color:rgba(230,226,218,0.6);">{{ heroActive.desc }}</span></div>
       </div>
@@ -204,7 +212,7 @@
         <div class="reveal" data-reveal style="order:{{ p.copyOrder }}; padding:0 6vw; max-width:560px; justify-self:{{ p.copyJustify }}; position:relative; z-index:2;">
           <div style="display:flex; align-items:center; gap:14px;">
             <div style="font-family:'Cormorant Garamond', serif; font-style:italic; font-size:20px; color:{{ p.accent }};">{{ p.no }}</div>
-            <div style="font-family:'Jost'; font-size:10px; letter-spacing:0.2em; color:rgba(230,226,218,0.55); border:1px solid rgba(230,226,218,0.25); border-radius:20px; padding:4px 12px;">{{ p.categoryLabel }}</div>
+            <div class="category-badge">{{ p.categoryLabel }}</div>
           </div>
           <div style="margin-top:4px; font-family:'Jost'; font-weight:300; font-size:clamp(46px,5vw,80px); letter-spacing:0.08em; color:#f0ebe2;">{{ p.name }}</div>
           <div style="margin-top:10px; font-family:'Cormorant Garamond', serif; font-style:italic; font-size:19px; color:rgba(230,226,218,0.6);">{{ p.tagline }}</div>
@@ -254,7 +262,7 @@
               <div style="padding:0 2vw;">
                 <div style="display:flex; align-items:center; gap:14px;">
                   <div style="font-family:'Cormorant Garamond',serif; font-style:italic; font-size:20px; color:{{ e.accent }};">{{ e.no }}</div>
-                  <div style="font-family:'Jost'; font-size:10px; letter-spacing:0.2em; color:rgba(230,226,218,0.55); border:1px solid rgba(230,226,218,0.25); border-radius:20px; padding:4px 12px;">{{ e.categoryLabel }}</div>
+                  <div class="category-badge">{{ e.categoryLabel }}</div>
                 </div>
                 <div style="margin-top:4px; font-family:'Jost'; font-weight:300; font-size:clamp(36px,3.6vw,56px); letter-spacing:0.08em;">{{ e.name }}</div>
                 <div style="margin-top:14px; font-family:'Cormorant Garamond',serif; font-style:italic; font-size:22px; color:rgba(230,226,218,0.72);">{{ e.line }}</div>
@@ -285,7 +293,7 @@
                 <img class="boxcard-boxed" src="{{ b.boxed }}" alt="{{ b.name }} boxed" style="position:absolute; inset:0; width:100%; height:100%; object-fit:contain; padding:2% 0%; display:block;" />
               </div>
               <div style="margin-top:20px; font-family:'Jost'; font-weight:300; font-size:24px; letter-spacing:0.1em;">{{ b.name }}</div>
-              <div style="margin-top:6px; font-family:'Jost'; font-size:9.5px; letter-spacing:0.2em; color:rgba(230,226,218,0.5);">{{ b.categoryLabel }}</div>
+              <div style="margin-top:8px; display:flex; justify-content:center;"><div class="category-badge">{{ b.categoryLabel }}</div></div>
               <div style="margin-top:8px; font-family:'Jost'; font-weight:300; font-size:15px; color:{{ b.accent }};">{{ b.tagline }}</div>
               <div style="margin-top:16px; display:flex; align-items:center; justify-content:center; gap:18px;">
                 <div style="display:flex; align-items:baseline; gap:10px;">
@@ -629,7 +637,7 @@ class Component extends DCLogic {
         return {
           accent: p.accent, noNum: p.no.replace('No. ', ''), note: p.base, name: p.name,
           tagline: p.tagline.charAt(0).toUpperCase() + p.tagline.slice(1) + '.',
-          desc: p.desc,
+          desc: p.desc, categoryLabel: p.categoryLabel,
         };
       })(),
       heroTextOpacity: this.state.heroTextOn ? 1 : 0,
