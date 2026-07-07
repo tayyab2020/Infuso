@@ -107,7 +107,10 @@ router.post('/', async (req, res) => {
       : undefined;
     sendMail({ to: order.customerEmail, from, ...email });
 
-    const adminNotifyTo = settings.contactEmail || process.env.ADMIN_NOTIFY_EMAIL || 'sales@infuso.pk';
+    // ADMIN_NOTIFY_EMAIL takes priority over the public contactEmail — it's meant
+    // to route to the actual mailbox, which can't be the same address as `from`
+    // (Gmail silently drops self-addressed mail sent from a verified alias to itself).
+    const adminNotifyTo = process.env.ADMIN_NOTIFY_EMAIL || settings.contactEmail || 'sales@infuso.pk';
     sendMail({ to: adminNotifyTo, from, ...adminNotificationEmail(order) });
   } catch (err) {
     const status = err.status || 500;
