@@ -151,6 +151,11 @@ const STATUS_COPY = {
     heading: 'Order #{n} delivered ✓',
     message: 'Your order has been delivered. We hope you love it.',
   },
+  PAYMENT_RECEIVED: {
+    subject: 'Your INFUSO order payment has been received',
+    heading: 'Order #{n} payment received ✓',
+    message: "We've received your cash on delivery payment. Thank you for shopping with INFUSO!",
+  },
   CANCELLED: {
     subject: 'Your INFUSO order has been cancelled',
     heading: 'Order #{n} cancelled',

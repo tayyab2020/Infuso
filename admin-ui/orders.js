@@ -1,12 +1,15 @@
-const STATUSES = ['PENDING', 'CONFIRMED', 'SHIPPED', 'DELIVERED', 'CANCELLED'];
+const STATUSES = ['PENDING', 'CONFIRMED', 'SHIPPED', 'DELIVERED', 'PAYMENT_RECEIVED', 'CANCELLED'];
 
 function renderOrderRow(order) {
   const itemsHtml = order.items.map((it) =>
     `<div>${it.quantity} × ${escapeHtml(it.productName)}</div>`
   ).join('') + (order.deliveryCharge ? `<div class="hint">+ Delivery: ${money(order.deliveryCharge)}</div>` : '');
 
-  const statusOptions = STATUSES.map((s) =>
-    `<option value="${s}" ${s === order.status ? 'selected' : ''}>${s}</option>`
+  // Payment Received only makes sense for COD orders (bank transfer orders are
+  // already confirmed as paid before shipping via the CONFIRMED status).
+  const statusChoices = STATUSES.filter((s) => s !== 'PAYMENT_RECEIVED' || order.paymentMethod === 'COD' || order.status === 'PAYMENT_RECEIVED');
+  const statusOptions = statusChoices.map((s) =>
+    `<option value="${s}" ${s === order.status ? 'selected' : ''}>${s.replace('_', ' ')}</option>`
   ).join('');
 
   const date = new Date(order.createdAt).toLocaleString('en-PK', {
