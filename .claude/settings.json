@@ -145,7 +145,10 @@
       "PowerShell(Resolve-DnsName -Name infuso.pk -Type MX)",
       "Bash(gh run *)",
       "PowerShell(gh run list --workflow=deploy.yml --limit 3 --repo tayyab2020/Infuso)",
-      "Bash(powershell -NoProfile -Command \"Get-CimInstance Win32_Process -Filter \\\\\"Name='node.exe'\\\\\" | Select-Object ProcessId,CommandLine | Format-Table -Wrap\")"
+      "Bash(powershell -NoProfile -Command \"Get-CimInstance Win32_Process -Filter \\\\\"Name='node.exe'\\\\\" | Select-Object ProcessId,CommandLine | Format-Table -Wrap\")",
+      "Bash(curl -s http://localhost:3001/)",
+      "Bash(curl -s http://localhost:3001/ -o /dev/null -w \"status:%{http_code} size:%{size_download}\\\\n\")",
+      "PowerShell(Get-CimInstance Win32_Process -Filter \"Name='node.exe'\" | Where-Object { $_.CommandLine -match [regex]::Escape\\(\"Claude Design v2 \\(Infuso\\)\"\\) } | ForEach-Object { Stop-Process -Id $_.ProcessId -Force -ErrorAction SilentlyContinue; \"killed $\\($_.ProcessId\\)\" })"
     ],
     "additionalDirectories": [
       "C:\\Users\\hp\\.ssh"
