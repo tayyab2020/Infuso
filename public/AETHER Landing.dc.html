@@ -30,7 +30,7 @@
     .btn { transition:background .35s, color .35s, border-color .35s, transform .2s; }
     .btn:hover { transform:translateY(-2px); }
     .social-ico { transition:border-color .3s, color .3s, transform .2s; }
-    .social-ico:hover { border-color:rgba(150,220,235,0.7); color:#f0ebe2; transform:translateY(-2px); }
+    .social-ico:hover { border-color:rgba(219,204,166,0.7); color:#f0ebe2; transform:translateY(-2px); }
     .wa-widget { transition:transform .25s ease, box-shadow .25s ease; }
     .wa-widget:hover { transform:scale(1.08); box-shadow:0 10px 30px rgba(0,0,0,0.45); }
     .cardimg { transition:transform 1.2s cubic-bezier(.16,1,.3,1); }
@@ -191,19 +191,18 @@
       <div style="position:absolute; left:50%; bottom:36px; transform:translateX(-50%); display:flex; flex-direction:column; align-items:center; gap:8px;">
         <div style="font-family:'Jost'; font-size:10px; letter-spacing:0.3em; color:rgba(240,235,226,0.45);">SCROLL</div>
         <div style="width:1px; height:26px; background:linear-gradient(rgba(240,235,226,0.5), transparent); position:relative; overflow:hidden;">
-          <div style="position:absolute; inset:0; background:rgba(150,220,235,0.9); animation:scrollcue 1.8s ease-in-out infinite;"></div>
+          <div style="position:absolute; inset:0; background:rgba(219,204,166,0.9); animation:scrollcue 1.8s ease-in-out infinite;"></div>
         </div>
       </div>
     </section>
 
     <!-- ══ ETHOS ══ -->
-    <section data-role="sec" data-idx="1" data-label="The House" class="brand-section" style="position:relative; min-height:82vh; display:flex; align-items:center; justify-content:center; padding:14vh 8vw; background:#0a0c0f; overflow:hidden;">
-      <div data-fx="par-slow" style="position:absolute; inset:-10% 0; background:radial-gradient(60% 50% at 50% 40%, rgba(120,200,215,0.05), transparent 70%); pointer-events:none;"></div>
+    <section data-role="sec" data-idx="1" data-label="The House" class="brand-section" style="position:relative; min-height:82vh; display:flex; align-items:center; justify-content:center; padding:14vh 8vw; background:transparent; overflow:hidden;">
       <div class="reveal" data-reveal style="max-width:920px; text-align:center; position:relative;">
-        <div style="font-family:'Jost'; font-size:12px; letter-spacing:0.4em; color:rgba(150,220,235,0.7);">{{ houseEyebrow }}</div>
-        <div style="margin-top:28px; font-family:'Cormorant Garamond', serif; font-weight:300; font-size:clamp(32px,4.6vw,60px); line-height:1.22; color:rgba(240,235,226,0.92);">More Than Perfume. <span style="font-style:italic; color:rgba(150,220,235,0.95);">It's Presence.</span></div>
+        <div style="font-family:'Jost'; font-size:12px; letter-spacing:0.4em; color:rgba(219,204,166,0.7);">{{ houseEyebrow }}</div>
+        <div style="margin-top:28px; font-family:'Cormorant Garamond', serif; font-weight:300; font-size:clamp(32px,4.6vw,60px); line-height:1.22; color:rgba(240,235,226,0.92);">More Than Perfume. <span style="font-style:italic; color:rgba(219,204,166,0.95);">It's Presence.</span></div>
         <div style="margin-top:26px; max-width:680px; margin-left:auto; margin-right:auto; font-family:'Jost'; font-weight:300; font-size:17px; line-height:1.8; color:rgba(230,226,218,0.65);">{{ houseBody }}</div>
-        <div style="margin-top:24px; font-family:'Cormorant Garamond', serif; font-style:italic; font-weight:300; font-size:clamp(22px,2.4vw,30px); color:rgba(150,220,235,0.9);">Wear The Invisible.</div>
+        <div style="margin-top:24px; font-family:'Cormorant Garamond', serif; font-style:italic; font-weight:300; font-size:clamp(22px,2.4vw,30px); color:rgba(219,204,166,0.9);">Wear The Invisible.</div>
       </div>
     </section>
 
@@ -246,27 +245,10 @@
       </section>
     </sc-for>
 
-    <!-- ══ FILM ══ -->
-    <section data-role="sec" data-idx="5" data-label="Film" style="position:relative; height:300vh; background:#050607;">
-      <div style="position:sticky; top:0; height:100vh; overflow:hidden; display:flex; align-items:center;">
-        <img src="products/collection-banner.png" alt="" style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover; display:block;" />
-        <video ref="{{ setBgVideo }}" muted playsinline preload="auto" crossorigin="anonymous" style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover; display:block; opacity:0; pointer-events:none;"></video>
-        <canvas data-role="filmcanvas" style="position:absolute; inset:0; width:100%; height:100%; display:block;"></canvas>
-        <div style="position:absolute; inset:0; background:linear-gradient(180deg, rgba(5,6,7,0.35) 0%, rgba(5,6,7,0) 30%, rgba(5,6,7,0) 70%, rgba(5,6,7,0.4) 100%);"></div>
-        <div class="film-scrollcue" style="position:absolute; right:6vw; bottom:44px; display:flex; align-items:center; gap:12px; opacity:0.75;">
-          <div style="font-family:'Jost'; font-size:10px; letter-spacing:0.3em; color:rgba(240,235,226,0.85);">SCROLL TO PLAY</div>
-          <div style="width:34px; height:1px; background:rgba(240,235,226,0.5); position:relative; overflow:hidden;">
-            <div ref="{{ setScrubFill }}" style="position:absolute; left:0; top:0; bottom:0; width:0%; background:rgba(150,220,235,0.95);"></div>
-          </div>
-          <svg width="12" height="12" viewBox="0 0 20 20" fill="none" stroke="rgba(150,220,235,0.95)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="animation:filmchevron 1.6s ease-in-out infinite; flex-shrink:0;"><path d="M4 7 L10 13 L16 7"></path></svg>
-        </div>
-      </div>
-    </section>
-
     <!-- ══ EDITORIAL GALLERY ══ -->
-    <section data-role="sec" data-idx="6" data-label="Editorial" class="editorial-section" style="position:relative; padding:16vh 6vw; background:#0a0c0f; overflow:hidden;">
+    <section data-role="sec" data-idx="5" data-label="Editorial" class="editorial-section" style="position:relative; padding:16vh 6vw; background:rgb(0 0 0); overflow:hidden;">
       <div class="reveal" data-reveal style="text-align:center; max-width:760px; margin:0 auto 10vh;">
-        <div style="font-family:'Jost'; font-size:12px; letter-spacing:0.4em; color:rgba(150,220,235,0.7);">{{ editorialEyebrow }}</div>
+        <div style="font-family:'Jost'; font-size:12px; letter-spacing:0.4em; color:rgba(219,204,166,0.7);">{{ editorialEyebrow }}</div>
         <div style="margin-top:18px; font-family:'Cormorant Garamond', serif; font-weight:300; font-size:clamp(32px,4vw,58px); color:#f0ebe2;">{{ editorialHeading }}</div>
         <div style="margin-top:18px; font-family:'Jost'; font-weight:300; font-size:15px; line-height:1.7; color:rgba(230,226,218,0.6);">{{ editorialBody }}</div>
       </div>
@@ -295,10 +277,27 @@
       </div>
     </section>
 
+    <!-- ══ FILM ══ -->
+    <section data-role="sec" data-idx="6" data-label="Film" style="position:relative; height:300vh; background:#050607;">
+      <div style="position:sticky; top:0; height:100vh; overflow:hidden; display:flex; align-items:center;">
+        <img src="products/collection-banner.png" alt="" style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover; display:block;" />
+        <video ref="{{ setBgVideo }}" muted playsinline preload="auto" crossorigin="anonymous" style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover; display:block; opacity:0; pointer-events:none;"></video>
+        <canvas data-role="filmcanvas" style="position:absolute; inset:0; width:100%; height:100%; display:block;"></canvas>
+        <div style="position:absolute; inset:0; background:linear-gradient(180deg, rgba(5,6,7,0.35) 0%, rgba(5,6,7,0) 30%, rgba(5,6,7,0) 70%, rgba(5,6,7,0.4) 100%);"></div>
+        <div class="film-scrollcue" style="position:absolute; right:6vw; bottom:44px; display:flex; align-items:center; gap:12px; opacity:0.75;">
+          <div style="font-family:'Jost'; font-size:10px; letter-spacing:0.3em; color:rgba(240,235,226,0.85);">SCROLL TO PLAY</div>
+          <div style="width:34px; height:1px; background:rgba(240,235,226,0.5); position:relative; overflow:hidden;">
+            <div ref="{{ setScrubFill }}" style="position:absolute; left:0; top:0; bottom:0; width:0%; background:rgba(219,204,166,0.95);"></div>
+          </div>
+          <svg width="12" height="12" viewBox="0 0 20 20" fill="none" stroke="rgba(219,204,166,0.95)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="animation:filmchevron 1.6s ease-in-out infinite; flex-shrink:0;"><path d="M4 7 L10 13 L16 7"></path></svg>
+        </div>
+      </div>
+    </section>
+
     <!-- ══ THE SET (boxes) ══ -->
-    <section data-role="sec" data-idx="7" data-label="The Set" class="discovery-section" style="position:relative; min-height:100vh; padding:16vh 6vw; background:radial-gradient(120% 90% at 50% 20%, #12181c 0%, #0a0c0f 60%, #08090b 100%); overflow:hidden;">
+    <section data-role="sec" data-idx="7" data-label="The Set" class="discovery-section" style="position:relative; min-height:100vh; padding:16vh 6vw; background:rgb(10, 12, 15); overflow:hidden;">
       <div class="reveal" data-reveal style="text-align:center; max-width:760px; margin:0 auto;">
-        <div style="font-family:'Jost'; font-size:12px; letter-spacing:0.4em; color:rgba(150,220,235,0.7);">{{ discoveryEyebrow }}</div>
+        <div style="font-family:'Jost'; font-size:12px; letter-spacing:0.4em; color:rgba(219,204,166,0.7);">{{ discoveryEyebrow }}</div>
         <div style="margin-top:18px; font-family:'Cormorant Garamond', serif; font-weight:300; font-size:clamp(32px,4vw,58px); color:#f0ebe2;">{{ discoveryHeading }}</div>
         <div style="margin-top:18px; font-family:'Jost'; font-weight:300; font-size:15px; line-height:1.7; color:rgba(230,226,218,0.6);">{{ discoveryBody }}</div>
       </div>
@@ -333,14 +332,14 @@
         </div>
       </div>
       <div class="reveal d2" data-reveal style="margin-top:8vh; text-align:center;">
-        <div onClick="{{ addSet }}" class="btn add-set-btn" style="cursor:pointer; display:inline-block; padding:17px 52px; border-radius:40px; border:1px solid rgba(150,220,235,0.6); background:rgba(120,200,215,0.08); font-size:12px; letter-spacing:0.28em; color:#f0ebe2;">ADD ALL THREE · {{ setPrice }}</div>
+        <div onClick="{{ addSet }}" class="btn add-set-btn" style="cursor:pointer; display:inline-block; padding:17px 52px; border-radius:40px; border:1px solid rgba(219,204,166,0.6); background:rgba(219,204,166,0.08); font-size:12px; letter-spacing:0.28em; color:#f0ebe2;">ADD ALL THREE · {{ setPrice }}</div>
       </div>
     </section>
 
     <!-- ══ FAQ ══ -->
     <section data-role="sec" data-idx="8" data-label="FAQ" class="faq-section" style="position:relative; padding:16vh 8vw; background:#0a0c0f; overflow:hidden;">
       <div class="reveal" data-reveal style="max-width:800px; margin:0 auto; text-align:center;">
-        <div style="font-family:'Jost'; font-size:12px; letter-spacing:0.4em; color:rgba(150,220,235,0.7);">{{ faqEyebrow }}</div>
+        <div style="font-family:'Jost'; font-size:12px; letter-spacing:0.4em; color:rgba(219,204,166,0.7);">{{ faqEyebrow }}</div>
         <div style="margin-top:18px; font-family:'Cormorant Garamond', serif; font-weight:300; font-size:clamp(30px,4vw,50px); color:#f0ebe2;">{{ faqHeading }}</div>
       </div>
       <div class="reveal" data-reveal style="max-width:800px; margin:8vh auto 0;">
@@ -349,8 +348,8 @@
             <div onClick="{{ f.toggle }}" style="cursor:pointer; display:flex; align-items:center; justify-content:space-between; gap:20px; padding:22px 4px; font-family:'Jost'; font-weight:400; font-size:16px; letter-spacing:0.02em; color:#f0ebe2;">
               <span>{{ f.q }}</span>
               <span style="flex-shrink:0; width:20px; height:20px; position:relative;">
-                <span style="position:absolute; left:50%; top:50%; width:12px; height:1px; background:rgba(150,220,235,0.85); transform:translate(-50%,-50%);"></span>
-                <span style="position:absolute; left:50%; top:50%; width:12px; height:1px; background:rgba(150,220,235,0.85); transform:translate(-50%,-50%) rotate({{ f.rot }}); transition:transform .3s ease;"></span>
+                <span style="position:absolute; left:50%; top:50%; width:12px; height:1px; background:rgba(219,204,166,0.85); transform:translate(-50%,-50%);"></span>
+                <span style="position:absolute; left:50%; top:50%; width:12px; height:1px; background:rgba(219,204,166,0.85); transform:translate(-50%,-50%) rotate({{ f.rot }}); transition:transform .3s ease;"></span>
               </span>
             </div>
             <div style="max-height:{{ f.maxH }}; overflow:hidden; transition:max-height .4s cubic-bezier(.16,1,.3,1);">
@@ -364,11 +363,11 @@
     <!-- ══ NEWSLETTER + FOOTER ══ -->
     <section data-role="sec" data-idx="9" data-label="Contact" style="position:relative; padding:16vh 8vw 56px; background:#08090b; border-top:1px solid rgba(240,235,226,0.1);">
       <div class="reveal" data-reveal style="max-width:760px; margin:0 auto; text-align:center;">
-        <div style="font-family:'Jost'; font-size:12px; letter-spacing:0.4em; color:rgba(150,220,235,0.7);">STAY IN THE LIGHT</div>
+        <div style="font-family:'Jost'; font-size:12px; letter-spacing:0.4em; color:rgba(219,204,166,0.7);">STAY IN THE LIGHT</div>
         <div style="margin-top:20px; font-family:'Cormorant Garamond', serif; font-weight:300; font-size:clamp(28px,3.6vw,46px); color:#f0ebe2;">First access to new compositions.</div>
         <div style="margin-top:36px; display:flex; max-width:460px; margin-left:auto; margin-right:auto; border-bottom:1px solid rgba(240,235,226,0.3);">
           <input placeholder="your email" value="{{ newsletterEmail }}" onChange="{{ onNewsletterEmail }}" onKeyDown="{{ onNewsletterKeyDown }}" style="flex:1; background:transparent; border:0; outline:none; color:#f0ebe2; font-family:'Jost'; font-size:15px; padding:12px 4px; letter-spacing:0.06em;" />
-          <div onClick="{{ submitNewsletter }}" class="btn" style="cursor:pointer; padding:12px 8px; font-size:12px; letter-spacing:0.24em; color:rgba(150,220,235,0.9); pointer-events:{{ newsletterPointer }};">{{ newsletterBtnLabel }}</div>
+          <div onClick="{{ submitNewsletter }}" class="btn" style="cursor:pointer; padding:12px 8px; font-size:12px; letter-spacing:0.24em; color:rgba(219,204,166,0.9); pointer-events:{{ newsletterPointer }};">{{ newsletterBtnLabel }}</div>
         </div>
         <sc-if value="{{ newsletterMessage }}">
           <div style="margin-top:14px; font-family:'Jost'; font-size:12px; letter-spacing:0.06em; color:{{ newsletterMessageColor }};">{{ newsletterMessage }}</div>
@@ -436,7 +435,7 @@
           <span style="font-size:12px; letter-spacing:0.24em; color:rgba(240,235,226,0.6);">TOTAL</span>
           <span style="font-family:'Jost'; font-weight:500; font-size:22px;">{{ orderTotal }}</span>
         </div>
-        <div onClick="{{ openCheckoutForm }}" class="btn" style="cursor:pointer; margin-top:20px; text-align:center; padding:17px; border-radius:40px; background:rgba(150,220,235,0.92); color:#08090b; font-size:12px; letter-spacing:0.26em; font-weight:500;">CHECKOUT</div>
+        <div onClick="{{ openCheckoutForm }}" class="btn" style="cursor:pointer; margin-top:20px; text-align:center; padding:17px; border-radius:40px; background:rgba(219,204,166,0.92); color:#08090b; font-size:12px; letter-spacing:0.26em; font-weight:500;">CHECKOUT</div>
         <div style="margin-top:14px; text-align:center; font-size:10px; letter-spacing:0.14em; color:rgba(240,235,226,0.35);">Cash on delivery available across Pakistan</div>
       </sc-if>
 
@@ -468,7 +467,7 @@
         <sc-if value="{{ checkoutError }}" hint-placeholder-val="{{ false }}">
           <div style="margin-top:10px; font-size:11px; letter-spacing:0.04em; color:#e5877d;">{{ checkoutError }}</div>
         </sc-if>
-        <div onClick="{{ submitOrder }}" class="btn" style="cursor:pointer; margin-top:18px; text-align:center; padding:17px; border-radius:40px; background:rgba(150,220,235,0.92); color:#08090b; font-size:12px; letter-spacing:0.26em; font-weight:500; pointer-events:{{ submitPointer }};">{{ submitLabel }}</div>
+        <div onClick="{{ submitOrder }}" class="btn" style="cursor:pointer; margin-top:18px; text-align:center; padding:17px; border-radius:40px; background:rgba(219,204,166,0.92); color:#08090b; font-size:12px; letter-spacing:0.26em; font-weight:500; pointer-events:{{ submitPointer }};">{{ submitLabel }}</div>
         <div onClick="{{ backToCart }}" style="margin-top:12px; text-align:center; cursor:pointer; font-size:11px; letter-spacing:0.14em; color:rgba(240,235,226,0.5);">← Back to cart</div>
       </sc-if>
 
@@ -476,7 +475,7 @@
         <div style="text-align:center; padding:10px 0;">
           <div style="font-family:'Cormorant Garamond',serif; font-size:22px; color:#f0ebe2;">Order placed ✓</div>
           <div style="margin-top:10px; font-size:12px; line-height:1.6; color:rgba(240,235,226,0.6);">Thank you — we'll contact you shortly to confirm delivery. Cash on delivery.</div>
-          <div onClick="{{ closeCart }}" class="btn" style="cursor:pointer; margin-top:20px; display:inline-block; padding:14px 34px; border-radius:40px; border:1px solid rgba(150,220,235,0.5); font-size:11px; letter-spacing:0.2em;">CONTINUE SHOPPING</div>
+          <div onClick="{{ closeCart }}" class="btn" style="cursor:pointer; margin-top:20px; display:inline-block; padding:14px 34px; border-radius:40px; border:1px solid rgba(219,204,166,0.5); font-size:11px; letter-spacing:0.2em;">CONTINUE SHOPPING</div>
         </div>
       </sc-if>
 
@@ -493,8 +492,8 @@
             <div>Account No: {{ bankAccountNumber }}</div>
             <div>IBAN: {{ bankIban }}</div>
           </div>
-          <div style="margin-top:16px; font-size:11.5px; line-height:1.75; color:rgba(150,220,235,0.9);">After payment, please share your transaction screenshot on WhatsApp <a href="{{ waLink }}" target="_blank" rel="noopener noreferrer" style="color:#f0ebe2; text-decoration:underline;">{{ waDisplay }}</a> so we can confirm your order.</div>
-          <div onClick="{{ closeCart }}" class="btn" style="cursor:pointer; margin-top:20px; display:inline-block; padding:14px 34px; border-radius:40px; border:1px solid rgba(150,220,235,0.5); font-size:11px; letter-spacing:0.2em;">CONTINUE SHOPPING</div>
+          <div style="margin-top:16px; font-size:11.5px; line-height:1.75; color:rgba(219,204,166,0.9);">After payment, please share your transaction screenshot on WhatsApp <a href="{{ waLink }}" target="_blank" rel="noopener noreferrer" style="color:#f0ebe2; text-decoration:underline;">{{ waDisplay }}</a> so we can confirm your order.</div>
+          <div onClick="{{ closeCart }}" class="btn" style="cursor:pointer; margin-top:20px; display:inline-block; padding:14px 34px; border-radius:40px; border:1px solid rgba(219,204,166,0.5); font-size:11px; letter-spacing:0.2em;">CONTINUE SHOPPING</div>
         </div>
       </sc-if>
     </div>
@@ -557,19 +556,19 @@ class Component extends DCLogic {
     return [
       { id: 'aether', name: 'AETHER', no: 'No. 01', idx: 2, img: 'products/aether.png', box: 'products/aether_box.png', category: 'UNISEX',
         accent: 'rgba(150,220,235,0.85)', bg: 'radial-gradient(120% 90% at 22% 42%, #14262c 0%, #0a0e11 60%, #08090b 100%)',
-        heroBg: 'linear-gradient(165deg, #17323a 0%, #08090b 78%)',
+        heroBg: 'linear-gradient(180deg, #17323a 0%, #08090b 78%)',
         tagline: 'cold air over stone', top: 'Sea Mineral', heart: 'Iris · Smoke', base: 'Amber Resin',
         desc: 'Clear and mineral at the first breath, warming through iris and a wisp of smoke, drying to a quiet resin that stays close to the skin.',
         inspired: 'INSPIRED BY L’IMMENSITÉ · LOUIS VUITTON', floatDur: '8s', par: '20px' },
       { id: 'aria', name: 'ARIA', no: 'No. 02', idx: 3, img: 'products/aria.png', box: 'products/aria_box.png', category: 'WOMEN',
         accent: 'rgba(195,170,235,0.9)', bg: 'radial-gradient(120% 90% at 78% 42%, #1b1a26 0%, #0d0c12 60%, #08090b 100%)',
-        heroBg: 'linear-gradient(165deg, #251f38 0%, #08090b 78%)',
+        heroBg: 'linear-gradient(180deg, #251f38 0%, #08090b 78%)',
         tagline: 'light through open air', top: 'Bergamot', heart: 'White Fruit', base: 'Soft Musk',
         desc: 'A bright, luminous fruit accord suspended over clean musk — airy and effortless, the scent of light moving through an open window.',
         inspired: 'INSPIRED BY ERBA PURA · XERJOFF', floatDur: '9s', par: '-18px' },
       { id: 'oudor', name: 'OUDOR', no: 'No. 03', idx: 4, img: 'products/oudor.png', box: 'products/oudor_box.png', category: 'MEN',
         accent: 'rgba(220,175,120,0.9)', bg: 'radial-gradient(120% 90% at 22% 42%, #241e17 0%, #12100b 60%, #08090b 100%)',
-        heroBg: 'linear-gradient(165deg, #342414 0%, #08090b 78%)',
+        heroBg: 'linear-gradient(180deg, #342414 0%, #08090b 78%)',
         tagline: 'warmth after dark', top: 'Saffron', heart: 'Oud · Incense', base: 'Amber · Woods',
         desc: 'Deep and resinous — saffron over smoked oud and incense, settling into warm amber and woods. The house at its most opulent.',
         inspired: 'INSPIRED BY TERRONI · ORTO PARISI', floatDur: '8.5s', par: '20px' },
@@ -618,7 +617,7 @@ class Component extends DCLogic {
       lineTotal: PKR(cart[p.id] * this.priceFor(p.id)),
       inc: () => this.setQty(p.id, 1), dec: () => this.setQty(p.id, -1),
     }));
-    const sections = ['Hero','House','Aether','Aria','Oudor','Film','Editorial','Set','FAQ','Contact'];
+    const sections = ['Hero','House','Aether','Aria','Oudor','Editorial','Film','Set','FAQ','Contact'];
     const editorial = [
       { id: 'aether', name: 'AETHER', no: 'No. 01', accent: 'rgba(150,220,235,0.85)', tall: 'products/aether_dark.png', wide: 'products/aether_slate.jpg',
         line: 'Cold air over stone.', story: 'Shot on wet slate under a single shaft of light — mineral, cool and clean, the way it opens on skin.', tallOrder: 1, sideOrder: 2 },
@@ -724,7 +723,7 @@ class Component extends DCLogic {
       newsletterMessage: this.state.newsletterStatus === 'done'
         ? "You're subscribed."
         : (this.state.newsletterStatus === 'error' ? (this.state.newsletterError || 'Something went wrong.') : null),
-      newsletterMessageColor: this.state.newsletterStatus === 'error' ? 'rgba(230,140,120,0.9)' : 'rgba(150,220,235,0.85)',
+      newsletterMessageColor: this.state.newsletterStatus === 'error' ? 'rgba(230,140,120,0.9)' : 'rgba(219,204,166,0.85)',
       bankQrSrc: S.bankQrImageUrl || 'products/bank-qr.png',
       bankAccountName: S.bankAccountName || 'Minahil Asim',
       bankName: S.bankName || 'Bank Al Habib',
@@ -755,13 +754,13 @@ class Component extends DCLogic {
 
       menu: [
         { label: 'Collection', go: () => { this.navTo(2); this.setState({ mobileMenuOpen: false }); } },
-        { label: 'Editorial', go: () => { this.navTo(6); this.setState({ mobileMenuOpen: false }); } },
+        { label: 'Editorial', go: () => { this.navTo(5); this.setState({ mobileMenuOpen: false }); } },
         { label: 'The Set', go: () => { this.navTo(7); this.setState({ mobileMenuOpen: false }); } },
-        { label: 'Film', go: () => { this.navTo(5); this.setState({ mobileMenuOpen: false }); } },
+        { label: 'Film', go: () => { this.navTo(6); this.setState({ mobileMenuOpen: false }); } },
       ],
       dots: sections.map((_, i) => ({
         go: () => this.navTo(i),
-        fill: this.state.active === i ? 'rgba(150,220,235,0.95)' : 'transparent',
+        fill: this.state.active === i ? 'rgba(219,204,166,0.95)' : 'transparent',
         scale: this.state.active === i ? 1.4 : 1,
       })),
 
@@ -787,7 +786,7 @@ class Component extends DCLogic {
       addSet: () => this.addSet(),
 
       cartCount: count,
-      cartBadgeBg: count > 0 ? 'rgba(150,220,235,0.95)' : 'rgba(240,235,226,0.25)',
+      cartBadgeBg: count > 0 ? 'rgba(219,204,166,0.95)' : 'rgba(240,235,226,0.25)',
       cartLines: lines,
       cartEmpty: count === 0,
       cartTotal: PKR(total),
@@ -803,11 +802,11 @@ class Component extends DCLogic {
       showBankInfo: this.state.checkoutStep === 'bankinfo',
       checkoutForm: this.state.checkoutForm,
       checkoutError: this.state.checkoutError,
-      codBorder: this.state.checkoutForm.paymentMethod === 'COD' ? 'rgba(150,220,235,0.7)' : 'rgba(240,235,226,0.25)',
-      codBg: this.state.checkoutForm.paymentMethod === 'COD' ? 'rgba(150,220,235,0.12)' : 'transparent',
+      codBorder: this.state.checkoutForm.paymentMethod === 'COD' ? 'rgba(219,204,166,0.7)' : 'rgba(240,235,226,0.25)',
+      codBg: this.state.checkoutForm.paymentMethod === 'COD' ? 'rgba(219,204,166,0.12)' : 'transparent',
       codColor: this.state.checkoutForm.paymentMethod === 'COD' ? '#f0ebe2' : 'rgba(240,235,226,0.55)',
-      bankBorder: this.state.checkoutForm.paymentMethod === 'BANK_TRANSFER' ? 'rgba(150,220,235,0.7)' : 'rgba(240,235,226,0.25)',
-      bankBg: this.state.checkoutForm.paymentMethod === 'BANK_TRANSFER' ? 'rgba(150,220,235,0.12)' : 'transparent',
+      bankBorder: this.state.checkoutForm.paymentMethod === 'BANK_TRANSFER' ? 'rgba(219,204,166,0.7)' : 'rgba(240,235,226,0.25)',
+      bankBg: this.state.checkoutForm.paymentMethod === 'BANK_TRANSFER' ? 'rgba(219,204,166,0.12)' : 'transparent',
       bankColor: this.state.checkoutForm.paymentMethod === 'BANK_TRANSFER' ? '#f0ebe2' : 'rgba(240,235,226,0.55)',
       selectCOD: () => this.setCheckoutField('paymentMethod', 'COD'),
       selectBank: () => this.setCheckoutField('paymentMethod', 'BANK_TRANSFER'),

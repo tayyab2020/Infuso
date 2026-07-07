@@ -18,7 +18,7 @@ function renderOrderRow(order) {
       <td class="order-number">#${order.orderNumber}</td>
       <td>${date}</td>
       <td>${escapeHtml(order.customerName)}</td>
-      <td>${escapeHtml(order.phone)}<br><span class="hint">${escapeHtml(order.customerEmail || '')} · ${escapeHtml(order.city)}</span></td>
+      <td>${escapeHtml(order.phone)}<br><span class="hint">${escapeHtml(order.customerEmail || '')} · ${escapeHtml(order.city)}</span>${order.notes ? `<br><span class="hint">Note: ${escapeHtml(order.notes)}</span>` : ''}</td>
       <td class="order-items">${itemsHtml}</td>
       <td>${money(order.totalAmount)}</td>
       <td>${order.paymentMethod === 'BANK_TRANSFER' ? 'Bank Transfer' : 'COD'}</td>
