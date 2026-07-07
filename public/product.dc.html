@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<script src="./support.js"></script>
+<script src="/support.js"></script>
 </head>
 <body>
 <x-dc>
@@ -24,6 +24,8 @@
     .linkline:hover::after { transform:scaleX(1); transform-origin:left; }
     .wa-widget { transition:transform .25s ease, box-shadow .25s ease; }
     .wa-widget:hover { transform:scale(1.08); box-shadow:0 10px 30px rgba(0,0,0,0.45); }
+    .social-ico { transition:border-color .3s, color .3s, transform .2s; }
+    .social-ico:hover { border-color:rgba(150,220,235,0.7); color:#f0ebe2; transform:translateY(-2px); }
     .thumb { transition:border-color .3s, opacity .3s; cursor:pointer; opacity:0.55; }
     .thumb:hover { opacity:0.85; }
     .thumb.active { opacity:1; border-color:rgba(150,220,235,0.85) !important; }
@@ -116,6 +118,22 @@
         </sc-for>
       </div>
     </div>
+
+    <div style="max-width:1200px; margin:14vh auto 0; display:flex; justify-content:space-between; align-items:flex-end; flex-wrap:wrap; gap:30px; border-top:1px solid rgba(240,235,226,0.1); padding-top:40px;">
+      <a href="/"><img src="{{ logoSrc }}" alt="INFUSO" style="height:30px; width:auto; display:block;" /></a>
+      <div style="display:flex; gap:16px;">
+        <a href="{{ facebookUrl }}" target="_blank" rel="noopener noreferrer" aria-label="Facebook" class="social-ico" style="width:36px; height:36px; border-radius:50%; border:1px solid rgba(240,235,226,0.3); display:flex; align-items:center; justify-content:center; color:rgba(240,235,226,0.7);">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>
+        </a>
+        <a href="{{ instagramUrl }}" target="_blank" rel="noopener noreferrer" aria-label="Instagram" class="social-ico" style="width:36px; height:36px; border-radius:50%; border:1px solid rgba(240,235,226,0.3); display:flex; align-items:center; justify-content:center; color:rgba(240,235,226,0.7);">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+        </a>
+        <a href="{{ contactMailto }}" aria-label="Email" class="social-ico" style="width:36px; height:36px; border-radius:50%; border:1px solid rgba(240,235,226,0.3); display:flex; align-items:center; justify-content:center; color:rgba(240,235,226,0.7);">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+        </a>
+      </div>
+      <div style="font-size:10px; letter-spacing:0.18em; color:rgba(240,235,226,0.32);">{{ footerCopyright }}</div>
+    </div>
   </div>
 </div>
 </x-dc>
@@ -146,20 +164,20 @@ function loadStoredCart() {
 // editorial/boxes sections already keep independent copies of this data.
 const CATALOG = [
   { id: 'aether', name: 'AETHER', no: 'No. 01', category: 'UNISEX',
-    accent: 'rgba(150,220,235,0.85)', img: 'products/aether.png', box: 'products/aether_box.png',
-    editorialTall: 'products/aether_dark.png', editorialWide: 'products/aether_slate.jpg',
+    accent: 'rgba(150,220,235,0.85)', img: '/products/aether.png', box: '/products/aether_box.png',
+    editorialTall: '/products/aether_dark.png', editorialWide: '/products/aether_slate.jpg',
     tagline: 'cold air over stone', top: 'Sea Mineral', heart: 'Iris · Smoke', base: 'Amber Resin',
     desc: 'Clear and mineral at the first breath, warming through iris and a wisp of smoke, drying to a quiet resin that stays close to the skin.',
     inspired: 'INSPIRED BY L’IMMENSITÉ · LOUIS VUITTON' },
   { id: 'aria', name: 'ARIA', no: 'No. 02', category: 'WOMEN',
-    accent: 'rgba(195,170,235,0.9)', img: 'products/aria.png', box: 'products/aria_box.png',
-    editorialTall: 'products/aria_hands.png', editorialWide: 'products/aria_citrus.jpg',
+    accent: 'rgba(195,170,235,0.9)', img: '/products/aria.png', box: '/products/aria_box.png',
+    editorialTall: '/products/aria_hands.png', editorialWide: '/products/aria_citrus.jpg',
     tagline: 'light through open air', top: 'Bergamot', heart: 'White Fruit', base: 'Soft Musk',
     desc: 'A bright, luminous fruit accord suspended over clean musk — airy and effortless, the scent of light moving through an open window.',
     inspired: 'INSPIRED BY ERBA PURA · XERJOFF' },
   { id: 'oudor', name: 'OUDOR', no: 'No. 03', category: 'MEN',
-    accent: 'rgba(220,175,120,0.9)', img: 'products/oudor.png', box: 'products/oudor_box.png',
-    editorialTall: 'products/oudor_wood.png', editorialWide: 'products/oudor_rocks.jpg',
+    accent: 'rgba(220,175,120,0.9)', img: '/products/oudor.png', box: '/products/oudor_box.png',
+    editorialTall: '/products/oudor_wood.png', editorialWide: '/products/oudor_rocks.jpg',
     tagline: 'warmth after dark', top: 'Saffron', heart: 'Oud · Incense', base: 'Amber · Woods',
     desc: 'Deep and resinous — saffron over smoked oud and incense, settling into warm amber and woods. The house at its most opulent.',
     inspired: 'INSPIRED BY TERRONI · ORTO PARISI' },
@@ -176,8 +194,13 @@ class Component extends DCLogic {
   };
 
   componentDidMount() {
-    const params = new URLSearchParams(window.location.search);
-    const slug = CATALOG.some((p) => p.id === params.get('slug')) ? params.get('slug') : 'aether';
+    // Pretty URL (/product/aether) is primary; ?slug= is kept as a fallback
+    // for any old links pointing at product.dc.html directly.
+    const pathMatch = window.location.pathname.match(/\/product\/([^/]+)/);
+    const fromPath = pathMatch ? decodeURIComponent(pathMatch[1]) : null;
+    const fromQuery = new URLSearchParams(window.location.search).get('slug');
+    const candidate = fromPath || fromQuery;
+    const slug = CATALOG.some((p) => p.id === candidate) ? candidate : 'aether';
     this.setState({ slug });
 
     fetch('/api/products')
@@ -249,8 +272,12 @@ class Component extends DCLogic {
     const S = this.state.liveSettings;
 
     return {
-      logoSrc: S.logoUrl || 'products/infuso-logo.png',
+      logoSrc: S.logoUrl || '/products/infuso-logo.png',
       waLink: 'https://wa.me/' + (S.whatsappNumber || '923316841320'),
+      facebookUrl: S.facebookUrl || 'https://www.facebook.com/profile.php?id=61590700033553&mibextid=wwXIfr&mibextid=wwXIfr',
+      instagramUrl: S.instagramUrl || 'https://www.instagram.com/infuso.pk?igsh=MXYyaDh2bnM5em01cA%3D%3D&utm_source=qr',
+      contactMailto: 'mailto:' + (S.contactEmail || 'sales@infuso.pk'),
+      footerCopyright: S.footerCopyright || '© 2026 INFUSO',
       cartCount,
       cartBadgeBg: cartCount > 0 ? 'rgba(150,220,235,0.95)' : 'rgba(240,235,226,0.25)',
 
@@ -275,7 +302,7 @@ class Component extends DCLogic {
 
       otherProducts: merged.filter((p) => p.id !== current.id).map((p) => ({
         name: p.name, img: p.img, categoryLabel: p.categoryLabel,
-        href: '/product.dc.html?slug=' + p.id,
+        href: '/product/' + p.id,
       })),
     };
   }

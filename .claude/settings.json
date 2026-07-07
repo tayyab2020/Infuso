@@ -156,7 +156,12 @@
       "Bash(node --check 'C:\\\\Users\\\\hp\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\c--Users-hp-Downloads-Claude-Design-v2--Infuso-\\\\c53dae2c-ad54-40b1-9839-501b7e65e5c8\\\\scratchpad/product-script-check.js')",
       "Bash(node --check 'C:\\\\Users\\\\hp\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\c--Users-hp-Downloads-Claude-Design-v2--Infuso-\\\\c53dae2c-ad54-40b1-9839-501b7e65e5c8\\\\scratchpad/main-script-check.js')",
       "Bash(node --check admin-ui/admin.js)",
-      "Bash(node --check admin-ui/subscribers.js)"
+      "Bash(node --check admin-ui/subscribers.js)",
+      "Bash(node --check 'C:\\\\Users\\\\hp\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\c--Users-hp-Downloads-Claude-Design-v2--Infuso-\\\\c53dae2c-ad54-40b1-9839-501b7e65e5c8\\\\scratchpad/product-script-check2.js')",
+      "Bash(grep -v \"https://\\\\|src=\\\\\"/\\\\|src=\\\\\"{{ \")",
+      "Bash(node --check 'C:\\\\Users\\\\hp\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\c--Users-hp-Downloads-Claude-Design-v2--Infuso-\\\\c53dae2c-ad54-40b1-9839-501b7e65e5c8\\\\scratchpad/product-script-check3.js')",
+      "Bash(curl -s -o /dev/null -w \"pretty url: %{http_code}\\\\n\" http://localhost:3001/product/oudor)",
+      "Bash(curl -s http://localhost:3001/product/oudor)"
     ],
     "additionalDirectories": [
       "C:\\Users\\hp\\.ssh"

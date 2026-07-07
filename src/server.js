@@ -48,6 +48,13 @@ function setStaticCacheHeaders(res, filePath) {
   }
 }
 
+// Pretty product URLs (/product/aether) — serves the same standalone
+// product.dc.html file; the page itself reads the slug from the path.
+app.get('/product/:slug', (req, res) => {
+  res.setHeader('Cache-Control', 'no-store');
+  res.sendFile(path.join(__dirname, '..', 'public', 'product.dc.html'));
+});
+
 // Customer storefront (the existing design, unchanged filename).
 app.use(express.static(path.join(__dirname, '..', 'public'), {
   index: 'AETHER Landing.dc.html',
