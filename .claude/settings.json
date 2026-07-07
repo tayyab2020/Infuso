@@ -168,7 +168,8 @@
       "PowerShell(Get-NetTCPConnection -LocalPort 3000 -State Listen -ErrorAction SilentlyContinue | Select-Object -ExpandProperty OwningProcess -Unique | ForEach-Object { Get-CimInstance Win32_Process -Filter \"ProcessId=$_\" | Select-Object ProcessId, Name, CommandLine })",
       "PowerShell(Stop-Process -Id 25400 -Force)",
       "PowerShell(Get-NetTCPConnection -LocalPort 3000 -State Listen -ErrorAction SilentlyContinue)",
-      "PowerShell(try { $c = Get-NetTCPConnection -LocalPort 3000 -State Listen -ErrorAction Stop; Write-Output \"still listening: $\\($c.OwningProcess\\)\" } catch { Write-Output \"port 3000 is free\" })"
+      "PowerShell(try { $c = Get-NetTCPConnection -LocalPort 3000 -State Listen -ErrorAction Stop; Write-Output \"still listening: $\\($c.OwningProcess\\)\" } catch { Write-Output \"port 3000 is free\" })",
+      "Bash(node --check 'C:\\\\Users\\\\hp\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\c--Users-hp-Downloads-Claude-Design-v2--Infuso-\\\\c53dae2c-ad54-40b1-9839-501b7e65e5c8\\\\scratchpad/main-check-addr.js')"
     ],
     "additionalDirectories": [
       "C:\\Users\\hp\\.ssh"
