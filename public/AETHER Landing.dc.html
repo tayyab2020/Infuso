@@ -170,7 +170,7 @@
           <div style="font-family:'Jost'; font-size:12px; letter-spacing:0.22em; color:{{ heroActive.accent }};">{{ heroActive.noNum }} — {{ heroActive.note }}</div>
           <div class="category-badge">{{ heroActive.categoryLabel }}</div>
         </div>
-        <div style="margin-top:10px; font-family:'Jost'; font-weight:300; font-size:clamp(38px,4.2vw,58px); letter-spacing:0.06em; color:#f0ebe2;">{{ heroActive.name }}</div>
+        <div onClick="{{ heroActive.viewProduct }}" class="linkline" style="cursor:pointer; display:inline-block; margin-top:10px; font-family:'Jost'; font-weight:300; font-size:clamp(38px,4.2vw,58px); letter-spacing:0.06em; color:#f0ebe2;">{{ heroActive.name }}</div>
         <div style="margin-top:16px; font-family:'Jost'; font-weight:300; font-size:15px; line-height:1.7;"><span style="color:{{ heroActive.accent }};">{{ heroActive.tagline }}</span> <span style="color:rgba(240,235,226,0.85);">{{ heroActive.desc }}</span></div>
         <div style="margin-top:26px; display:flex; align-items:center; flex-wrap:wrap; gap:20px;">
           <div style="display:flex; align-items:baseline; gap:12px;">
@@ -215,7 +215,7 @@
             <div style="font-family:'Cormorant Garamond', serif; font-style:italic; font-size:20px; color:{{ p.accent }};">{{ p.no }}</div>
             <div class="category-badge">{{ p.categoryLabel }}</div>
           </div>
-          <div style="margin-top:4px; font-family:'Jost'; font-weight:300; font-size:clamp(46px,5vw,80px); letter-spacing:0.08em; color:#f0ebe2;">{{ p.name }}</div>
+          <div onClick="{{ p.viewProduct }}" class="linkline" style="cursor:pointer; display:inline-block; margin-top:4px; font-family:'Jost'; font-weight:300; font-size:clamp(46px,5vw,80px); letter-spacing:0.08em; color:#f0ebe2;">{{ p.name }}</div>
           <div style="margin-top:10px; font-family:'Cormorant Garamond', serif; font-style:italic; font-size:19px; color:rgba(230,226,218,0.6);">{{ p.tagline }}</div>
           <div style="margin-top:22px; font-family:'Jost'; font-weight:300; font-size:16px; line-height:1.75; color:rgba(230,226,218,0.62);">{{ p.desc }}</div>
           <div style="margin-top:28px; display:flex; gap:34px;">
@@ -282,7 +282,7 @@
                   <div style="font-family:'Cormorant Garamond',serif; font-style:italic; font-size:20px; color:{{ e.accent }};">{{ e.no }}</div>
                   <div class="category-badge">{{ e.categoryLabel }}</div>
                 </div>
-                <div style="margin-top:4px; font-family:'Jost'; font-weight:300; font-size:clamp(36px,3.6vw,56px); letter-spacing:0.08em;">{{ e.name }}</div>
+                <div onClick="{{ e.viewProduct }}" class="linkline" style="cursor:pointer; display:inline-block; margin-top:4px; font-family:'Jost'; font-weight:300; font-size:clamp(36px,3.6vw,56px); letter-spacing:0.08em;">{{ e.name }}</div>
                 <div style="margin-top:14px; font-family:'Cormorant Garamond',serif; font-style:italic; font-size:22px; color:rgba(230,226,218,0.72);">{{ e.line }}</div>
                 <div style="margin-top:16px; font-family:'Jost'; font-weight:300; font-size:15px; line-height:1.7; color:rgba(230,226,218,0.55); max-width:420px;">{{ e.story }}</div>
               </div>
@@ -310,7 +310,7 @@
                 <img class="boxcard-bottle" src="{{ b.bottle }}" alt="{{ b.name }}" style="position:absolute; inset:0; width:100%; height:100%; object-fit:contain; padding:22% 8%; display:block;" />
                 <img class="boxcard-boxed" src="{{ b.boxed }}" alt="{{ b.name }} boxed" style="position:absolute; inset:0; width:100%; height:100%; object-fit:contain; padding:2% 0%; display:block;" />
               </div>
-              <div style="margin-top:20px; font-family:'Jost'; font-weight:300; font-size:24px; letter-spacing:0.1em;">{{ b.name }}</div>
+              <div onClick="{{ b.viewProduct }}" class="linkline" style="cursor:pointer; display:inline-block; margin-top:20px; font-family:'Jost'; font-weight:300; font-size:24px; letter-spacing:0.1em;">{{ b.name }}</div>
               <div style="margin-top:8px; display:flex; justify-content:center;"><div class="category-badge">{{ b.categoryLabel }}</div></div>
               <div style="margin-top:8px; font-family:'Jost'; font-weight:300; font-size:15px; color:{{ b.accent }};">{{ b.tagline }}</div>
               <div style="margin-top:16px; display:flex; align-items:center; justify-content:center; gap:18px;">
@@ -367,9 +367,12 @@
         <div style="font-family:'Jost'; font-size:12px; letter-spacing:0.4em; color:rgba(150,220,235,0.7);">STAY IN THE LIGHT</div>
         <div style="margin-top:20px; font-family:'Cormorant Garamond', serif; font-weight:300; font-size:clamp(28px,3.6vw,46px); color:#f0ebe2;">First access to new compositions.</div>
         <div style="margin-top:36px; display:flex; max-width:460px; margin-left:auto; margin-right:auto; border-bottom:1px solid rgba(240,235,226,0.3);">
-          <input placeholder="your email" style="flex:1; background:transparent; border:0; outline:none; color:#f0ebe2; font-family:'Jost'; font-size:15px; padding:12px 4px; letter-spacing:0.06em;" />
-          <div onClick="{{ noop }}" class="btn" style="cursor:pointer; padding:12px 8px; font-size:12px; letter-spacing:0.24em; color:rgba(150,220,235,0.9);">SUBSCRIBE →</div>
+          <input placeholder="your email" value="{{ newsletterEmail }}" onChange="{{ onNewsletterEmail }}" onKeyDown="{{ onNewsletterKeyDown }}" style="flex:1; background:transparent; border:0; outline:none; color:#f0ebe2; font-family:'Jost'; font-size:15px; padding:12px 4px; letter-spacing:0.06em;" />
+          <div onClick="{{ submitNewsletter }}" class="btn" style="cursor:pointer; padding:12px 8px; font-size:12px; letter-spacing:0.24em; color:rgba(150,220,235,0.9); pointer-events:{{ newsletterPointer }};">{{ newsletterBtnLabel }}</div>
         </div>
+        <sc-if value="{{ newsletterMessage }}">
+          <div style="margin-top:14px; font-family:'Jost'; font-size:12px; letter-spacing:0.06em; color:{{ newsletterMessageColor }};">{{ newsletterMessage }}</div>
+        </sc-if>
       </div>
       <div style="max-width:1200px; margin:14vh auto 0; display:flex; justify-content:space-between; align-items:flex-end; flex-wrap:wrap; gap:30px; border-top:1px solid rgba(240,235,226,0.1); padding-top:40px;">
         <img src="{{ logoSrc }}" alt="INFUSO" style="height:30px; width:auto; display:block;" />
@@ -535,6 +538,7 @@ class Component extends DCLogic {
     checkoutError: null,
     faqOpen: null,
     mobileMenuOpen: false,
+    newsletterEmail: '', newsletterStatus: 'idle', newsletterError: null, // 'idle' | 'sending' | 'done' | 'error'
   };
 
   _faqs() {
@@ -632,6 +636,7 @@ class Component extends DCLogic {
         line: live.editorialLine || e.line,
         story: live.editorialStory || e.story,
         categoryLabel: merged.categoryLabel,
+        viewProduct: () => this.goToProduct(e.id),
       };
     });
     const S = this.state.liveSettings;
@@ -679,6 +684,7 @@ class Component extends DCLogic {
           btnBg: this.state.justAdded === p.id ? p.accent : 'rgba(255,255,255,0.02)',
           btnLabel: this.state.justAdded === p.id ? 'ADDED ✓' : 'ADD TO CART',
           add: () => this.add(p.id),
+          viewProduct: () => this.goToProduct(p.id),
         };
       })(),
       heroTextOpacity: this.state.heroTextOn ? 1 : 0,
@@ -708,6 +714,17 @@ class Component extends DCLogic {
       instagramUrl: S.instagramUrl || 'https://www.instagram.com/infuso.pk?igsh=MXYyaDh2bnM5em01cA%3D%3D&utm_source=qr',
       contactMailto: 'mailto:' + (S.contactEmail || 'sales@infuso.pk'),
       footerCopyright: S.footerCopyright || '© 2026 INFUSO',
+
+      newsletterEmail: this.state.newsletterEmail,
+      onNewsletterEmail: (e) => this.setState({ newsletterEmail: e.target.value, newsletterStatus: 'idle', newsletterError: null }),
+      onNewsletterKeyDown: (e) => { if (e.key === 'Enter') this.submitNewsletter(); },
+      submitNewsletter: () => this.submitNewsletter(),
+      newsletterPointer: this.state.newsletterStatus === 'sending' ? 'none' : 'auto',
+      newsletterBtnLabel: this.state.newsletterStatus === 'sending' ? 'SENDING…' : 'SUBSCRIBE →',
+      newsletterMessage: this.state.newsletterStatus === 'done'
+        ? "You're subscribed."
+        : (this.state.newsletterStatus === 'error' ? (this.state.newsletterError || 'Something went wrong.') : null),
+      newsletterMessageColor: this.state.newsletterStatus === 'error' ? 'rgba(230,140,120,0.9)' : 'rgba(150,220,235,0.85)',
       bankQrSrc: S.bankQrImageUrl || 'products/bank-qr.png',
       bankAccountName: S.bankAccountName || 'Minahil Asim',
       bankName: S.bankName || 'Bank Al Habib',
@@ -756,12 +773,14 @@ class Component extends DCLogic {
         btnBg: this.state.justAdded === p.id ? p.accent : 'rgba(255,255,255,0.02)',
         btnLabel: this.state.justAdded === p.id ? 'ADDED ✓' : 'ADD TO CART',
         add: () => this.add(p.id),
+        viewProduct: () => this.goToProduct(p.id),
       })),
 
       boxes: D.map((p, i) => ({
         name: p.name, bottle: p.img, boxed: p.box, accent: p.accent, tagline: p.tagline, price: PKR(this.priceFor(p.id)), priceOld: PKR(this.priceOldFor(p.id)),
         categoryLabel: p.categoryLabel,
         delay: 'd' + (i + 1), add: () => this.add(p.id),
+        viewProduct: () => this.goToProduct(p.id),
       })),
 
       setPrice: PKR(D.reduce((sum, p) => sum + this.priceFor(p.id), 0)),
@@ -840,6 +859,27 @@ class Component extends DCLogic {
   toggleFaq(i) {
     this.setState((s) => ({ faqOpen: s.faqOpen === i ? null : i }));
   }
+  async submitNewsletter() {
+    const email = this.state.newsletterEmail.trim();
+    if (this.state.newsletterStatus === 'sending') return;
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      this.setState({ newsletterStatus: 'error', newsletterError: 'Please enter a valid email address.' });
+      return;
+    }
+    this.setState({ newsletterStatus: 'sending', newsletterError: null });
+    try {
+      const res = await fetch('/api/newsletter', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || 'Something went wrong.');
+      this.setState({ newsletterStatus: 'done', newsletterEmail: '' });
+    } catch (err) {
+      this.setState({ newsletterStatus: 'error', newsletterError: err.message });
+    }
+  }
   setCheckoutField(field, value) {
     this.setState((s) => ({ checkoutForm: { ...s.checkoutForm, [field]: value } }));
   }
@@ -883,6 +923,9 @@ class Component extends DCLogic {
   navTo(i) {
     const el = this.root && this.root.querySelector(`[data-idx="${i}"]`);
     if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+  goToProduct(id) {
+    window.location.href = '/product.dc.html?slug=' + id;
   }
 
   _isMobile() {

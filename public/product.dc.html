@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&display=swap" rel="stylesheet">
+  <style>
+    html, body { margin:0; padding:0; background:#08090b; }
+    * { box-sizing:border-box; }
+    body { font-family:'Jost', system-ui, sans-serif; color:#f0ebe2; }
+    a { text-decoration:none; }
+    @keyframes floaty { 0%,100% { transform:translateY(0) } 50% { transform:translateY(-18px) } }
+    .btn { transition:background .35s, color .35s, border-color .35s, transform .2s; }
+    .btn:hover { transform:translateY(-2px); }
+    .linkline { position:relative; }
+    .linkline::after { content:''; position:absolute; left:0; bottom:-3px; width:100%; height:1px; background:currentColor; transform:scaleX(0); transform-origin:right; transition:transform .5s cubic-bezier(.16,1,.3,1); }
+    .linkline:hover::after { transform:scaleX(1); transform-origin:left; }
+    .wa-widget { transition:transform .25s ease, box-shadow .25s ease; }
+    .wa-widget:hover { transform:scale(1.08); box-shadow:0 10px 30px rgba(0,0,0,0.45); }
+    .thumb { transition:border-color .3s, opacity .3s; cursor:pointer; opacity:0.55; }
+    .thumb:hover { opacity:0.85; }
+    .thumb.active { opacity:1; border-color:rgba(150,220,235,0.85) !important; }
+    .category-badge {
+      font-family:'Jost'; font-size:10px; letter-spacing:0.2em; white-space:nowrap;
+      color:rgba(240,235,226,0.92); border:1px solid rgba(240,235,226,0.4); border-radius:20px;
+      padding:4px 12px; background:rgba(8,9,11,0.45); backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px);
+    }
+    .pd-grid { display:grid; grid-template-columns:1fr 1fr; gap:5vw; align-items:start; }
+    .pd-thumbs { display:flex; gap:12px; margin-top:18px; }
+    @media (max-width:880px) {
+      .pd-grid { grid-template-columns:1fr !important; gap:8vw !important; }
+      .pd-nav-label { display:none !important; }
+      .pd-main-img { height:44vh !important; }
+    }
+  </style>
+</helmet>
+<div style="position:relative; min-height:100vh; background:#08090b;">
+
+  <div style="position:fixed; top:0; left:0; right:0; z-index:60; display:flex; align-items:center; justify-content:space-between; padding:18px 44px; background:rgba(8,9,11,0.85); backdrop-filter:blur(18px) saturate(1.2); -webkit-backdrop-filter:blur(18px) saturate(1.2); border-bottom:1px solid rgba(240,235,226,0.12);">
+    <a href="/">
+      <img src="{{ logoSrc }}" alt="INFUSO" style="height:36px; width:auto; display:block;" />
+    </a>
+    <div style="display:flex; align-items:center; gap:24px;">
+      <a href="/" class="linkline pd-nav-label" style="font-size:11px; letter-spacing:0.22em; text-transform:uppercase; color:#f0ebe2;">← All Products</a>
+      <a href="/" style="position:relative; display:flex; align-items:center; gap:9px; padding:9px 16px; border:1px solid rgba(240,235,226,0.35); border-radius:30px;">
+        <span style="font-size:11px; letter-spacing:0.2em; color:#f0ebe2;">CART</span>
+        <span style="min-width:20px; height:20px; padding:0 6px; border-radius:12px; background:{{ cartBadgeBg }}; color:#08090b; font-size:11px; font-weight:500; display:flex; align-items:center; justify-content:center;">{{ cartCount }}</span>
+      </a>
+    </div>
+  </div>
+
+  <a href="{{ waLink }}" target="_blank" rel="noopener noreferrer" aria-label="Chat on WhatsApp" class="wa-widget" style="position:fixed; right:30px; bottom:30px; z-index:65; width:58px; height:58px; border-radius:50%; background:#25D366; display:flex; align-items:center; justify-content:center; box-shadow:0 8px 24px rgba(0,0,0,0.35);">
+    <svg width="30" height="30" viewBox="0 0 24 24" fill="#fff"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.29.173-1.414-.074-.124-.272-.198-.57-.347z"></path><path d="M12.001 2.003c-5.514 0-9.997 4.483-9.997 9.997 0 1.763.464 3.483 1.346 4.997L2 22l5.11-1.34a9.96 9.96 0 0 0 4.891 1.247h.004c5.514 0 9.997-4.483 9.997-9.997 0-2.67-1.04-5.18-2.928-7.07a9.935 9.935 0 0 0-7.073-2.837zm0 18.174h-.003a8.19 8.19 0 0 1-4.166-1.14l-.299-.177-3.033.795.81-2.955-.195-.304a8.166 8.166 0 0 1-1.253-4.4c0-4.518 3.678-8.196 8.202-8.196a8.14 8.14 0 0 1 5.798 2.404 8.14 8.14 0 0 1 2.399 5.795c-.001 4.518-3.679 8.197-8.26 8.197z"></path></svg>
+  </a>
+
+  <div style="max-width:1200px; margin:0 auto; padding:150px 6vw 100px;">
+    <div class="pd-grid">
+      <div>
+        <div style="position:relative; height:64vh; min-height:420px; display:flex; align-items:center; justify-content:center; background:radial-gradient(120% 90% at 50% 40%, rgba(255,255,255,0.04) 0%, transparent 70%); border-radius:12px; overflow:hidden;">
+          <img src="{{ product.mainImg }}" alt="{{ product.name }}" class="pd-main-img" style="height:58vh; max-height:560px; display:block; animation:floaty 7s ease-in-out infinite;" />
+        </div>
+        <div class="pd-thumbs">
+          <sc-for list="{{ product.gallery }}" as="g" hint-placeholder-count="4">
+            <div onClick="{{ g.select }}" class="thumb {{ g.activeClass }}" style="width:70px; height:70px; flex-shrink:0; border:1px solid rgba(240,235,226,0.25); border-radius:8px; overflow:hidden; background:rgba(255,255,255,0.03);">
+              <img src="{{ g.src }}" alt="" style="width:100%; height:100%; object-fit:cover; display:block;" />
+            </div>
+          </sc-for>
+        </div>
+      </div>
+
+      <div>
+        <div style="display:flex; align-items:center; gap:14px;">
+          <div style="font-family:'Jost'; font-size:12px; letter-spacing:0.22em; color:{{ product.accent }};">{{ product.noNum }} — {{ product.base }}</div>
+          <div class="category-badge">{{ product.categoryLabel }}</div>
+        </div>
+        <div style="margin-top:10px; font-family:'Jost'; font-weight:300; font-size:clamp(38px,4.2vw,58px); letter-spacing:0.06em; color:#f0ebe2;">{{ product.name }}</div>
+        <div style="margin-top:16px; font-family:'Jost'; font-weight:300; font-size:15px; line-height:1.75;"><span style="color:{{ product.accent }};">{{ product.taglineCased }}</span> <span style="color:rgba(240,235,226,0.85);">{{ product.desc }}</span></div>
+
+        <div style="margin-top:30px; display:flex; gap:34px;">
+          <div><div style="font-size:11px; letter-spacing:0.22em; color:{{ product.accent }};">TOP</div><div style="margin-top:6px; font-family:'Cormorant Garamond',serif; font-size:19px;">{{ product.top }}</div></div>
+          <div><div style="font-size:11px; letter-spacing:0.22em; color:{{ product.accent }};">HEART</div><div style="margin-top:6px; font-family:'Cormorant Garamond',serif; font-size:19px;">{{ product.heart }}</div></div>
+          <div><div style="font-size:11px; letter-spacing:0.22em; color:{{ product.accent }};">BASE</div><div style="margin-top:6px; font-family:'Cormorant Garamond',serif; font-size:19px;">{{ product.base }}</div></div>
+        </div>
+
+        <div style="margin-top:22px; font-size:12px; letter-spacing:0.16em; color:rgba(230,226,218,0.5);">{{ product.inspired }}</div>
+        <div style="margin-top:6px; font-size:11px; letter-spacing:0.14em; color:rgba(230,226,218,0.4);">60 ml · eau de parfum</div>
+
+        <div style="margin-top:34px; display:flex; align-items:center; flex-wrap:wrap; gap:20px;">
+          <div style="display:flex; align-items:baseline; gap:12px;">
+            <span style="font-family:'Jost'; font-weight:300; font-size:15px; text-decoration:line-through; color:rgba(230,226,218,0.4);">{{ product.priceOld }}</span>
+            <span style="font-family:'Jost'; font-weight:500; font-size:26px; color:#f0ebe2;">{{ product.price }}</span>
+          </div>
+          <div onClick="{{ product.add }}" class="btn" style="cursor:pointer; padding:15px 40px; border-radius:40px; border:1px solid {{ product.accent }}; background:{{ product.btnBg }}; color:#f0ebe2; font-size:12px; letter-spacing:0.26em; white-space:nowrap;">{{ product.btnLabel }}</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top:14vh; border-top:1px solid rgba(240,235,226,0.1); padding-top:6vh;">
+      <div style="font-family:'Jost'; font-size:12px; letter-spacing:0.4em; color:rgba(150,220,235,0.7);">EXPLORE THE COLLECTION</div>
+      <div style="margin-top:4vh; display:flex; gap:4vw; flex-wrap:wrap;">
+        <sc-for list="{{ otherProducts }}" as="o" hint-placeholder-count="2">
+          <a href="{{ o.href }}" style="display:flex; align-items:center; gap:16px; padding:14px 18px; border:1px solid rgba(240,235,226,0.12); border-radius:10px; flex:1; min-width:220px;">
+            <img src="{{ o.img }}" alt="{{ o.name }}" style="height:60px; width:auto; object-fit:contain;" />
+            <div>
+              <div class="category-badge">{{ o.categoryLabel }}</div>
+              <div style="margin-top:8px; font-family:'Jost'; font-size:18px; letter-spacing:0.08em; color:#f0ebe2;">{{ o.name }}</div>
+            </div>
+          </a>
+        </sc-for>
+      </div>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const PKR = (n) => 'PKR ' + n.toLocaleString('en-PK');
+const PRICE = 3850;
+const ORIGINAL_PRICE = 4500;
+const CART_STORAGE_KEY = 'infuso_cart';
+
+function loadStoredCart() {
+  const empty = { aether: 0, aria: 0, oudor: 0 };
+  try {
+    const raw = window.localStorage && localStorage.getItem(CART_STORAGE_KEY);
+    if (!raw) return empty;
+    const parsed = JSON.parse(raw);
+    return {
+      aether: Math.max(0, parseInt(parsed.aether, 10) || 0),
+      aria: Math.max(0, parseInt(parsed.aria, 10) || 0),
+      oudor: Math.max(0, parseInt(parsed.oudor, 10) || 0),
+    };
+  } catch (e) { return empty; }
+}
+
+// Trimmed, self-contained copy of the same hardcoded fallback content used on
+// the main landing page (public/AETHER Landing.dc.html) — this page boots
+// standalone (its own <x-dc> document, no shared imports across pages in this
+// runtime), so it keeps its own copy the same way the landing page's own
+// editorial/boxes sections already keep independent copies of this data.
+const CATALOG = [
+  { id: 'aether', name: 'AETHER', no: 'No. 01', category: 'UNISEX',
+    accent: 'rgba(150,220,235,0.85)', img: 'products/aether.png', box: 'products/aether_box.png',
+    editorialTall: 'products/aether_dark.png', editorialWide: 'products/aether_slate.jpg',
+    tagline: 'cold air over stone', top: 'Sea Mineral', heart: 'Iris · Smoke', base: 'Amber Resin',
+    desc: 'Clear and mineral at the first breath, warming through iris and a wisp of smoke, drying to a quiet resin that stays close to the skin.',
+    inspired: 'INSPIRED BY L’IMMENSITÉ · LOUIS VUITTON' },
+  { id: 'aria', name: 'ARIA', no: 'No. 02', category: 'WOMEN',
+    accent: 'rgba(195,170,235,0.9)', img: 'products/aria.png', box: 'products/aria_box.png',
+    editorialTall: 'products/aria_hands.png', editorialWide: 'products/aria_citrus.jpg',
+    tagline: 'light through open air', top: 'Bergamot', heart: 'White Fruit', base: 'Soft Musk',
+    desc: 'A bright, luminous fruit accord suspended over clean musk — airy and effortless, the scent of light moving through an open window.',
+    inspired: 'INSPIRED BY ERBA PURA · XERJOFF' },
+  { id: 'oudor', name: 'OUDOR', no: 'No. 03', category: 'MEN',
+    accent: 'rgba(220,175,120,0.9)', img: 'products/oudor.png', box: 'products/oudor_box.png',
+    editorialTall: 'products/oudor_wood.png', editorialWide: 'products/oudor_rocks.jpg',
+    tagline: 'warmth after dark', top: 'Saffron', heart: 'Oud · Incense', base: 'Amber · Woods',
+    desc: 'Deep and resinous — saffron over smoked oud and incense, settling into warm amber and woods. The house at its most opulent.',
+    inspired: 'INSPIRED BY TERRONI · ORTO PARISI' },
+];
+
+class Component extends DCLogic {
+  state = {
+    slug: 'aether',
+    liveProducts: {},
+    liveSettings: {},
+    cart: loadStoredCart(),
+    justAdded: false,
+    activeImageIdx: 0,
+  };
+
+  componentDidMount() {
+    const params = new URLSearchParams(window.location.search);
+    const slug = CATALOG.some((p) => p.id === params.get('slug')) ? params.get('slug') : 'aether';
+    this.setState({ slug });
+
+    fetch('/api/products')
+      .then((r) => (r.ok ? r.json() : []))
+      .then((list) => {
+        const map = {};
+        for (const p of list) map[p.slug] = p;
+        this.setState({ liveProducts: map });
+      })
+      .catch(() => {});
+
+    fetch('/api/settings')
+      .then((r) => (r.ok ? r.json() : {}))
+      .then((s) => { if (s && Object.keys(s).length) this.setState({ liveSettings: s }); })
+      .catch(() => {});
+  }
+
+  priceFor(id) {
+    const live = this.state.liveProducts[id];
+    return live ? live.price : PRICE;
+  }
+  priceOldFor(id) {
+    const live = this.state.liveProducts[id];
+    if (live && live.priceOld != null) return live.priceOld;
+    return ORIGINAL_PRICE;
+  }
+  _stockFor(id) {
+    const live = this.state.liveProducts[id];
+    return live ? live.stock : Infinity;
+  }
+  _mergeProduct(p) {
+    const live = this.state.liveProducts[p.id] || {};
+    const category = live.category || p.category;
+    return {
+      ...p,
+      img: live.imageUrl || p.img,
+      box: live.hoverImageUrl || p.box,
+      editorialTall: live.editorialTallImageUrl || p.editorialTall,
+      editorialWide: live.editorialWideImageUrl || p.editorialWide,
+      tagline: live.tagline || p.tagline,
+      top: live.topNote || p.top,
+      heart: live.heartNote || p.heart,
+      base: live.baseNote || p.base,
+      desc: live.description || p.desc,
+      inspired: live.inspiredBy || p.inspired,
+      category,
+      categoryLabel: { MEN: 'Men', WOMEN: 'Women', UNISEX: 'Unisex' }[category] || 'Unisex',
+    };
+  }
+
+  add(id) {
+    const stock = this._stockFor(id);
+    this.setState((s) => {
+      const q = Math.min(stock, (s.cart[id] || 0) + 1);
+      const cart = { ...s.cart, [id]: q };
+      try { localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cart)); } catch (e) {}
+      return { cart, justAdded: true };
+    });
+    clearTimeout(this._addT);
+    this._addT = setTimeout(() => this.setState({ justAdded: false }), 1400);
+  }
+
+  renderVals() {
+    const merged = CATALOG.map((p) => this._mergeProduct(p));
+    const current = merged.find((p) => p.id === this.state.slug) || merged[0];
+    const gallery = [current.img, current.box, current.editorialTall, current.editorialWide];
+    const cart = this.state.cart;
+    const cartCount = cart.aether + cart.aria + cart.oudor;
+    const S = this.state.liveSettings;
+
+    return {
+      logoSrc: S.logoUrl || 'products/infuso-logo.png',
+      waLink: 'https://wa.me/' + (S.whatsappNumber || '923316841320'),
+      cartCount,
+      cartBadgeBg: cartCount > 0 ? 'rgba(150,220,235,0.95)' : 'rgba(240,235,226,0.25)',
+
+      product: {
+        name: current.name, noNum: current.no.replace('No. ', ''), base: current.base,
+        accent: current.accent, categoryLabel: current.categoryLabel,
+        taglineCased: current.tagline.charAt(0).toUpperCase() + current.tagline.slice(1) + '.',
+        desc: current.desc, top: current.top, heart: current.heart,
+        inspired: current.inspired,
+        mainImg: gallery[this.state.activeImageIdx] || current.img,
+        gallery: gallery.map((src, i) => ({
+          src,
+          activeClass: this.state.activeImageIdx === i ? 'active' : '',
+          select: () => this.setState({ activeImageIdx: i }),
+        })),
+        price: PKR(this.priceFor(current.id)),
+        priceOld: PKR(this.priceOldFor(current.id)),
+        btnBg: this.state.justAdded ? current.accent : 'rgba(255,255,255,0.02)',
+        btnLabel: this.state.justAdded ? 'ADDED ✓' : 'ADD TO CART',
+        add: () => this.add(current.id),
+      },
+
+      otherProducts: merged.filter((p) => p.id !== current.id).map((p) => ({
+        name: p.name, img: p.img, categoryLabel: p.categoryLabel,
+        href: '/product.dc.html?slug=' + p.id,
+      })),
+    };
+  }
+}
+</script>
+</body>
+</html>

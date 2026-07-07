@@ -89,6 +89,15 @@ router.patch('/orders/:id', requireAdmin, async (req, res) => {
   }
 });
 
+router.delete('/orders/:id', requireAdmin, async (req, res) => {
+  try {
+    await prisma.order.delete({ where: { id: req.params.id } });
+    res.json({ ok: true });
+  } catch (err) {
+    res.status(404).json({ error: 'Order not found.' });
+  }
+});
+
 // ---- Products ----
 
 // Fields beyond the original slug/name/price/stock/active — all optional content/image fields.
@@ -299,6 +308,22 @@ router.put('/settings', requireAdmin, async (req, res) => {
     create: { id: 'singleton', ...data },
   });
   res.json(settings);
+});
+
+// ---- Newsletter subscribers ----
+
+router.get('/subscribers', requireAdmin, async (req, res) => {
+  const subscribers = await prisma.subscriber.findMany({ orderBy: { createdAt: 'desc' } });
+  res.json(subscribers);
+});
+
+router.delete('/subscribers/:id', requireAdmin, async (req, res) => {
+  try {
+    await prisma.subscriber.delete({ where: { id: req.params.id } });
+    res.json({ ok: true });
+  } catch (err) {
+    res.status(404).json({ error: 'Subscriber not found.' });
+  }
 });
 
 module.exports = router;

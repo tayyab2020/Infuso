@@ -39,6 +39,7 @@ const ADMIN_NAV = [
   { key: 'orders', label: 'Orders', href: '/admin/orders.html' },
   { key: 'products', label: 'Products', href: '/admin/products.html' },
   { key: 'faqs', label: 'FAQs', href: '/admin/faqs.html' },
+  { key: 'subscribers', label: 'Subscribers', href: '/admin/subscribers.html' },
   { key: 'settings', label: 'Settings', href: '/admin/settings.html' },
 ];
 
@@ -46,7 +47,19 @@ const ADMIN_NAV = [
 // to hand-duplicate the markup — pages just call mountSidebar('products') etc.
 // The sidebar is position:fixed and .admin-main carries a matching margin-left,
 // so no existing page content needs to be relocated into a wrapper.
+// On narrow viewports the sidebar becomes an off-canvas drawer, toggled by a
+// hamburger button also injected here (see mobile media queries in admin.css).
 function mountSidebar(activeKey) {
+  const overlay = document.createElement('div');
+  overlay.className = 'sidebar-overlay';
+  document.body.prepend(overlay);
+
+  const toggle = document.createElement('button');
+  toggle.className = 'sidebar-toggle';
+  toggle.setAttribute('aria-label', 'Toggle menu');
+  toggle.innerHTML = '<svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><line x1="2" y1="5" x2="18" y2="5"></line><line x1="2" y1="10" x2="18" y2="10"></line><line x1="2" y1="15" x2="18" y2="15"></line></svg>';
+  document.body.prepend(toggle);
+
   const nav = document.createElement('div');
   nav.className = 'admin-sidebar';
   nav.innerHTML = `
@@ -59,6 +72,11 @@ function mountSidebar(activeKey) {
     <button id="logout-btn" class="sidebar-logout">Log out</button>
   `;
   document.body.prepend(nav);
+
+  const closeSidebar = () => { nav.classList.remove('sidebar-open'); overlay.classList.remove('sidebar-open'); };
+  const openSidebar = () => { nav.classList.add('sidebar-open'); overlay.classList.add('sidebar-open'); };
+  toggle.addEventListener('click', () => (nav.classList.contains('sidebar-open') ? closeSidebar() : openSidebar()));
+  overlay.addEventListener('click', closeSidebar);
 
   // Best-effort: reflect a custom uploaded logo if one's been set in Settings.
   api('/settings', {}, { redirectOn401: false })

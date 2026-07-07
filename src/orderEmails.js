@@ -176,4 +176,23 @@ function orderStatusEmail(order, status, settings = {}) {
   return { subject: copy.subject, html, attachments: [] };
 }
 
-module.exports = { codConfirmationEmail, bankTransferEmail, adminNotificationEmail, orderStatusEmail };
+function newsletterWelcomeEmail() {
+  const html = wrapper(`
+    <h2 style="margin:0 0 12px; font-family:Georgia,serif; font-weight:400; color:#f0ebe2;">You're on the list</h2>
+    <p style="font-size:14px; line-height:1.7; color:rgba(240,235,226,0.75);">Thank you for subscribing to INFUSO. You'll be the first to hear about new compositions, restocks, and members-only offers.</p>
+  `);
+  return { subject: 'Welcome to INFUSO', html, attachments: [] };
+}
+
+function newsletterAdminNotifyEmail(email) {
+  const html = wrapper(`
+    <h2 style="margin:0 0 12px; font-family:Georgia,serif; font-weight:400; color:#f0ebe2;">New newsletter subscriber</h2>
+    <p style="font-size:14px; line-height:1.7; color:rgba(240,235,226,0.75);">${escapeHtml(email)}</p>
+  `);
+  return { subject: 'New newsletter subscriber', html, attachments: [] };
+}
+
+module.exports = {
+  codConfirmationEmail, bankTransferEmail, adminNotificationEmail, orderStatusEmail,
+  newsletterWelcomeEmail, newsletterAdminNotifyEmail,
+};

@@ -25,6 +25,7 @@ function renderOrderRow(order) {
       <td>
         <select class="status-select status-${order.status}">${statusOptions}</select>
       </td>
+      <td><button class="btn danger delete-btn" type="button">Delete</button></td>
     </tr>
   `;
 }
@@ -33,7 +34,7 @@ async function loadOrders() {
   const body = document.getElementById('orders-body');
   const orders = await api('/orders');
   if (!orders.length) {
-    body.innerHTML = '<tr><td colspan="8" class="hint">No orders yet.</td></tr>';
+    body.innerHTML = '<tr><td colspan="9" class="hint">No orders yet.</td></tr>';
     return;
   }
   body.innerHTML = orders.map(renderOrderRow).join('');
@@ -54,6 +55,17 @@ async function loadOrders() {
         select.value = prevStatus;
       } finally {
         select.disabled = false;
+      }
+    });
+
+    row.querySelector('.delete-btn').addEventListener('click', async () => {
+      const id = row.getAttribute('data-id');
+      if (!confirm(`Delete order #${row.querySelector('.order-number').textContent.replace('#', '')}? This cannot be undone.`)) return;
+      try {
+        await api(`/orders/${id}`, { method: 'DELETE' });
+        row.remove();
+      } catch (err) {
+        alert(err.message);
       }
     });
   });
