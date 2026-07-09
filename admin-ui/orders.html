@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>INFUSO Admin · Orders</title>
+<link rel="icon" type="image/png" href="/products/favicon.png">
 <link rel="stylesheet" href="admin.css">
 </head>
 <body>
@@ -31,6 +32,17 @@
         </tbody>
       </table>
       </div>
+    </div>
+
+    <div class="card" id="items-edit-panel" style="display:none;">
+      <h2>Edit items — order <span id="items-edit-order-number"></span></h2>
+      <p class="page-sub">Set the quantity for each product; 0 removes it from the order. Delivery charge stays the same and the total recalculates from current product prices.</p>
+      <div id="items-edit-rows" class="form-grid cols-1"></div>
+      <div class="btn-row" style="margin-top:14px;">
+        <button type="button" class="btn accent" id="items-save-btn">Save changes</button>
+        <span id="items-cancel-edit" class="hint" style="cursor:pointer;">Cancel</span>
+      </div>
+      <div id="items-edit-error" class="error-msg" style="display:none;"></div>
     </div>
   </div>
 

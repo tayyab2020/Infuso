@@ -89,6 +89,94 @@ router.patch('/orders/:id', requireAdmin, async (req, res) => {
   }
 });
 
+// Replaces an order's line items wholesale (admin correction tool — wrong size
+// picked, customer asked to swap a product, etc). Prices are re-priced from
+// each product's current price, and totalAmount is recomputed on top of the
+// order's existing deliveryCharge.
+router.put('/orders/:id/items', requireAdmin, async (req, res) => {
+  const { items } = req.body || {};
+  if (!Array.isArray(items) || !items.length) {
+    return res.status(400).json({ error: 'items must be a non-empty array.' });
+  }
+  const normalized = [];
+  for (const it of items) {
+    const slug = it && it.slug;
+    const quantity = Number(it && it.quantity);
+    if (typeof slug !== 'string' || !slug.trim() || !Number.isInteger(quantity) || quantity < 1) {
+      return res.status(400).json({ error: 'Each item needs a valid slug and an integer quantity >= 1.' });
+    }
+    normalized.push({ slug, quantity });
+  }
+
+  const order = await prisma.order.findUnique({ where: { id: req.params.id }, include: { items: true } });
+  if (!order) return res.status(404).json({ error: 'Order not found.' });
+
+  const products = await prisma.product.findMany({ where: { slug: { in: normalized.map((n) => n.slug) } } });
+  const bySlug = Object.fromEntries(products.map((p) => [p.slug, p]));
+  for (const n of normalized) {
+    if (!bySlug[n.slug]) return res.status(400).json({ error: `Unknown product: ${n.slug}` });
+  }
+
+  // Stock follows the order: taking more of a product than it previously held
+  // draws down stock (like a fresh checkout would); taking less restocks the
+  // difference. Only products whose quantity actually changed are touched.
+  const oldQtyByProductId = {};
+  for (const it of order.items) oldQtyByProductId[it.productId] = (oldQtyByProductId[it.productId] || 0) + it.quantity;
+  const newQtyByProductId = {};
+  for (const n of normalized) {
+    const productId = bySlug[n.slug].id;
+    newQtyByProductId[productId] = (newQtyByProductId[productId] || 0) + n.quantity;
+  }
+  const allProductIds = new Set([...Object.keys(oldQtyByProductId), ...Object.keys(newQtyByProductId)]);
+  const stockDeltas = [...allProductIds]
+    .map((productId) => ({ productId, delta: (newQtyByProductId[productId] || 0) - (oldQtyByProductId[productId] || 0) }))
+    .filter((d) => d.delta !== 0);
+
+  const itemsTotal = normalized.reduce((sum, n) => sum + bySlug[n.slug].price * n.quantity, 0);
+  const totalAmount = itemsTotal + (order.deliveryCharge || 0);
+
+  try {
+    const updated = await prisma.$transaction(async (tx) => {
+      for (const { productId, delta } of stockDeltas) {
+        if (delta > 0) {
+          const { count } = await tx.product.updateMany({
+            where: { id: productId, stock: { gte: delta } },
+            data: { stock: { decrement: delta } },
+          });
+          if (count === 0) {
+            const p = await tx.product.findUnique({ where: { id: productId } });
+            throw Object.assign(new Error(`Not enough stock for ${p ? p.name : 'product'}.`), { status: 409 });
+          }
+        } else {
+          await tx.product.update({ where: { id: productId }, data: { stock: { increment: -delta } } });
+        }
+      }
+
+      await tx.orderItem.deleteMany({ where: { orderId: order.id } });
+      return tx.order.update({
+        where: { id: order.id },
+        data: {
+          totalAmount,
+          items: {
+            create: normalized.map((n) => ({
+              productId: bySlug[n.slug].id,
+              quantity: n.quantity,
+              unitPrice: bySlug[n.slug].price,
+              productName: bySlug[n.slug].name,
+            })),
+          },
+        },
+        include: { items: true },
+      });
+    });
+
+    res.json(updated);
+  } catch (err) {
+    if (err.status) return res.status(err.status).json({ error: err.message });
+    throw err;
+  }
+});
+
 router.delete('/orders/:id', requireAdmin, async (req, res) => {
   try {
     await prisma.order.delete({ where: { id: req.params.id } });

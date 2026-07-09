@@ -1,5 +1,8 @@
 const STATUSES = ['PENDING', 'CONFIRMED', 'SHIPPED', 'DELIVERED', 'PAYMENT_RECEIVED', 'CANCELLED'];
 
+let allProducts = [];
+let ordersById = {};
+
 function renderOrderRow(order) {
   const itemsHtml = order.items.map((it) =>
     `<div>${it.quantity} × ${escapeHtml(it.productName)}</div>`
@@ -28,14 +31,20 @@ function renderOrderRow(order) {
       <td>
         <select class="status-select status-${order.status}">${statusOptions}</select>
       </td>
-      <td><button class="btn danger delete-btn" type="button">Delete</button></td>
+      <td class="btn-row">
+        <button class="btn secondary items-btn" type="button">Edit items</button>
+        <button class="btn danger delete-btn" type="button">Delete</button>
+      </td>
     </tr>
   `;
 }
 
 async function loadOrders() {
   const body = document.getElementById('orders-body');
-  const orders = await api('/orders');
+  const [orders, products] = await Promise.all([api('/orders'), api('/products')]);
+  allProducts = products.filter((p) => p.active);
+  ordersById = Object.fromEntries(orders.map((o) => [o.id, o]));
+
   if (!orders.length) {
     body.innerHTML = '<tr><td colspan="9" class="hint">No orders yet.</td></tr>';
     return;
@@ -71,8 +80,61 @@ async function loadOrders() {
         alert(err.message);
       }
     });
+
+    row.querySelector('.items-btn').addEventListener('click', () => {
+      openItemsPanel(ordersById[row.getAttribute('data-id')]);
+    });
   });
 }
+
+function openItemsPanel(order) {
+  document.getElementById('items-edit-order-number').textContent = '#' + order.orderNumber;
+
+  const qtyByProductId = Object.fromEntries(order.items.map((it) => [it.productId, it.quantity]));
+  document.getElementById('items-edit-rows').innerHTML = allProducts.map((p) => `
+    <div class="field" data-slug="${p.slug}" style="flex-direction:row; align-items:center; gap:12px;">
+      <label style="flex:1; text-transform:none; font-weight:400; font-size:13px; color:var(--text);">${escapeHtml(p.name)} <span class="hint">(${money(p.price)})</span></label>
+      <input type="number" class="items-qty-input" min="0" style="width:90px;" value="${qtyByProductId[p.id] || 0}" />
+    </div>
+  `).join('');
+
+  document.getElementById('items-edit-error').style.display = 'none';
+  document.getElementById('items-edit-panel').dataset.orderId = order.id;
+  const panel = document.getElementById('items-edit-panel');
+  panel.style.display = 'block';
+  panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+document.getElementById('items-cancel-edit').addEventListener('click', () => {
+  document.getElementById('items-edit-panel').style.display = 'none';
+});
+
+document.getElementById('items-save-btn').addEventListener('click', async () => {
+  const panel = document.getElementById('items-edit-panel');
+  const orderId = panel.dataset.orderId;
+  const errorEl = document.getElementById('items-edit-error');
+  errorEl.style.display = 'none';
+
+  const items = [];
+  panel.querySelectorAll('#items-edit-rows [data-slug]').forEach((row) => {
+    const quantity = Number(row.querySelector('.items-qty-input').value || 0);
+    if (quantity > 0) items.push({ slug: row.getAttribute('data-slug'), quantity });
+  });
+  if (!items.length) {
+    errorEl.textContent = 'An order needs at least one item.';
+    errorEl.style.display = 'block';
+    return;
+  }
+
+  try {
+    await api(`/orders/${orderId}/items`, { method: 'PUT', body: JSON.stringify({ items }) });
+    panel.style.display = 'none';
+    await loadOrders();
+  } catch (err) {
+    errorEl.textContent = err.message;
+    errorEl.style.display = 'block';
+  }
+});
 
 mountSidebar('orders');
 requireAuthAndWireLogout().then(loadOrders).catch(() => {});

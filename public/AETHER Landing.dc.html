@@ -3,6 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" type="image/png" href="/products/favicon.png">
+<link rel="apple-touch-icon" href="/products/favicon.png">
 <script src="./support.js"></script>
 </head>
 <body>
@@ -280,7 +282,7 @@
     <!-- ══ FILM ══ -->
     <section data-role="sec" data-idx="6" data-label="Film" style="position:relative; height:300vh; background:#050607;">
       <div style="position:sticky; top:0; height:100vh; overflow:hidden; display:flex; align-items:center;">
-        <img src="products/collection-banner.png" alt="" style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover; display:block;" />
+        <img src="products/collection-banner.webp" alt="" style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover; display:block;" />
         <video ref="{{ setBgVideo }}" muted playsinline preload="auto" crossorigin="anonymous" style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover; display:block; opacity:0; pointer-events:none;"></video>
         <canvas data-role="filmcanvas" style="position:absolute; inset:0; width:100%; height:100%; display:block;"></canvas>
         <div style="position:absolute; inset:0; background:linear-gradient(180deg, rgba(5,6,7,0.35) 0%, rgba(5,6,7,0) 30%, rgba(5,6,7,0) 70%, rgba(5,6,7,0.4) 100%);"></div>
@@ -554,19 +556,19 @@ class Component extends DCLogic {
 
   _data() {
     return [
-      { id: 'aether', name: 'AETHER', no: 'No. 01', idx: 2, img: 'products/aether.png', box: 'products/aether_box.png', category: 'UNISEX',
+      { id: 'aether', name: 'AETHER', no: 'No. 01', idx: 2, img: 'products/aether.webp', box: 'products/aether_box.webp', category: 'UNISEX',
         accent: 'rgba(150,220,235,0.85)', bg: 'radial-gradient(120% 90% at 22% 42%, #14262c 0%, #0a0e11 60%, #08090b 100%)',
         heroBg: 'linear-gradient(180deg, #17323a 0%, #08090b 78%)',
         tagline: 'cold air over stone', top: 'Sea Mineral', heart: 'Iris · Smoke', base: 'Amber Resin',
         desc: 'Clear and mineral at the first breath, warming through iris and a wisp of smoke, drying to a quiet resin that stays close to the skin.',
         inspired: 'INSPIRED BY L’IMMENSITÉ · LOUIS VUITTON', floatDur: '8s', par: '20px' },
-      { id: 'aria', name: 'ARIA', no: 'No. 02', idx: 3, img: 'products/aria.png', box: 'products/aria_box.png', category: 'WOMEN',
+      { id: 'aria', name: 'ARIA', no: 'No. 02', idx: 3, img: 'products/aria.webp', box: 'products/aria_box.webp', category: 'WOMEN',
         accent: 'rgba(195,170,235,0.9)', bg: 'radial-gradient(120% 90% at 78% 42%, #1b1a26 0%, #0d0c12 60%, #08090b 100%)',
         heroBg: 'linear-gradient(180deg, #251f38 0%, #08090b 78%)',
         tagline: 'light through open air', top: 'Bergamot', heart: 'White Fruit', base: 'Soft Musk',
         desc: 'A bright, luminous fruit accord suspended over clean musk — airy and effortless, the scent of light moving through an open window.',
         inspired: 'INSPIRED BY ERBA PURA · XERJOFF', floatDur: '9s', par: '-18px' },
-      { id: 'oudor', name: 'OUDOR', no: 'No. 03', idx: 4, img: 'products/oudor.png', box: 'products/oudor_box.png', category: 'MEN',
+      { id: 'oudor', name: 'OUDOR', no: 'No. 03', idx: 4, img: 'products/oudor.webp', box: 'products/oudor_box.webp', category: 'MEN',
         accent: 'rgba(220,175,120,0.9)', bg: 'radial-gradient(120% 90% at 22% 42%, #241e17 0%, #12100b 60%, #08090b 100%)',
         heroBg: 'linear-gradient(180deg, #342414 0%, #08090b 78%)',
         tagline: 'warmth after dark', top: 'Saffron', heart: 'Oud · Incense', base: 'Amber · Woods',
@@ -619,11 +621,11 @@ class Component extends DCLogic {
     }));
     const sections = ['Hero','House','Aether','Aria','Oudor','Editorial','Film','Set','FAQ','Contact'];
     const editorial = [
-      { id: 'aether', name: 'AETHER', no: 'No. 01', accent: 'rgba(150,220,235,0.85)', tall: 'products/aether_dark.png', wide: 'products/aether_slate.jpg',
+      { id: 'aether', name: 'AETHER', no: 'No. 01', accent: 'rgba(150,220,235,0.85)', tall: 'products/aether_dark.webp', wide: 'products/aether_slate.webp',
         line: 'Cold air over stone.', story: 'Shot on wet slate under a single shaft of light — mineral, cool and clean, the way it opens on skin.', tallOrder: 1, sideOrder: 2 },
-      { id: 'aria', name: 'ARIA', no: 'No. 02', accent: 'rgba(195,170,235,0.9)', tall: 'products/aria_hands.png', wide: 'products/aria_citrus.jpg',
+      { id: 'aria', name: 'ARIA', no: 'No. 02', accent: 'rgba(195,170,235,0.9)', tall: 'products/aria_hands.webp', wide: 'products/aria_citrus.webp',
         line: 'Light through open air.', story: 'Held in warm daylight beside cut citrus and marble — luminous, weightless, effortlessly bright.', tallOrder: 2, sideOrder: 1 },
-      { id: 'oudor', name: 'OUDOR', no: 'No. 03', accent: 'rgba(220,175,120,0.9)', tall: 'products/oudor_wood.png', wide: 'products/oudor_rocks.jpg',
+      { id: 'oudor', name: 'OUDOR', no: 'No. 03', accent: 'rgba(220,175,120,0.9)', tall: 'products/oudor_wood.webp', wide: 'products/oudor_rocks.webp',
         line: 'Warmth after dark.', story: 'Laid among agarwood, ember and resin against black stone — deep, smoky and opulent.', tallOrder: 1, sideOrder: 2 },
     ].map((e) => {
       const live = this.state.liveProducts[e.id] || {};
@@ -965,10 +967,7 @@ class Component extends DCLogic {
     const loop = () => { try { this._tick(); } catch (e) {} this._raf = requestAnimationFrame(loop); };
     this._raf = requestAnimationFrame(loop);
     this._startHeroTimer();
-    // Safety net: never let the loader get stuck if the video fails to load/decode.
-    this._loaderFallback = setTimeout(() => {
-      if (this.state.pageLoading) this.setState({ pageLoading: false });
-    }, 9000);
+    this._preloadCriticalAssets();
 
     // Live product content from the backend (price/stock/images/copy) — falls
     // back to the hardcoded _data()/editorial()/_faqs() values until this
@@ -996,6 +995,42 @@ class Component extends DCLogic {
   _hidePageLoader() {
     if (this._loaderFallback) { clearTimeout(this._loaderFallback); this._loaderFallback = null; }
     if (this.state.pageLoading) this.setState({ pageLoading: false });
+  }
+
+  // Loads a single image and always resolves (never rejects) once it either
+  // loads or fails, so one broken/slow asset can't hang the whole batch.
+  _loadOne(url) {
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.onload = () => resolve(true);
+      img.onerror = () => resolve(false);
+      img.src = url;
+    });
+  }
+
+  // Keeps the page loader up until every above-the-fold-and-beyond asset the
+  // page actually uses — bottles, editorial/discovery shots, the film's
+  // scroll-scrub frames — has settled, not just a fixed guess. Frame
+  // extraction (_extractFrames, started from the scroll/scrub loop) resolves
+  // this._framesSettled itself once its own 120-image batch finishes.
+  _preloadCriticalAssets() {
+    const D = this._data();
+    const editorialImgs = ['products/aether_dark.webp', 'products/aether_slate.webp',
+      'products/aria_hands.webp', 'products/aria_citrus.webp',
+      'products/oudor_wood.webp', 'products/oudor_rocks.webp'];
+    const urls = new Set(['products/collection-banner.webp', 'products/infuso-logo.png', ...editorialImgs]);
+    D.forEach((p) => { urls.add(p.img); urls.add(p.box); });
+
+    this._framesSettled = new Promise((resolve) => { this._resolveFramesSettled = resolve; });
+
+    Promise.all([...urls].map((u) => this._loadOne(u)).concat([this._framesSettled]))
+      .then(() => this._hidePageLoader());
+
+    // Safety net: never let the loader get stuck — e.g. a stalled connection
+    // that never fires load/error on some asset.
+    this._loaderFallback = setTimeout(() => {
+      if (this.state.pageLoading) this.setState({ pageLoading: false });
+    }, 20000);
   }
 
   _startHeroTimer() {
@@ -1201,16 +1236,16 @@ class Component extends DCLogic {
       const settle = () => {
         done++;
         if (done === N) {
-          if (failed) { this._extracting = false; this._hidePageLoader(); return; }
+          if (failed) { this._extracting = false; this._resolveFramesSettled(); return; }
           this._frames = frames;
           this._framesReady = true;
           this._lastFrameIdx = -1;
-          this._hidePageLoader();
+          this._resolveFramesSettled();
         }
       };
       img.onload = () => { frames[i] = img; settle(); };
       img.onerror = () => { failed = true; settle(); };
-      img.src = 'products/' + dir + '/f' + String(i).padStart(3, '0') + '.jpg';
+      img.src = 'products/' + dir + '/f' + String(i).padStart(3, '0') + '.webp';
     }
   }
 
