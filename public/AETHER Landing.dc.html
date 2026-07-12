@@ -532,6 +532,19 @@ const PRICE = 3850;
 const ORIGINAL_PRICE = 4500;
 const CART_STORAGE_KEY = 'infuso_cart';
 
+// Fires a Meta Pixel event — safe no-op if fbq never loaded (blocked by an
+// ad-blocker, offline, etc). eventID is passed through so the server-side
+// Conversions API call for the same action (see src/metaConversions.js) can
+// reuse it and Meta de-dupes the two into a single event instead of double-
+// counting.
+function fbTrack(eventName, params, eventId) {
+  try {
+    if (typeof window.fbq === 'function') {
+      window.fbq('track', eventName, params, eventId ? { eventID: eventId } : undefined);
+    }
+  } catch (e) {}
+}
+
 // Cart survives a page reload via localStorage (scoped to this browser) —
 // not an IP address, which is shared by every device on the same wifi/mobile
 // NAT and would leak one customer's cart into another's, and changes on its
@@ -603,6 +616,11 @@ class Component extends DCLogic {
   priceFor(id) {
     const live = this.state.liveProducts[id];
     return live ? live.price : PRICE;
+  }
+
+  _productMeta(id) {
+    const p = this._data().find((x) => x.id === id);
+    return { name: p ? p.name : id, price: this.priceFor(id) };
   }
 
   // null means "no compare-at price" (admin left it blank) and must suppress
@@ -842,7 +860,15 @@ class Component extends DCLogic {
         ? 'PLACING ORDER…'
         : (this.state.checkoutForm.paymentMethod === 'BANK_TRANSFER' ? 'PLACE ORDER · BANK TRANSFER' : 'PLACE ORDER · COD'),
       submitPointer: this.state.checkoutStep === 'placing' ? 'none' : 'auto',
-      openCheckoutForm: () => this.setState({ checkoutStep: 'form', checkoutError: null }),
+      openCheckoutForm: () => {
+        this.setState({ checkoutStep: 'form', checkoutError: null });
+        const inCart = D.filter((p) => cart[p.id] > 0);
+        fbTrack('InitiateCheckout', {
+          content_ids: inCart.map((p) => p.id), content_type: 'product',
+          contents: inCart.map((p) => ({ id: p.id, quantity: cart[p.id] })),
+          num_items: count, value: total, currency: 'PKR',
+        });
+      },
       backToCart: () => this.setState({ checkoutStep: 'cart', checkoutError: null }),
       onCustomerName: (e) => this.setCheckoutField('customerName', e.target.value),
       onCustomerEmail: (e) => this.setCheckoutField('customerEmail', e.target.value),
@@ -859,6 +885,11 @@ class Component extends DCLogic {
     this.setState({ justAdded: id });
     clearTimeout(this._addT);
     this._addT = setTimeout(() => this.setState({ justAdded: null }), 1400);
+    const meta = this._productMeta(id);
+    fbTrack('AddToCart', {
+      content_ids: [id], content_type: 'product', content_name: meta.name,
+      value: meta.price, currency: 'PKR',
+    });
   }
   addSet() {
     this.setState((s) => {
@@ -867,6 +898,9 @@ class Component extends DCLogic {
       this._persistCart(cart);
       return { cart, cartOpen: true };
     });
+    const ids = ['aether', 'aria', 'oudor'];
+    const value = ids.reduce((sum, id) => sum + this.priceFor(id), 0);
+    fbTrack('AddToCart', { content_ids: ids, content_type: 'product', content_name: 'Discovery Set', value, currency: 'PKR' });
   }
   setQty(id, delta) {
     this.setState((s) => {
@@ -928,14 +962,29 @@ class Component extends DCLogic {
       return;
     }
     this.setState({ checkoutStep: 'placing', checkoutError: null });
+    // Generated client-side and sent to the server too, so the browser Pixel
+    // Purchase event and the server's Conversions API Purchase event (fired
+    // from POST /api/orders) share one event_id — that's what lets Meta
+    // de-dupe them into a single conversion instead of counting it twice.
+    const fbEventId = (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : String(Date.now()) + Math.random();
+    const value = items.reduce((sum, it) => sum + this.priceFor(it.slug) * it.quantity, 0);
     try {
       const res = await fetch('/api/orders', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ customerName, customerEmail, phone, address, city, notes, paymentMethod, items }),
+        body: JSON.stringify({
+          customerName, customerEmail, phone, address, city, notes, paymentMethod, items,
+          fbEventId, fbEventSourceUrl: window.location.href,
+        }),
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data.error || 'Failed to place order.');
+      fbTrack('Purchase', {
+        content_ids: items.map((it) => it.slug), content_type: 'product',
+        contents: items.map((it) => ({ id: it.slug, quantity: it.quantity })),
+        num_items: items.reduce((sum, it) => sum + it.quantity, 0),
+        value, currency: 'PKR',
+      }, fbEventId);
       this._persistCart({ aether: 0, aria: 0, oudor: 0 });
       this.setState({
         checkoutStep: paymentMethod === 'BANK_TRANSFER' ? 'bankinfo' : 'done',

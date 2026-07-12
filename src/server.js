@@ -12,6 +12,11 @@ const newsletterRouter = require('./routes/newsletter');
 
 const app = express();
 
+// Behind Nginx (a single reverse-proxy hop) — trusts its X-Forwarded-For/Proto
+// headers so req.ip reflects the real visitor (needed for accurate Meta
+// Conversions API matching) instead of Nginx's own loopback address.
+app.set('trust proxy', 1);
+
 app.use(express.json());
 app.use(session({
   secret: process.env.SESSION_SECRET || 'dev-only-secret-change-me',

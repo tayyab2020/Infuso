@@ -1,8 +1,10 @@
+const crypto = require('crypto');
 const express = require('express');
 const prisma = require('../db');
 const { sendMail } = require('../mailer');
 const { codConfirmationEmail, bankTransferEmail, adminNotificationEmail } = require('../orderEmails');
 const { generateOrderNumber } = require('../lib/orderNumber');
+const { sendMetaEvent } = require('../metaConversions');
 
 const router = express.Router();
 
@@ -20,7 +22,7 @@ function isValidEmail(v) {
 // city, notes?, items: [{ slug, quantity }] }. Price/stock are always resolved
 // server-side — the client never gets to dictate what it pays.
 router.post('/', async (req, res) => {
-  const { customerName, customerEmail, phone, address, city, notes, items, paymentMethod } = req.body || {};
+  const { customerName, customerEmail, phone, address, city, notes, items, paymentMethod, fbEventId, fbEventSourceUrl } = req.body || {};
 
   if (!isNonEmptyString(customerName) || !isValidEmail(customerEmail) || !isNonEmptyString(phone) ||
       !isNonEmptyString(address) || !isNonEmptyString(city)) {
@@ -112,6 +114,26 @@ router.post('/', async (req, res) => {
     // (Gmail silently drops self-addressed mail sent from a verified alias to itself).
     const adminNotifyTo = process.env.ADMIN_NOTIFY_EMAIL || settings.contactEmail || 'sales@infuso.pk';
     sendMail({ to: adminNotifyTo, from, ...adminNotificationEmail(order) });
+
+    // Server-side Purchase event — reuses the client's Pixel event_id (when
+    // sent) so Meta de-dupes the browser and server copies of the same order
+    // into a single conversion instead of double-counting it.
+    sendMetaEvent({
+      eventName: 'Purchase',
+      eventId: isNonEmptyString(fbEventId) ? fbEventId : crypto.randomUUID(),
+      req,
+      customerData: { email: order.customerEmail, phone: order.phone },
+      eventSourceUrl: isNonEmptyString(fbEventSourceUrl) ? fbEventSourceUrl : req.headers.referer,
+      customData: {
+        currency: 'PKR',
+        value: order.totalAmount,
+        content_type: 'product',
+        content_ids: order.items.map((it) => it.productId),
+        contents: order.items.map((it) => ({ id: it.productId, quantity: it.quantity, item_price: it.unitPrice })),
+        num_items: order.items.reduce((sum, it) => sum + it.quantity, 0),
+        order_id: order.orderNumber,
+      },
+    });
   } catch (err) {
     const status = err.status || 500;
     if (status === 500) console.error(err);

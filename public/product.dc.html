@@ -164,6 +164,16 @@ const PRICE = 3850;
 const ORIGINAL_PRICE = 4500;
 const CART_STORAGE_KEY = 'infuso_cart';
 
+// Fires a Meta Pixel event — safe no-op if fbq never loaded (blocked by an
+// ad-blocker, offline, etc).
+function fbTrack(eventName, params, eventId) {
+  try {
+    if (typeof window.fbq === 'function') {
+      window.fbq('track', eventName, params, eventId ? { eventID: eventId } : undefined);
+    }
+  } catch (e) {}
+}
+
 function loadStoredCart() {
   const empty = { aether: 0, aria: 0, oudor: 0 };
   try {
@@ -223,6 +233,13 @@ class Component extends DCLogic {
     const candidate = fromPath || fromQuery;
     const slug = CATALOG.some((p) => p.id === candidate) ? candidate : 'aether';
     this.setState({ slug });
+
+    const viewed = CATALOG.find((p) => p.id === slug);
+    fbTrack('ViewContent', {
+      content_ids: [slug], content_type: 'product',
+      content_name: viewed ? viewed.name : slug,
+      value: this.priceFor(slug), currency: 'PKR',
+    });
 
     fetch('/api/products')
       .then((r) => (r.ok ? r.json() : []))
@@ -285,6 +302,11 @@ class Component extends DCLogic {
     });
     clearTimeout(this._addT);
     this._addT = setTimeout(() => this.setState({ justAdded: false }), 1400);
+    const p = CATALOG.find((x) => x.id === id);
+    fbTrack('AddToCart', {
+      content_ids: [id], content_type: 'product', content_name: p ? p.name : id,
+      value: this.priceFor(id), currency: 'PKR',
+    });
   }
 
   renderVals() {
