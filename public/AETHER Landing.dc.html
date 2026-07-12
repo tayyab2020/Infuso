@@ -5,6 +5,23 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="icon" type="image/png" href="/products/favicon.png">
 <link rel="apple-touch-icon" href="/products/favicon.png">
+<!-- Meta Pixel Code -->
+<script>
+!function(f,b,e,v,n,t,s)
+{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];
+s.parentNode.insertBefore(t,s)}(window, document,'script',
+'https://connect.facebook.net/en_US/fbevents.js');
+fbq('init', '1703900774196311');
+fbq('track', 'PageView');
+</script>
+<noscript><img height="1" width="1" style="display:none"
+src="https://www.facebook.com/tr?id=1703900774196311&ev=PageView&noscript=1"
+/></noscript>
+<!-- End Meta Pixel Code -->
 <script src="./support.js"></script>
 </head>
 <body>
@@ -176,7 +193,9 @@
         <div style="margin-top:16px; font-family:'Jost'; font-weight:300; font-size:15px; line-height:1.7;"><span style="color:{{ heroActive.accent }};">{{ heroActive.tagline }}</span> <span style="color:rgba(240,235,226,0.85);">{{ heroActive.desc }}</span></div>
         <div style="margin-top:26px; display:flex; align-items:center; flex-wrap:wrap; gap:20px;">
           <div style="display:flex; align-items:baseline; gap:12px;">
-            <span style="font-family:'Jost'; font-weight:300; font-size:14px; text-decoration:line-through; color:rgba(230,226,218,0.4);">{{ heroActive.priceOld }}</span>
+            <sc-if value="{{ heroActive.priceOld }}">
+              <span style="font-family:'Jost'; font-weight:300; font-size:14px; text-decoration:line-through; color:rgba(230,226,218,0.4);">{{ heroActive.priceOld }}</span>
+            </sc-if>
             <span style="font-family:'Jost'; font-weight:500; font-size:22px; color:#f0ebe2;">{{ heroActive.price }}</span>
           </div>
           <div onClick="{{ heroActive.add }}" class="btn hero-add-btn" style="cursor:pointer; padding:14px 36px; border-radius:40px; border:1px solid {{ heroActive.accent }}; background:{{ heroActive.btnBg }}; color:#f0ebe2; font-size:11px; letter-spacing:0.24em; white-space:nowrap; display:flex; align-items:center; justify-content:center; gap:10px;">
@@ -227,7 +246,9 @@
           <div style="margin-top:22px; font-size:12px; letter-spacing:0.16em; color:rgba(230,226,218,0.5);">{{ p.inspired }}</div>
           <div style="margin-top:34px; display:flex; align-items:center; flex-wrap:wrap; gap:20px;">
             <div style="display:flex; align-items:baseline; gap:12px;">
-              <span style="font-family:'Jost'; font-weight:300; font-size:15px; text-decoration:line-through; color:rgba(230,226,218,0.4);">{{ p.priceOld }}</span>
+              <sc-if value="{{ p.priceOld }}">
+                <span style="font-family:'Jost'; font-weight:300; font-size:15px; text-decoration:line-through; color:rgba(230,226,218,0.4);">{{ p.priceOld }}</span>
+              </sc-if>
               <span style="font-family:'Jost'; font-weight:500; font-size:24px; color:#f0ebe2;">{{ p.price }}</span>
             </div>
             <div onClick="{{ p.add }}" class="btn" style="cursor:pointer; padding:15px 40px; border-radius:40px; border:1px solid {{ p.accent }}; background:{{ p.btnBg }}; color:#f0ebe2; font-size:12px; letter-spacing:0.26em; white-space:nowrap;">{{ p.btnLabel }}</div>
@@ -316,7 +337,9 @@
               <div style="margin-top:8px; font-family:'Jost'; font-weight:300; font-size:15px; color:{{ b.accent }};">{{ b.tagline }}</div>
               <div style="margin-top:16px; display:flex; align-items:center; justify-content:center; gap:18px;">
                 <div style="display:flex; align-items:baseline; gap:10px;">
-                  <span style="font-family:'Jost'; font-weight:300; font-size:12px; text-decoration:line-through; color:rgba(230,226,218,0.4);">{{ b.priceOld }}</span>
+                  <sc-if value="{{ b.priceOld }}">
+                    <span style="font-family:'Jost'; font-weight:300; font-size:12px; text-decoration:line-through; color:rgba(230,226,218,0.4);">{{ b.priceOld }}</span>
+                  </sc-if>
                   <span style="font-family:'Jost'; font-weight:500; font-size:18px; color:#f0ebe2;">{{ b.price }}</span>
                 </div>
                 <div onClick="{{ b.add }}" class="btn" style="cursor:pointer; padding:11px 26px; border-radius:30px; border:1px solid rgba(240,235,226,0.3); font-size:11px; letter-spacing:0.22em;">ADD</div>
@@ -582,9 +605,12 @@ class Component extends DCLogic {
     return live ? live.price : PRICE;
   }
 
+  // null means "no compare-at price" (admin left it blank) and must suppress
+  // the strikethrough — distinct from "live data hasn't loaded yet", which
+  // still shows the hardcoded fallback so nothing flashes empty on first paint.
   priceOldFor(id) {
     const live = this.state.liveProducts[id];
-    if (live && live.priceOld != null) return live.priceOld;
+    if (live) return live.priceOld != null ? live.priceOld : null;
     return ORIGINAL_PRICE;
   }
 
@@ -681,7 +707,7 @@ class Component extends DCLogic {
           accent: p.accent, noNum: p.no.replace('No. ', ''), note: p.base, name: p.name,
           tagline: p.tagline.charAt(0).toUpperCase() + p.tagline.slice(1) + '.',
           desc: p.desc, categoryLabel: p.categoryLabel,
-          price: PKR(this.priceFor(p.id)), priceOld: PKR(this.priceOldFor(p.id)),
+          price: PKR(this.priceFor(p.id)), priceOld: this.priceOldFor(p.id) != null ? PKR(this.priceOldFor(p.id)) : null,
           btnBg: this.state.justAdded === p.id ? p.accent : 'rgba(255,255,255,0.02)',
           btnLabel: this.state.justAdded === p.id ? 'ADDED ✓' : 'ADD TO CART',
           add: () => this.add(p.id),
@@ -767,7 +793,7 @@ class Component extends DCLogic {
       })),
 
       products: D.map((p) => ({
-        ...p, price: PKR(this.priceFor(p.id)), priceOld: PKR(this.priceOldFor(p.id)),
+        ...p, price: PKR(this.priceFor(p.id)), priceOld: this.priceOldFor(p.id) != null ? PKR(this.priceOldFor(p.id)) : null,
         copyOrder: p.id === 'aria' ? 2 : 1,
         imgOrder: p.id === 'aria' ? 1 : 2,
         copyJustify: p.id === 'aria' ? 'end' : 'start',
@@ -778,7 +804,7 @@ class Component extends DCLogic {
       })),
 
       boxes: D.map((p, i) => ({
-        name: p.name, bottle: p.img, boxed: p.box, accent: p.accent, tagline: p.tagline, price: PKR(this.priceFor(p.id)), priceOld: PKR(this.priceOldFor(p.id)),
+        name: p.name, bottle: p.img, boxed: p.box, accent: p.accent, tagline: p.tagline, price: PKR(this.priceFor(p.id)), priceOld: this.priceOldFor(p.id) != null ? PKR(this.priceOldFor(p.id)) : null,
         categoryLabel: p.categoryLabel,
         delay: 'd' + (i + 1), add: () => this.add(p.id),
         viewProduct: () => this.goToProduct(p.id),

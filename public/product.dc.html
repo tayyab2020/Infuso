@@ -5,6 +5,23 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="icon" type="image/png" href="/products/favicon.png">
 <link rel="apple-touch-icon" href="/products/favicon.png">
+<!-- Meta Pixel Code -->
+<script>
+!function(f,b,e,v,n,t,s)
+{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];
+s.parentNode.insertBefore(t,s)}(window, document,'script',
+'https://connect.facebook.net/en_US/fbevents.js');
+fbq('init', '1703900774196311');
+fbq('track', 'PageView');
+</script>
+<noscript><img height="1" width="1" style="display:none"
+src="https://www.facebook.com/tr?id=1703900774196311&ev=PageView&noscript=1"
+/></noscript>
+<!-- End Meta Pixel Code -->
 <script src="/support.js"></script>
 </head>
 <body>
@@ -98,7 +115,9 @@
 
         <div style="margin-top:34px; display:flex; align-items:center; flex-wrap:wrap; gap:20px;">
           <div style="display:flex; align-items:baseline; gap:12px;">
-            <span style="font-family:'Jost'; font-weight:300; font-size:15px; text-decoration:line-through; color:rgba(230,226,218,0.4);">{{ product.priceOld }}</span>
+            <sc-if value="{{ product.priceOld }}">
+              <span style="font-family:'Jost'; font-weight:300; font-size:15px; text-decoration:line-through; color:rgba(230,226,218,0.4);">{{ product.priceOld }}</span>
+            </sc-if>
             <span style="font-family:'Jost'; font-weight:500; font-size:26px; color:#f0ebe2;">{{ product.price }}</span>
           </div>
           <div onClick="{{ product.add }}" class="btn" style="cursor:pointer; padding:15px 40px; border-radius:40px; border:1px solid {{ product.accent }}; background:{{ product.btnBg }}; color:#f0ebe2; font-size:12px; letter-spacing:0.26em; white-space:nowrap;">{{ product.btnLabel }}</div>
@@ -224,9 +243,12 @@ class Component extends DCLogic {
     const live = this.state.liveProducts[id];
     return live ? live.price : PRICE;
   }
+  // null means "no compare-at price" (admin left it blank) and must suppress
+  // the strikethrough — distinct from "live data hasn't loaded yet", which
+  // still shows the hardcoded fallback so nothing flashes empty on first paint.
   priceOldFor(id) {
     const live = this.state.liveProducts[id];
-    if (live && live.priceOld != null) return live.priceOld;
+    if (live) return live.priceOld != null ? live.priceOld : null;
     return ORIGINAL_PRICE;
   }
   _stockFor(id) {
@@ -296,7 +318,7 @@ class Component extends DCLogic {
           select: () => this.setState({ activeImageIdx: i }),
         })),
         price: PKR(this.priceFor(current.id)),
-        priceOld: PKR(this.priceOldFor(current.id)),
+        priceOld: this.priceOldFor(current.id) != null ? PKR(this.priceOldFor(current.id)) : null,
         btnBg: this.state.justAdded ? current.accent : 'rgba(255,255,255,0.02)',
         btnLabel: this.state.justAdded ? 'ADDED ✓' : 'ADD TO CART',
         add: () => this.add(current.id),
