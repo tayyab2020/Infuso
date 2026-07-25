@@ -202,7 +202,11 @@
       "Bash(curl -s -X POST http://localhost:3001/api/orders -H \"Content-Type: application/json\" -d '{\"customerName\":\"Meta Test4\",\"customerEmail\":\"meta-test4@example.com\",\"phone\":\"03001234567\",\"address\":\"Test St\",\"city\":\"Lahore\",\"paymentMethod\":\"COD\",\"items\":[{\"slug\":\"aether\",\"quantity\":1}],\"fbEventId\":\"test-live-001\"}')",
       "PowerShell(Stop-Process -Id 3568 -Force)",
       "Bash(curl -s -o /dev/null -w \"product page: %{http_code}\\\\n\" http://localhost:3001/product/aria)",
-      "Bash(curl -s http://localhost:3001/product/aria)"
+      "Bash(curl -s http://localhost:3001/product/aria)",
+      "Bash(node scripts/build-film-sprites.js)",
+      "Bash(node --check 'C:\\\\Users\\\\hp\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\c--Users-hp-Downloads-Claude-Design-v2--Infuso-\\\\c53dae2c-ad54-40b1-9839-501b7e65e5c8\\\\scratchpad/main-check-sprite.js')",
+      "Bash(curl -s -o /dev/null -w \"old f000.webp now 404: %{http_code}\\\\n\" http://localhost:3001/products/film-frames/f000.webp)",
+      "Bash(curl -s -o /dev/null -w \"home still loads: %{http_code}\\\\n\" http://localhost:3001/)"
     ],
     "additionalDirectories": [
       "C:\\Users\\hp\\.ssh"

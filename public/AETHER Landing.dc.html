@@ -689,12 +689,11 @@ class Component extends DCLogic {
     return {
       setRoot: (el) => { if (el) this.root = el; },
       setScroller: (el) => { if (el) this.scroller = el; },
-      setBgVideo: (el) => {
-        if (!el) return;
-        this.bgVideo = el;
-        const wantSrc = this._isMobile() ? 'products/infuso-film-mobile.mp4' : 'products/infuso-film.mp4';
-        if (!el.src || !el.src.endsWith(wantSrc)) el.src = wantSrc;
-      },
+      // Deliberately does NOT set el.src here — the pre-rendered frame images
+      // (see _extractFrames) are the normal path and load far cheaper than a
+      // 2MB video. The video is only fetched lazily, as an emergency fallback,
+      // if frame loading actually fails (see _loadBgVideoFallback).
+      setBgVideo: (el) => { if (el) this.bgVideo = el; },
       setScrubFill: (el) => { if (el) this.scrubFill = el; },
       setBoxesGrid: (el) => { if (el) this.boxesGrid = el; },
       scrollBoxesPrev: () => {
@@ -791,7 +790,6 @@ class Component extends DCLogic {
       toTop: () => this.navTo(0),
       openCart: () => this.setState({ cartOpen: true }),
       closeCart: () => this.setState((s) => ({ cartOpen: false, checkoutStep: (s.checkoutStep === 'done' || s.checkoutStep === 'bankinfo') ? 'cart' : s.checkoutStep })),
-      playFilm: () => this.playFilm(),
       openMobileMenu: () => this.setState({ mobileMenuOpen: true }),
       closeMobileMenu: () => this.setState({ mobileMenuOpen: false }),
       mobileMenuOverlayOpacity: this.state.mobileMenuOpen ? 1 : 0,
@@ -1006,22 +1004,6 @@ class Component extends DCLogic {
 
   _isMobile() {
     return window.innerWidth <= 880;
-  }
-
-  playFilm() {
-    if (this._filmOpen) return;
-    this._filmOpen = true;
-    if (this.bgVideo) { try { this.bgVideo.pause(); } catch (e) {} }
-    const src = this._isMobile() ? 'products/infuso-film-mobile.mp4' : 'products/infuso-film.mp4';
-    const ov = document.createElement('div');
-    ov.style.cssText = 'position:fixed;inset:0;z-index:200;background:rgba(4,5,6,0.96);display:flex;align-items:center;justify-content:center;backdrop-filter:blur(6px);';
-    ov.innerHTML = `
-      <video src="${src}" controls autoplay playsinline style="max-width:90vw;max-height:86vh;border-radius:6px;box-shadow:0 40px 120px rgba(0,0,0,0.7);background:#000;"></video>
-      <div data-close style="position:absolute;top:28px;right:34px;cursor:pointer;font-family:'Jost',sans-serif;font-size:12px;letter-spacing:0.24em;color:#f0ebe2;">CLOSE ✕</div>`;
-    const vid = ov.querySelector('video');
-    const close = () => { try { vid.pause(); } catch (e) {} ov.remove(); this._filmOpen = false; if (this.bgVideo) { try { this.bgVideo.play(); } catch (e) {} } };
-    ov.addEventListener('click', (e) => { if (e.target === ov || e.target.hasAttribute('data-close')) close(); });
-    document.body.appendChild(ov);
   }
 
   componentDidMount() {
@@ -1278,10 +1260,10 @@ class Component extends DCLogic {
     this._filmP = p;
     if (this.scrubFill) this.scrubFill.style.width = (this._filmP * 100).toFixed(1) + '%';
 
-    if (this._framesReady && this._frames.length) {
+    if (this._framesReady) {
       // Paint the nearest cached frame — instant, no decode.
-      const idx = Math.round(this._filmP * (this._frames.length - 1));
-      if (idx !== this._lastFrameIdx) { this._lastFrameIdx = idx; this._paintFilmFrame(this._frames[idx]); }
+      const idx = Math.round(this._filmP * (this._frameLayout.total - 1));
+      if (idx !== this._lastFrameIdx) { this._lastFrameIdx = idx; this._paintFilmFrame(idx); }
     } else {
       // Fallback while frames are still decoding: seek the live video.
       const dur = v.duration;
@@ -1298,30 +1280,45 @@ class Component extends DCLogic {
   _extractFrames() {
     if (this._framesReady || this._extracting) return;
     this._extracting = true;
-    // Frames are pre-rendered at build time (see products/film-frames) and just
-    // preloaded here in parallel — no runtime video seeking/decoding, so this
-    // is fast and never competes with the live scroll fallback.
-    const N = 120;
-    const dir = this._isMobile() ? 'film-frames-mobile' : 'film-frames';
-    const frames = new Array(N);
+    // Frames are pre-rendered at build time (see scripts/build-film-sprites.js)
+    // and packed into sprite sheets — 10 requests instead of 120 individual
+    // frame images, which is what actually matters for load time (each
+    // request has real overhead regardless of how small the file is).
+    const SHEET_COUNT = 10, FRAMES_PER_SHEET = 12, COLS = 4, ROWS = 3;
+    const mobile = this._isMobile();
+    const dir = mobile ? 'film-frames-mobile' : 'film-frames';
+    this._frameLayout = {
+      cols: COLS, rows: ROWS, perSheet: FRAMES_PER_SHEET,
+      total: SHEET_COUNT * FRAMES_PER_SHEET,
+      frameW: mobile ? 720 : 1280, frameH: mobile ? 1280 : 720,
+    };
+    const sheets = new Array(SHEET_COUNT);
     let done = 0;
     let failed = false;
-    for (let i = 0; i < N; i++) {
+    for (let i = 0; i < SHEET_COUNT; i++) {
       const img = new Image();
       const settle = () => {
         done++;
-        if (done === N) {
-          if (failed) { this._extracting = false; this._resolveFramesSettled(); return; }
-          this._frames = frames;
+        if (done === SHEET_COUNT) {
+          if (failed) { this._extracting = false; this._loadBgVideoFallback(); this._resolveFramesSettled(); return; }
+          this._sheets = sheets;
           this._framesReady = true;
           this._lastFrameIdx = -1;
           this._resolveFramesSettled();
         }
       };
-      img.onload = () => { frames[i] = img; settle(); };
+      img.onload = () => { sheets[i] = img; settle(); };
       img.onerror = () => { failed = true; settle(); };
-      img.src = 'products/' + dir + '/f' + String(i).padStart(3, '0') + '.webp';
+      img.src = 'products/' + dir + '/sprite_' + String(i).padStart(2, '0') + '.webp';
     }
+  }
+
+  // Only called if frame extraction actually failed — loads the (much
+  // heavier) real video as a last-resort scrub source instead.
+  _loadBgVideoFallback() {
+    if (!this.bgVideo) return;
+    const wantSrc = this._isMobile() ? 'products/infuso-film-mobile.mp4' : 'products/infuso-film.mp4';
+    if (!this.bgVideo.src || !this.bgVideo.src.endsWith(wantSrc)) this.bgVideo.src = wantSrc;
   }
 
   _filmCanvasCtx() {
@@ -1332,13 +1329,20 @@ class Component extends DCLogic {
     return this._filmCanvas.getContext('2d');
   }
 
-  _paintFilmFrame(frame) {
-    const ctx = this._filmCanvasCtx(); if (!ctx || !frame) return;
+  _paintFilmFrame(idx) {
+    const ctx = this._filmCanvasCtx(); if (!ctx) return;
+    const { cols, perSheet, frameW, frameH } = this._frameLayout;
+    const sheet = this._sheets[Math.floor(idx / perSheet)];
+    if (!sheet) return;
+    const within = idx % perSheet;
+    const col = within % cols, row = Math.floor(within / cols);
     const cv = this._filmCanvas;
-    const iw = frame.width, ih = frame.height;
-    const s = Math.max(cv.width / iw, cv.height / ih);
-    const dw = iw * s, dh = ih * s;
-    ctx.drawImage(frame, (cv.width - dw) / 2, (cv.height - dh) / 2, dw, dh);
+    const s = Math.max(cv.width / frameW, cv.height / frameH);
+    const dw = frameW * s, dh = frameH * s;
+    ctx.drawImage(
+      sheet, col * frameW, row * frameH, frameW, frameH,
+      (cv.width - dw) / 2, (cv.height - dh) / 2, dw, dh
+    );
   }
 
   _paintFilmVideo(v) {
