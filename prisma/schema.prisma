@@ -132,10 +132,25 @@ model Order {
   status        OrderStatus   @default(PENDING)
   paymentMethod PaymentMethod @default(COD)
   deliveryCharge Int          @default(280)
+  // Snapshotted at checkout — kept even if the voucher is later edited/deleted,
+  // so past orders keep showing what discount was actually applied.
+  voucherCode    String?
+  discountAmount Int          @default(0)
   totalAmount   Int
   items         OrderItem[]
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
+}
+
+model Voucher {
+  id              String    @id @default(cuid())
+  code            String    @unique
+  discountPercent Int
+  active          Boolean   @default(true)
+  startsAt        DateTime?
+  expiresAt       DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
 }
 
 model OrderItem {

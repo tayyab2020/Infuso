@@ -1,0 +1,72 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>INFUSO Admin · Vouchers</title>
+<link rel="icon" type="image/png" href="/products/favicon.png">
+<link rel="stylesheet" href="admin.css">
+</head>
+<body>
+  <div class="admin-main">
+    <h1>Vouchers</h1>
+    <p class="page-sub">Discount codes customers can apply at checkout.</p>
+
+    <div class="card">
+      <div class="table-scroll">
+      <table>
+        <thead>
+          <tr>
+            <th>Code</th>
+            <th>Discount</th>
+            <th>Valid from</th>
+            <th>Valid until</th>
+            <th>Active</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="vouchers-body">
+          <tr><td colspan="6" class="hint">Loading…</td></tr>
+        </tbody>
+      </table>
+      </div>
+    </div>
+
+    <div class="card" id="edit-panel" style="display:none;">
+      <h2 id="edit-panel-title">Edit voucher</h2>
+      <form id="edit-form">
+        <input type="hidden" id="edit-id" />
+        <div class="form-grid cols-1">
+          <div class="field"><label>Code</label><input id="edit-code" required style="text-transform:uppercase;" /></div>
+          <div class="field" style="max-width:160px;"><label>Discount %</label><input id="edit-percent" type="number" min="1" max="100" required /></div>
+          <div class="field"><label>Valid from (optional)</label><input id="edit-starts" type="date" /></div>
+          <div class="field"><label>Valid until (optional)</label><input id="edit-expires" type="date" /></div>
+          <div class="field"><label style="display:flex; align-items:center; gap:8px; text-transform:none; font-weight:400; font-size:13px;"><input type="checkbox" id="edit-active" style="width:auto;" /> Active</label></div>
+        </div>
+        <div class="btn-row" style="margin-top:6px;">
+          <button type="submit" class="btn accent">Save changes</button>
+          <span id="cancel-edit" class="hint" style="cursor:pointer;">Cancel</span>
+        </div>
+        <div id="edit-error" class="error-msg" style="display:none;"></div>
+      </form>
+    </div>
+
+    <div class="card">
+      <h2>Add voucher</h2>
+      <form id="add-form">
+        <div class="form-grid cols-1">
+          <div class="field"><label>Code</label><input id="new-code" required style="text-transform:uppercase;" /></div>
+          <div class="field" style="max-width:160px;"><label>Discount %</label><input id="new-percent" type="number" min="1" max="100" required /></div>
+          <div class="field"><label>Valid from (optional)</label><input id="new-starts" type="date" /></div>
+          <div class="field"><label>Valid until (optional)</label><input id="new-expires" type="date" /></div>
+        </div>
+        <button type="submit" class="btn" style="margin-top:6px;">Add</button>
+      </form>
+      <div id="add-error" class="error-msg" style="display:none;"></div>
+    </div>
+  </div>
+
+  <script src="admin.js"></script>
+  <script src="vouchers.js"></script>
+</body>
+</html>

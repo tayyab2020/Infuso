@@ -5,6 +5,7 @@ const { sendMail } = require('../mailer');
 const { codConfirmationEmail, bankTransferEmail, adminNotificationEmail } = require('../orderEmails');
 const { generateOrderNumber } = require('../lib/orderNumber');
 const { sendMetaEvent } = require('../metaConversions');
+const { resolveVoucher } = require('../lib/voucher');
 
 const router = express.Router();
 
@@ -22,7 +23,7 @@ function isValidEmail(v) {
 // city, notes?, items: [{ slug, quantity }] }. Price/stock are always resolved
 // server-side — the client never gets to dictate what it pays.
 router.post('/', async (req, res) => {
-  const { customerName, customerEmail, phone, address, city, notes, items, paymentMethod, fbEventId, fbEventSourceUrl } = req.body || {};
+  const { customerName, customerEmail, phone, address, city, notes, items, paymentMethod, voucherCode, fbEventId, fbEventSourceUrl } = req.body || {};
 
   if (!isNonEmptyString(customerName) || !isValidEmail(customerEmail) || !isNonEmptyString(phone) ||
       !isNonEmptyString(address) || !isNonEmptyString(city)) {
@@ -38,6 +39,16 @@ router.post('/', async (req, res) => {
     if (!isNonEmptyString(it && it.slug) || !Number.isInteger(it.quantity) || it.quantity < 1) {
       return res.status(400).json({ error: 'Each item needs a valid slug and a positive integer quantity.' });
     }
+  }
+
+  // Re-validated here rather than trusting whatever the client's "Apply code"
+  // check earlier returned — a voucher can expire or get deactivated in the
+  // time between the customer entering it and actually placing the order.
+  let voucher = null;
+  if (isNonEmptyString(voucherCode)) {
+    const resolved = await resolveVoucher(voucherCode);
+    if (resolved.error) return res.status(400).json({ error: resolved.error });
+    voucher = resolved.voucher;
   }
 
   try {
@@ -76,6 +87,8 @@ router.post('/', async (req, res) => {
             });
           }
 
+          const discountAmount = voucher ? Math.round(totalAmount * voucher.discountPercent / 100) : 0;
+
           return tx.order.create({
             data: {
               orderNumber: generateOrderNumber(),
@@ -87,7 +100,9 @@ router.post('/', async (req, res) => {
               notes: isNonEmptyString(notes) ? notes.trim() : null,
               paymentMethod: paymentMethod === 'BANK_TRANSFER' ? 'BANK_TRANSFER' : 'COD',
               deliveryCharge,
-              totalAmount: totalAmount + deliveryCharge,
+              voucherCode: voucher ? voucher.code : null,
+              discountAmount,
+              totalAmount: totalAmount - discountAmount + deliveryCharge,
               items: { create: itemsData },
             },
             include: { items: true },

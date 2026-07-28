@@ -5,6 +5,7 @@ const requireAdmin = require('../middleware/requireAdmin');
 const upload = require('../middleware/upload');
 const { sendMail } = require('../mailer');
 const { orderStatusEmail } = require('../orderEmails');
+const { normalizeCode } = require('../lib/voucher');
 
 const router = express.Router();
 
@@ -19,6 +20,16 @@ function optionalText(v) {
   if (typeof v !== 'string') return undefined;
   const trimmed = v.trim();
   return trimmed.length ? trimmed : null;
+}
+
+// Optional date field from a <input type="date"> value ('YYYY-MM-DD') or ISO
+// string. Returns undefined (leave unchanged), null (clear it), a Date, or
+// the sentinel NaN for an unparseable value so callers can reject it.
+function optionalDate(v, endOfDay) {
+  if (v === undefined) return undefined;
+  if (v === null || v === '') return null;
+  const d = new Date(endOfDay && /^\d{4}-\d{2}-\d{2}$/.test(v) ? v + 'T23:59:59.999' : v);
+  return isNaN(d.getTime()) ? NaN : d;
 }
 
 // ---- Auth ----
@@ -411,6 +422,86 @@ router.delete('/subscribers/:id', requireAdmin, async (req, res) => {
     res.json({ ok: true });
   } catch (err) {
     res.status(404).json({ error: 'Subscriber not found.' });
+  }
+});
+
+// ---- Vouchers ----
+
+router.get('/vouchers', requireAdmin, async (req, res) => {
+  const vouchers = await prisma.voucher.findMany({ orderBy: { createdAt: 'desc' } });
+  res.json(vouchers);
+});
+
+router.post('/vouchers', requireAdmin, async (req, res) => {
+  const { code, discountPercent, active, startsAt, expiresAt } = req.body || {};
+  if (!isNonEmptyString(code)) return res.status(400).json({ error: 'code is required.' });
+  if (!Number.isInteger(discountPercent) || discountPercent < 1 || discountPercent > 100) {
+    return res.status(400).json({ error: 'discountPercent must be an integer between 1 and 100.' });
+  }
+  const startsAtDate = optionalDate(startsAt);
+  const expiresAtDate = optionalDate(expiresAt, true);
+  if (Number.isNaN(startsAtDate) || Number.isNaN(expiresAtDate)) {
+    return res.status(400).json({ error: 'startsAt/expiresAt must be valid dates.' });
+  }
+
+  try {
+    const voucher = await prisma.voucher.create({
+      data: {
+        code: normalizeCode(code),
+        discountPercent,
+        active: active !== false,
+        startsAt: startsAtDate || null,
+        expiresAt: expiresAtDate || null,
+      },
+    });
+    res.status(201).json(voucher);
+  } catch (err) {
+    if (err.code === 'P2002') return res.status(409).json({ error: 'A voucher with that code already exists.' });
+    console.error(err);
+    res.status(500).json({ error: 'Failed to create voucher.' });
+  }
+});
+
+router.put('/vouchers/:id', requireAdmin, async (req, res) => {
+  const { code, discountPercent, active, startsAt, expiresAt } = req.body || {};
+  const data = {};
+  if (code !== undefined) {
+    if (!isNonEmptyString(code)) return res.status(400).json({ error: 'code must be a non-empty string.' });
+    data.code = normalizeCode(code);
+  }
+  if (discountPercent !== undefined) {
+    if (!Number.isInteger(discountPercent) || discountPercent < 1 || discountPercent > 100) {
+      return res.status(400).json({ error: 'discountPercent must be an integer between 1 and 100.' });
+    }
+    data.discountPercent = discountPercent;
+  }
+  if (active !== undefined) data.active = !!active;
+  if (startsAt !== undefined) {
+    const d = optionalDate(startsAt);
+    if (Number.isNaN(d)) return res.status(400).json({ error: 'startsAt must be a valid date.' });
+    data.startsAt = d;
+  }
+  if (expiresAt !== undefined) {
+    const d = optionalDate(expiresAt, true);
+    if (Number.isNaN(d)) return res.status(400).json({ error: 'expiresAt must be a valid date.' });
+    data.expiresAt = d;
+  }
+
+  try {
+    const voucher = await prisma.voucher.update({ where: { id: req.params.id }, data });
+    res.json(voucher);
+  } catch (err) {
+    if (err.code === 'P2002') return res.status(409).json({ error: 'A voucher with that code already exists.' });
+    res.status(404).json({ error: 'Voucher not found.' });
+  }
+});
+
+router.delete('/vouchers/:id', requireAdmin, async (req, res) => {
+  try {
+    await prisma.voucher.delete({ where: { id: req.params.id } });
+    res.json({ ok: true });
+  } catch (err) {
+    res.status(404).json({ error: 'Voucher not found.' });
   }
 });
 

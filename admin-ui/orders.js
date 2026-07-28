@@ -6,7 +6,9 @@ let ordersById = {};
 function renderOrderRow(order) {
   const itemsHtml = order.items.map((it) =>
     `<div>${it.quantity} × ${escapeHtml(it.productName)}</div>`
-  ).join('') + (order.deliveryCharge ? `<div class="hint">+ Delivery: ${money(order.deliveryCharge)}</div>` : '');
+  ).join('')
+    + (order.deliveryCharge ? `<div class="hint">+ Delivery: ${money(order.deliveryCharge)}</div>` : '')
+    + (order.discountAmount ? `<div class="hint">− Discount (${escapeHtml(order.voucherCode || '')}): ${money(order.discountAmount)}</div>` : '');
 
   // Payment Received only makes sense for COD orders (bank transfer orders are
   // already confirmed as paid before shipping via the CONFIRMED status).
