@@ -249,7 +249,19 @@
       "Bash(curl -s -b /tmp/infuso-cookies2.txt -X DELETE http://localhost:3001/api/admin/orders/cms4dzqbn0003vqfkn7ivfouj)",
       "Bash(rm -f /tmp/infuso-cookies2.txt /tmp/infuso-dev-voucher-test.log \"C:\\\\Users\\\\hp\\\\AppData\\\\Local\\\\Temp\\\\aether-inline.js\")",
       "Bash(node --check \"C:\\\\Users\\\\hp\\\\AppData\\\\Local\\\\Temp\\\\aether-inline2.js\")",
-      "Bash(rm -f \"/c/Users/hp/AppData/Local/Temp/aether-inline2.js\" /tmp/infuso-dev-emptycart.log)"
+      "Bash(rm -f \"/c/Users/hp/AppData/Local/Temp/aether-inline2.js\" /tmp/infuso-dev-emptycart.log)",
+      "Bash(node --check \"C:\\\\Users\\\\hp\\\\AppData\\\\Local\\\\Temp\\\\aether-inline3.js\")",
+      "Bash(rm -f \"C:\\\\Users\\\\hp\\\\AppData\\\\Local\\\\Temp\\\\aether-inline3.js\")",
+      "Bash(node --check \"C:\\\\Users\\\\hp\\\\AppData\\\\Local\\\\Temp\\\\product-inline.js\")",
+      "Bash(rm -f \"C:\\\\Users\\\\hp\\\\AppData\\\\Local\\\\Temp\\\\product-inline.js\")",
+      "Bash(cd \"/c/Users/hp/Downloads/Claude Design v2 \\(Infuso\\)\" && grep -rn \"animations.jsx\\\\|x-import\\\\|image-slot.js\" public/*.html 2>/dev/null | head -30)",
+      "Bash(cd \"/c/Users/hp/Downloads/Claude Design v2 \\(Infuso\\)\" && grep -n \"loadExternal\\\\s*[:=\\(]\\\\|resolveExternal\\\\s*[:=\\(]\\\\|function loadExternal\\\\|loadExternal\\(\" public/support.js | head -30)",
+      "Bash(cd \"/c/Users/hp/Downloads/Claude Design v2 \\(Infuso\\)\" && grep -n \"const external\\\\|external\\\\.load\\\\s*=\\\\|external\\\\.resolve\\\\s*=\\\\|function.*load\\(kind\" public/support.js | head -20)",
+      "Bash(cd \"/c/Users/hp/Downloads/Claude Design v2 \\(Infuso\\)\" && grep -n \"^function fbTrack\\\\|^function loadStoredCart\\\\|CART_STORAGE_KEY = \" \"public/AETHER Landing.dc.html\" public/product.dc.html)",
+      "Bash(node --check \"/c/Users/hp/Downloads/Claude Design v2 \\(Infuso\\)/public/cart.js\")",
+      "Bash(node --check \"C:\\\\Users\\\\hp\\\\AppData\\\\Local\\\\Temp\\\\product-inline2.js\")",
+      "Bash(node --check \"C:\\\\Users\\\\hp\\\\AppData\\\\Local\\\\Temp\\\\landing-inline.js\")",
+      "Bash(node \"C:\\\\Users\\\\hp\\\\AppData\\\\Local\\\\Temp\\\\test-cart-module.js\")"
     ],
     "additionalDirectories": [
       "C:\\Users\\hp\\.ssh",

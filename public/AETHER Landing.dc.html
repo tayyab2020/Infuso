@@ -22,6 +22,7 @@ fbq('track', 'PageView');
 src="https://www.facebook.com/tr?id=1703900774196311&ev=PageView&noscript=1"
 /></noscript>
 <!-- End Meta Pixel Code -->
+<script src="/cart.js"></script>
 <script src="./support.js"></script>
 </head>
 <body>
@@ -239,7 +240,7 @@ src="https://www.facebook.com/tr?id=1703900774196311&ev=PageView&noscript=1"
     <!-- ══ PRODUCT SECTIONS ══ -->
     <sc-for list="{{ products }}" as="p" hint-placeholder-count="3">
       <section data-role="sec" data-idx="{{ p.idx }}" data-label="{{ p.name }}" class="product-section" style="position:relative; min-height:100vh; display:grid; grid-template-columns:1fr 1fr; align-items:center; overflow:hidden; background:{{ p.bg }};">
-        <div class="reveal" data-reveal style="order:{{ p.copyOrder }}; padding:0 6vw; max-width:560px; justify-self:{{ p.copyJustify }}; position:relative; z-index:2;">
+        <div class="reveal" data-reveal style="order:{{ p.copyOrder }}; padding:0 6vw; max-width:700px; justify-self:{{ p.copyJustify }}; position:relative; z-index:2;">
           <div style="display:flex; align-items:center; gap:14px;">
             <div style="font-family:'Cormorant Garamond', serif; font-style:italic; font-size:20px; color:{{ p.accent }};">{{ p.no }}</div>
             <div class="category-badge">{{ p.categoryLabel }}</div>
@@ -572,38 +573,10 @@ src="https://www.facebook.com/tr?id=1703900774196311&ev=PageView&noscript=1"
 const PKR = (n) => 'PKR ' + n.toLocaleString('en-PK');
 const PRICE = 3850;
 const ORIGINAL_PRICE = 4500;
-const CART_STORAGE_KEY = 'infuso_cart';
-
-// Fires a Meta Pixel event — safe no-op if fbq never loaded (blocked by an
-// ad-blocker, offline, etc). eventID is passed through so the server-side
-// Conversions API call for the same action (see src/metaConversions.js) can
-// reuse it and Meta de-dupes the two into a single event instead of double-
-// counting.
-function fbTrack(eventName, params, eventId) {
-  try {
-    if (typeof window.fbq === 'function') {
-      window.fbq('track', eventName, params, eventId ? { eventID: eventId } : undefined);
-    }
-  } catch (e) {}
-}
-
-// Cart survives a page reload via localStorage (scoped to this browser) —
-// not an IP address, which is shared by every device on the same wifi/mobile
-// NAT and would leak one customer's cart into another's, and changes on its
-// own whenever a carrier reassigns an IP.
-function loadStoredCart() {
-  const empty = { aether: 0, aria: 0, oudor: 0 };
-  try {
-    const raw = window.localStorage && localStorage.getItem(CART_STORAGE_KEY);
-    if (!raw) return empty;
-    const parsed = JSON.parse(raw);
-    return {
-      aether: Math.max(0, parseInt(parsed.aether, 10) || 0),
-      aria: Math.max(0, parseInt(parsed.aria, 10) || 0),
-      oudor: Math.max(0, parseInt(parsed.oudor, 10) || 0),
-    };
-  } catch (e) { return empty; }
-}
+// Shared with product.dc.html via public/cart.js — single source of truth
+// for cart persistence, voucher validation, and order submission so a
+// checkout bug fix or rule change never has to be made twice.
+const { loadStoredCart, persistCart, fbTrack, defaultCheckoutForm, computeDiscount, validateVoucher, validateCheckoutForm, placeOrder } = window.InfusoCart;
 
 class Component extends DCLogic {
   state = {
@@ -613,7 +586,7 @@ class Component extends DCLogic {
     liveFaqs: [],
     liveSettings: {},
     checkoutStep: 'cart', // 'cart' | 'form' | 'placing' | 'done' | 'bankinfo'
-    checkoutForm: { customerName: '', customerEmail: '', phone: '', address: '', city: '', notes: '', paymentMethod: 'COD' },
+    checkoutForm: defaultCheckoutForm(),
     checkoutError: null,
     voucherInput: '',
     appliedVoucher: null, // { code, discountPercent } | null
@@ -732,8 +705,7 @@ class Component extends DCLogic {
     });
     const S = this.state.liveSettings;
     const deliveryChargeVal = S.deliveryCharge != null ? S.deliveryCharge : 280;
-    const discountPercent = this.state.appliedVoucher ? this.state.appliedVoucher.discountPercent : 0;
-    const discountAmount = discountPercent ? Math.round(total * discountPercent / 100) : 0;
+    const { discountPercent, discountAmount } = computeDiscount(total, this.state.appliedVoucher);
     const grandTotal = Math.max(0, total - discountAmount) + deliveryChargeVal;
 
     return {
@@ -944,7 +916,7 @@ class Component extends DCLogic {
 
   add(id) {
     this.setQty(id, 1);
-    this.setState({ justAdded: id });
+    this.setState({ justAdded: id, cartOpen: true });
     clearTimeout(this._addT);
     this._addT = setTimeout(() => this.setState({ justAdded: null }), 1400);
     const meta = this._productMeta(id);
@@ -957,7 +929,7 @@ class Component extends DCLogic {
     this.setState((s) => {
       const clamp = (id) => Math.min(this._stockFor(s, id), (s.cart[id] || 0) + 1);
       const cart = { aether: clamp('aether'), aria: clamp('aria'), oudor: clamp('oudor') };
-      this._persistCart(cart);
+      persistCart(cart);
       return { cart, cartOpen: true };
     });
     const ids = ['aether', 'aria', 'oudor'];
@@ -968,12 +940,9 @@ class Component extends DCLogic {
     this.setState((s) => {
       const q = Math.max(0, Math.min(this._stockFor(s, id), (s.cart[id] || 0) + delta));
       const cart = { ...s.cart, [id]: q };
-      this._persistCart(cart);
+      persistCart(cart);
       return { cart };
     });
-  }
-  _persistCart(cart) {
-    try { localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cart)); } catch (e) {}
   }
   _stockFor(state, id) {
     const live = state.liveProducts[id];
@@ -1011,29 +980,16 @@ class Component extends DCLogic {
     if (!code || this.state.voucherStatus === 'checking') return;
     this.setState({ voucherStatus: 'checking', voucherError: null });
     try {
-      const res = await fetch('/api/vouchers/validate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ code }),
-      });
-      const data = await res.json().catch(() => ({}));
-      if (!res.ok) throw new Error(data.error || 'Invalid discount code.');
-      this.setState({
-        appliedVoucher: { code: data.code, discountPercent: data.discountPercent },
-        voucherStatus: 'idle', voucherError: null,
-      });
+      const voucher = await validateVoucher(code);
+      this.setState({ appliedVoucher: voucher, voucherStatus: 'idle', voucherError: null });
     } catch (err) {
       this.setState({ appliedVoucher: null, voucherStatus: 'error', voucherError: err.message });
     }
   }
   async submitOrder() {
-    const { customerName, customerEmail, phone, address, city, notes, paymentMethod } = this.state.checkoutForm;
-    if (!customerName.trim() || !customerEmail.trim() || !phone.trim() || !address.trim() || !city.trim()) {
-      this.setState({ checkoutError: 'Please fill in all required fields.' });
-      return;
-    }
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(customerEmail.trim())) {
-      this.setState({ checkoutError: 'Please enter a valid email address.' });
+    const formError = validateCheckoutForm(this.state.checkoutForm);
+    if (formError) {
+      this.setState({ checkoutError: formError });
       return;
     }
     const items = Object.entries(this.state.cart)
@@ -1044,35 +1000,29 @@ class Component extends DCLogic {
       return;
     }
     this.setState({ checkoutStep: 'placing', checkoutError: null });
-    // Generated client-side and sent to the server too, so the browser Pixel
-    // Purchase event and the server's Conversions API Purchase event (fired
-    // from POST /api/orders) share one event_id — that's what lets Meta
-    // de-dupe them into a single conversion instead of counting it twice.
-    const fbEventId = (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : String(Date.now()) + Math.random();
+    const { paymentMethod } = this.state.checkoutForm;
     const value = items.reduce((sum, it) => sum + this.priceFor(it.slug) * it.quantity, 0);
     try {
-      const res = await fetch('/api/orders', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          customerName, customerEmail, phone, address, city, notes, paymentMethod, items,
-          voucherCode: this.state.appliedVoucher ? this.state.appliedVoucher.code : undefined,
-          fbEventId, fbEventSourceUrl: window.location.href,
-        }),
+      const { order, fbEventId } = await placeOrder({
+        form: this.state.checkoutForm, items,
+        voucherCode: this.state.appliedVoucher ? this.state.appliedVoucher.code : undefined,
+        fbEventSourceUrl: window.location.href,
       });
-      const data = await res.json().catch(() => ({}));
-      if (!res.ok) throw new Error(data.error || 'Failed to place order.');
+      // Shares the browser Pixel Purchase event's ID with the server's
+      // Conversions API Purchase event (fired from POST /api/orders) — that's
+      // what lets Meta de-dupe them into a single conversion instead of
+      // counting it twice.
       fbTrack('Purchase', {
         content_ids: items.map((it) => it.slug), content_type: 'product',
         contents: items.map((it) => ({ id: it.slug, quantity: it.quantity })),
         num_items: items.reduce((sum, it) => sum + it.quantity, 0),
-        value: value - (data.discountAmount || 0), currency: 'PKR',
+        value: value - (order.discountAmount || 0), currency: 'PKR',
       }, fbEventId);
-      this._persistCart({ aether: 0, aria: 0, oudor: 0 });
+      persistCart({ aether: 0, aria: 0, oudor: 0 });
       this.setState({
         checkoutStep: paymentMethod === 'BANK_TRANSFER' ? 'bankinfo' : 'done',
         cart: { aether: 0, aria: 0, oudor: 0 },
-        checkoutForm: { customerName: '', customerEmail: '', phone: '', address: '', city: '', notes: '', paymentMethod: 'COD' },
+        checkoutForm: defaultCheckoutForm(),
         voucherInput: '', appliedVoucher: null, voucherStatus: 'idle', voucherError: null,
       });
     } catch (err) {
