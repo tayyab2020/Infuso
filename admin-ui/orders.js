@@ -111,6 +111,76 @@ document.getElementById('items-cancel-edit').addEventListener('click', () => {
   document.getElementById('items-edit-panel').style.display = 'none';
 });
 
+function renderAddOrderRows() {
+  document.getElementById('add-order-rows').innerHTML = allProducts.map((p) => `
+    <div class="field" data-slug="${p.slug}" style="flex-direction:row; align-items:center; gap:12px;">
+      <label style="flex:1; text-transform:none; font-weight:400; font-size:13px; color:var(--text);">${escapeHtml(p.name)} <span class="hint">(${money(p.price)})</span></label>
+      <input type="number" class="add-order-qty-input" min="0" style="width:90px;" value="0" />
+    </div>
+  `).join('');
+}
+
+document.getElementById('add-order-btn').addEventListener('click', () => {
+  document.getElementById('add-order-form').reset();
+  document.getElementById('new-order-status').innerHTML = STATUSES.map((s) =>
+    `<option value="${s}" ${s === 'PENDING' ? 'selected' : ''}>${s.replace('_', ' ')}</option>`
+  ).join('');
+  renderAddOrderRows();
+  document.getElementById('add-order-error').style.display = 'none';
+  const panel = document.getElementById('add-order-panel');
+  panel.style.display = 'block';
+  panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+});
+
+document.getElementById('add-order-cancel').addEventListener('click', () => {
+  document.getElementById('add-order-panel').style.display = 'none';
+});
+
+document.getElementById('add-order-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const errorEl = document.getElementById('add-order-error');
+  errorEl.style.display = 'none';
+
+  const items = [];
+  document.querySelectorAll('#add-order-rows [data-slug]').forEach((row) => {
+    const quantity = Number(row.querySelector('.add-order-qty-input').value || 0);
+    if (quantity > 0) items.push({ slug: row.getAttribute('data-slug'), quantity });
+  });
+  if (!items.length) {
+    errorEl.textContent = 'Select at least one item.';
+    errorEl.style.display = 'block';
+    return;
+  }
+
+  const saveBtn = document.getElementById('add-order-save-btn');
+  saveBtn.disabled = true;
+  saveBtn.textContent = 'Creating…';
+  try {
+    await api('/orders', {
+      method: 'POST',
+      body: JSON.stringify({
+        customerName: document.getElementById('new-order-customerName').value.trim(),
+        customerEmail: document.getElementById('new-order-customerEmail').value.trim(),
+        phone: document.getElementById('new-order-phone').value.trim(),
+        address: document.getElementById('new-order-address').value.trim(),
+        city: document.getElementById('new-order-city').value.trim(),
+        notes: document.getElementById('new-order-notes').value.trim(),
+        paymentMethod: document.getElementById('new-order-paymentMethod').value,
+        status: document.getElementById('new-order-status').value,
+        items,
+      }),
+    });
+    document.getElementById('add-order-panel').style.display = 'none';
+    await loadOrders();
+  } catch (err) {
+    errorEl.textContent = err.message;
+    errorEl.style.display = 'block';
+  } finally {
+    saveBtn.disabled = false;
+    saveBtn.textContent = 'Create order';
+  }
+});
+
 document.getElementById('items-save-btn').addEventListener('click', async () => {
   const panel = document.getElementById('items-edit-panel');
   const orderId = panel.dataset.orderId;

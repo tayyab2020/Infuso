@@ -39,6 +39,7 @@ const ADMIN_NAV = [
   { key: 'orders', label: 'Orders', href: '/admin/orders.html' },
   { key: 'products', label: 'Products', href: '/admin/products.html' },
   { key: 'vouchers', label: 'Vouchers', href: '/admin/vouchers.html' },
+  { key: 'reviews', label: 'Reviews', href: '/admin/reviews.html' },
   { key: 'faqs', label: 'FAQs', href: '/admin/faqs.html' },
   { key: 'subscribers', label: 'Subscribers', href: '/admin/subscribers.html' },
   { key: 'settings', label: 'Settings', href: '/admin/settings.html' },

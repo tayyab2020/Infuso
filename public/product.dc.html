@@ -36,7 +36,6 @@ src="https://www.facebook.com/tr?id=1703900774196311&ev=PageView&noscript=1"
     * { box-sizing:border-box; }
     body { font-family:'Jost', system-ui, sans-serif; color:#f0ebe2; }
     a { text-decoration:none; }
-    @keyframes floaty { 0%,100% { transform:translateY(0) } 50% { transform:translateY(-18px) } }
     .btn { transition:background .35s, color .35s, border-color .35s, transform .2s; }
     .btn:hover { transform:translateY(-2px); }
     .linkline { position:relative; }
@@ -55,11 +54,21 @@ src="https://www.facebook.com/tr?id=1703900774196311&ev=PageView&noscript=1"
       padding:4px 12px; background:rgba(8,9,11,0.45); backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px);
     }
     .pd-grid { display:grid; grid-template-columns:1fr 1fr; gap:5vw; align-items:start; }
-    .pd-thumbs { display:flex; gap:12px; margin-top:18px; }
+    .pd-thumbs { display:flex; gap:12px; margin-top:30px; }
+    .pd-main-imgwrap { position:relative; height:64vh; min-height:420px; border-radius:12px; overflow:hidden; background:radial-gradient(120% 90% at 50% 40%, rgba(255,255,255,0.04) 0%, transparent 70%); }
+    .pd-main-img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; display:block; }
+    .collect-card { display:block; border:1px solid rgba(240,235,226,0.12); border-radius:14px; overflow:hidden; background:rgba(255,255,255,0.02); transition:border-color .35s ease, transform .35s ease; }
+    .collect-card:hover { border-color:rgba(150,220,235,0.4); transform:translateY(-4px); }
+    .collect-imgwrap { position:relative; height:400px; overflow:hidden; }
+    .collect-img-main, .collect-img-hover { position:absolute; inset:0; width:100%; height:100%; object-fit:contain; padding:5% 12%; display:block; transition:opacity 1.1s ease, transform 6s cubic-bezier(.16,1,.3,1); }
+    .collect-img-hover { opacity:0; }
+    .collect-card:hover .collect-img-main { opacity:0; transform:scale(1.05); }
+    .collect-card:hover .collect-img-hover { opacity:1; transform:scale(1.14); }
     @media (max-width:880px) {
       .pd-grid { grid-template-columns:1fr !important; gap:8vw !important; }
       .pd-nav-label { display:none !important; }
-      .pd-main-img { height:44vh !important; }
+      .pd-main-imgwrap { height:44vh !important; min-height:320px !important; }
+      .collect-imgwrap { height:300px !important; }
     }
   </style>
 </helmet>
@@ -225,8 +234,8 @@ src="https://www.facebook.com/tr?id=1703900774196311&ev=PageView&noscript=1"
   <div style="max-width:1200px; margin:0 auto; padding:150px 6vw 100px;">
     <div class="pd-grid">
       <div>
-        <div style="position:relative; height:64vh; min-height:420px; display:flex; align-items:center; justify-content:center; background:radial-gradient(120% 90% at 50% 40%, rgba(255,255,255,0.04) 0%, transparent 70%); border-radius:12px; overflow:hidden;">
-          <img src="{{ product.mainImg }}" alt="{{ product.name }}" class="pd-main-img" style="height:58vh; max-height:560px; display:block; animation:floaty 7s ease-in-out infinite;" />
+        <div class="pd-main-imgwrap">
+          <img src="{{ product.mainImg }}" alt="{{ product.name }}" class="pd-main-img" style="object-fit:{{ product.mainImgFit }};" />
         </div>
         <div class="pd-thumbs">
           <sc-for list="{{ product.gallery }}" as="g" hint-placeholder-count="4">
@@ -243,16 +252,26 @@ src="https://www.facebook.com/tr?id=1703900774196311&ev=PageView&noscript=1"
           <div class="category-badge">{{ product.categoryLabel }}</div>
         </div>
         <div style="margin-top:10px; font-family:'Jost'; font-weight:300; font-size:clamp(38px,4.2vw,58px); letter-spacing:0.06em; color:#f0ebe2;">{{ product.name }}</div>
+        <sc-if value="{{ reviewsHasAny }}" hint-placeholder-val="{{ false }}">
+          <div style="margin-top:8px; display:flex; align-items:center; gap:10px;">
+            <span style="color:{{ product.accent }}; font-size:14px; letter-spacing:0.05em;">{{ reviewsAverageStars }}</span>
+            <span style="font-size:11px; letter-spacing:0.08em; color:rgba(230,226,218,0.55);">{{ reviewsAverageDisplay }} · {{ reviewsCount }} reviews</span>
+          </div>
+        </sc-if>
         <div style="margin-top:16px; font-family:'Jost'; font-weight:300; font-size:15px; line-height:1.75;"><span style="color:{{ product.accent }};">{{ product.taglineCased }}</span> <span style="color:rgba(240,235,226,0.85);">{{ product.desc }}</span></div>
 
-        <div style="margin-top:30px; display:flex; gap:34px;">
-          <div><div style="font-size:11px; letter-spacing:0.22em; color:{{ product.accent }};">TOP</div><div style="margin-top:6px; font-family:'Cormorant Garamond',serif; font-size:19px;">{{ product.top }}</div></div>
-          <div><div style="font-size:11px; letter-spacing:0.22em; color:{{ product.accent }};">HEART</div><div style="margin-top:6px; font-family:'Cormorant Garamond',serif; font-size:19px;">{{ product.heart }}</div></div>
-          <div><div style="font-size:11px; letter-spacing:0.22em; color:{{ product.accent }};">BASE</div><div style="margin-top:6px; font-family:'Cormorant Garamond',serif; font-size:19px;">{{ product.base }}</div></div>
+        <div style="margin-top:30px;">
+          <div style="font-size:11px; letter-spacing:0.22em; color:{{ product.accent }};">LONGEVITY</div>
+          <div style="margin-top:6px; font-family:'Cormorant Garamond',serif; font-size:19px;">{{ product.longevity }}</div>
         </div>
 
         <div style="margin-top:22px; font-size:12px; letter-spacing:0.16em; color:rgba(230,226,218,0.5);">{{ product.inspired }}</div>
-        <div style="margin-top:6px; font-size:11px; letter-spacing:0.14em; color:rgba(230,226,218,0.4);">60 ml · eau de parfum</div>
+        <sc-if value="{{ product.hasConcentration }}" hint-placeholder-val="{{ false }}">
+          <div style="margin-top:6px; font-size:11px; letter-spacing:0.14em; color:rgba(230,226,218,0.4);">60 ml · {{ product.concentration }}</div>
+        </sc-if>
+        <sc-if value="{{ product.noConcentration }}" hint-placeholder-val="{{ true }}">
+          <div style="margin-top:6px; font-size:11px; letter-spacing:0.14em; color:rgba(230,226,218,0.4);">60 ml · eau de parfum</div>
+        </sc-if>
 
         <div style="margin-top:34px; display:flex; align-items:center; flex-wrap:wrap; gap:20px;">
           <div style="display:flex; align-items:baseline; gap:12px;">
@@ -263,21 +282,154 @@ src="https://www.facebook.com/tr?id=1703900774196311&ev=PageView&noscript=1"
           </div>
           <div onClick="{{ product.add }}" class="btn" style="cursor:pointer; padding:15px 40px; border-radius:40px; border:1px solid {{ product.accent }}; background:{{ product.btnBg }}; color:#f0ebe2; font-size:12px; letter-spacing:0.26em; white-space:nowrap;">{{ product.btnLabel }}</div>
         </div>
+
+        <div style="margin-top:8vh; border-top:1px solid rgba(240,235,226,0.12);">
+          <div style="border-bottom:1px solid rgba(240,235,226,0.12);">
+            <div onClick="{{ toggleNotes }}" style="cursor:pointer; padding:20px 2px; display:flex; align-items:center; justify-content:space-between; font-size:14px; letter-spacing:0.16em; color:#f0ebe2;">
+              <span>FRAGRANCE NOTES</span>
+              <span style="color:{{ product.accent }}; font-size:19px;">{{ notesSign }}</span>
+            </div>
+            <sc-if value="{{ notesOpen }}" hint-placeholder-val="{{ false }}">
+              <div style="padding:0 2px 24px;">
+                <div style="font-size:10px; letter-spacing:0.2em; color:rgba(230,226,218,0.4);">TOP</div>
+                <div style="margin-top:14px; display:flex; flex-wrap:wrap; gap:14px;">
+                  <sc-for list="{{ product.topList }}" as="n" hint-placeholder-count="3">
+                    <div style="display:flex; align-items:center; gap:8px; padding:8px 16px; border-radius:20px; border:1px solid rgba(240,235,226,0.22); font-size:13px; letter-spacing:0.03em; color:rgba(230,226,218,0.85);">
+                      <span style="color:{{ product.accent }}; font-size:9px;">◆</span>{{ n.name }}
+                    </div>
+                  </sc-for>
+                </div>
+                <sc-if value="{{ product.hasHeartNotes }}" hint-placeholder-val="{{ true }}">
+                  <div style="margin-top:22px; font-size:10px; letter-spacing:0.2em; color:rgba(230,226,218,0.4);">MIDDLE</div>
+                  <div style="margin-top:14px; display:flex; flex-wrap:wrap; gap:14px;">
+                    <sc-for list="{{ product.heartList }}" as="n" hint-placeholder-count="2">
+                      <div style="display:flex; align-items:center; gap:8px; padding:8px 16px; border-radius:20px; border:1px solid rgba(240,235,226,0.22); font-size:13px; letter-spacing:0.03em; color:rgba(230,226,218,0.85);">
+                        <span style="color:{{ product.accent }}; font-size:9px;">◆</span>{{ n.name }}
+                      </div>
+                    </sc-for>
+                  </div>
+                </sc-if>
+                <div style="margin-top:22px; font-size:10px; letter-spacing:0.2em; color:rgba(230,226,218,0.4);">BASE</div>
+                <div style="margin-top:14px; display:flex; flex-wrap:wrap; gap:14px;">
+                  <sc-for list="{{ product.baseList }}" as="n" hint-placeholder-count="3">
+                    <div style="display:flex; align-items:center; gap:8px; padding:8px 16px; border-radius:20px; border:1px solid rgba(240,235,226,0.22); font-size:13px; letter-spacing:0.03em; color:rgba(230,226,218,0.85);">
+                      <span style="color:{{ product.accent }}; font-size:9px;">◆</span>{{ n.name }}
+                    </div>
+                  </sc-for>
+                </div>
+              </div>
+            </sc-if>
+          </div>
+          <div style="border-bottom:1px solid rgba(240,235,226,0.12);">
+            <div onClick="{{ toggleHowToUse }}" style="cursor:pointer; padding:20px 2px; display:flex; align-items:center; justify-content:space-between; font-size:14px; letter-spacing:0.16em; color:#f0ebe2;">
+              <span>HOW TO USE</span>
+              <span style="color:{{ product.accent }}; font-size:19px;">{{ howToUseSign }}</span>
+            </div>
+            <sc-if value="{{ howToUseOpen }}" hint-placeholder-val="{{ false }}">
+              <div style="padding:0 2px 20px; font-size:14.5px; line-height:1.85; color:rgba(230,226,218,0.75);">{{ product.howToUse }}</div>
+            </sc-if>
+          </div>
+          <sc-if value="{{ showIngredients }}" hint-placeholder-val="{{ false }}">
+            <div style="border-bottom:1px solid rgba(240,235,226,0.12);">
+              <div onClick="{{ toggleIngredients }}" style="cursor:pointer; padding:20px 2px; display:flex; align-items:center; justify-content:space-between; font-size:14px; letter-spacing:0.16em; color:#f0ebe2;">
+                <span>INGREDIENTS</span>
+                <span style="color:{{ product.accent }}; font-size:19px;">{{ ingredientsSign }}</span>
+              </div>
+              <sc-if value="{{ ingredientsOpen }}" hint-placeholder-val="{{ false }}">
+                <div style="padding:0 2px 20px; font-size:14.5px; line-height:1.85; color:rgba(230,226,218,0.75);">{{ product.ingredients }}</div>
+              </sc-if>
+            </div>
+          </sc-if>
+          <div style="border-bottom:1px solid rgba(240,235,226,0.12);">
+            <div onClick="{{ toggleDelivery }}" style="cursor:pointer; padding:20px 2px; display:flex; align-items:center; justify-content:space-between; font-size:14px; letter-spacing:0.16em; color:#f0ebe2;">
+              <span>DELIVERY &amp; RETURNS</span>
+              <span style="color:{{ product.accent }}; font-size:19px;">{{ deliverySign }}</span>
+            </div>
+            <sc-if value="{{ deliveryOpen }}" hint-placeholder-val="{{ false }}">
+              <div style="padding:0 2px 20px; font-size:14.5px; line-height:1.85; color:rgba(230,226,218,0.75);">
+                <div>{{ deliveryInfo }}</div>
+                <div style="margin-top:10px;">{{ returnPolicy }}</div>
+              </div>
+            </sc-if>
+          </div>
+        </div>
       </div>
     </div>
 
     <div style="margin-top:14vh; border-top:1px solid rgba(240,235,226,0.1); padding-top:6vh;">
-      <div style="font-family:'Jost'; font-size:12px; letter-spacing:0.4em; color:rgba(150,220,235,0.7);">EXPLORE THE COLLECTION</div>
-      <div style="margin-top:4vh; display:flex; gap:4vw; flex-wrap:wrap;">
+      <div style="font-family:'Jost'; font-size:14px; letter-spacing:0.32em; color:rgba(150,220,235,0.7);">EXPLORE THE COLLECTION</div>
+      <div style="margin-top:4vh; display:grid; grid-template-columns:repeat(auto-fit,minmax(320px,1fr)); gap:3vw;">
         <sc-for list="{{ otherProducts }}" as="o" hint-placeholder-count="2">
-          <a href="{{ o.href }}" style="display:flex; align-items:center; gap:16px; padding:14px 18px; border:1px solid rgba(240,235,226,0.12); border-radius:10px; flex:1; min-width:220px;">
-            <img src="{{ o.img }}" alt="{{ o.name }}" style="height:60px; width:auto; object-fit:contain;" />
-            <div>
-              <div class="category-badge">{{ o.categoryLabel }}</div>
-              <div style="margin-top:8px; font-family:'Jost'; font-size:18px; letter-spacing:0.08em; color:#f0ebe2;">{{ o.name }}</div>
+          <a href="{{ o.href }}" class="collect-card">
+            <div class="collect-imgwrap" style="background:{{ o.bg }};">
+              <img class="collect-img-main" src="{{ o.img }}" alt="{{ o.name }}" />
+              <img class="collect-img-hover" src="{{ o.hoverImg }}" alt="{{ o.name }} detail" />
+              <div style="position:absolute; top:16px; left:16px;"><div class="category-badge">{{ o.categoryLabel }}</div></div>
+            </div>
+            <div style="padding:24px 28px 30px;">
+              <div style="font-family:'Jost'; font-size:28px; letter-spacing:0.08em; color:#f0ebe2;">{{ o.name }}</div>
+              <div style="margin-top:6px; font-family:'Cormorant Garamond',serif; font-style:italic; font-size:16px; color:rgba(230,226,218,0.55);">{{ o.tagline }}</div>
+              <div style="margin-top:14px; display:flex; align-items:baseline; gap:10px;">
+                <sc-if value="{{ o.priceOld }}">
+                  <span style="font-family:'Jost'; font-weight:300; font-size:13px; text-decoration:line-through; color:rgba(230,226,218,0.4);">{{ o.priceOld }}</span>
+                </sc-if>
+                <span style="font-family:'Jost'; font-weight:500; font-size:19px; color:#f0ebe2;">{{ o.price }}</span>
+              </div>
             </div>
           </a>
         </sc-for>
+      </div>
+    </div>
+
+    <div id="reviews" style="margin-top:14vh; border-top:1px solid rgba(240,235,226,0.1); padding-top:6vh;">
+      <div style="font-family:'Jost'; font-size:17px; letter-spacing:0.32em; color:rgba(150,220,235,0.7);">REVIEWS</div>
+
+      <sc-if value="{{ reviewsHasAny }}" hint-placeholder-val="{{ false }}">
+        <div style="margin-top:4vh; display:flex; align-items:center; gap:24px; flex-wrap:wrap;">
+          <div style="font-family:'Cormorant Garamond',serif; font-size:52px; color:#f0ebe2;">{{ reviewsAverageDisplay }}</div>
+          <div>
+            <div style="font-size:20px; letter-spacing:0.05em; color:{{ product.accent }};">{{ reviewsAverageStars }}</div>
+            <div style="margin-top:4px; font-size:12.5px; letter-spacing:0.1em; color:rgba(230,226,218,0.5);">Based on {{ reviewsCount }} reviews</div>
+          </div>
+        </div>
+
+        <div style="margin-top:5vh;">
+          <sc-for list="{{ reviewsList }}" as="r" hint-placeholder-count="2">
+            <div style="padding:22px 0; border-top:1px solid rgba(240,235,226,0.08);">
+              <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px;">
+                <div style="font-family:'Jost'; font-size:16px; letter-spacing:0.05em; color:#f0ebe2;">{{ r.customerName }}</div>
+                <div style="font-size:11.5px; letter-spacing:0.1em; color:rgba(230,226,218,0.4);">{{ r.dateDisplay }}</div>
+              </div>
+              <div style="margin-top:7px; font-size:15px; letter-spacing:0.05em; color:{{ product.accent }};">{{ r.starsDisplay }}</div>
+              <div style="margin-top:9px; font-size:15px; line-height:1.8; color:rgba(230,226,218,0.8);">{{ r.comment }}</div>
+            </div>
+          </sc-for>
+        </div>
+      </sc-if>
+
+      <div style="margin-top:6vh; max-width:560px; padding-top:5vh; border-top:1px solid rgba(240,235,226,0.1);">
+        <sc-if value="{{ showReviewForm }}" hint-placeholder-val="{{ true }}">
+          <div style="font-family:'Cormorant Garamond',serif; font-size:26px; color:#f0ebe2;">Write a review</div>
+          <div style="margin-top:8px; font-size:13.5px; line-height:1.6; color:rgba(230,226,218,0.5);">Reviews are verified against your order number.</div>
+          <div style="margin-top:22px; display:flex; gap:8px;">
+            <sc-for list="{{ ratingOptions }}" as="ro" hint-placeholder-count="5">
+              <div onClick="{{ ro.select }}" style="cursor:pointer; font-size:32px; line-height:1; color:{{ ro.color }};">{{ ro.star }}</div>
+            </sc-for>
+          </div>
+          <div style="margin-top:20px; display:flex; flex-direction:column; gap:14px;">
+            <input placeholder="Your name" value="{{ reviewForm.customerName }}" onInput="{{ onReviewName }}" style="background:transparent; border:0; border-bottom:1px solid rgba(240,235,226,0.25); outline:none; color:#f0ebe2; font-family:'Jost'; font-size:15.5px; padding:11px 2px; letter-spacing:0.04em;" />
+            <input placeholder="Order number" value="{{ reviewForm.orderNumber }}" onInput="{{ onReviewOrderNumber }}" style="background:transparent; border:0; border-bottom:1px solid rgba(240,235,226,0.25); outline:none; color:#f0ebe2; font-family:'Jost'; font-size:15.5px; padding:11px 2px; letter-spacing:0.08em; text-transform:uppercase;" />
+            <textarea placeholder="Share your experience..." value="{{ reviewForm.comment }}" onInput="{{ onReviewComment }}" style="background:transparent; border:1px solid rgba(240,235,226,0.25); outline:none; color:#f0ebe2; font-family:'Jost'; font-size:15.5px; padding:14px; letter-spacing:0.02em; min-height:110px; resize:vertical;"></textarea>
+          </div>
+          <sc-if value="{{ reviewError }}" hint-placeholder-val="{{ false }}">
+            <div style="margin-top:10px; font-size:12.5px; letter-spacing:0.04em; color:#e5877d;">{{ reviewError }}</div>
+          </sc-if>
+          <div onClick="{{ submitReview }}" class="btn" style="cursor:pointer; margin-top:20px; display:inline-block; padding:15px 36px; border-radius:40px; background:rgba(219,204,166,0.92); color:#08090b; font-size:12px; letter-spacing:0.2em; font-weight:500; pointer-events:{{ reviewSubmitPointer }};">{{ reviewSubmitLabel }}</div>
+        </sc-if>
+        <sc-if value="{{ showReviewDone }}" hint-placeholder-val="{{ false }}">
+          <div style="font-family:'Cormorant Garamond',serif; font-size:22px; color:#f0ebe2;">Thank you ✓</div>
+          <div style="margin-top:9px; font-size:13.5px; line-height:1.6; color:rgba(230,226,218,0.55);">Your review has been submitted and will appear once it's been reviewed.</div>
+        </sc-if>
       </div>
     </div>
 
@@ -303,6 +455,17 @@ src="https://www.facebook.com/tr?id=1703900774196311&ev=PageView&noscript=1"
 const PKR = (n) => 'PKR ' + n.toLocaleString('en-PK');
 const PRICE = 3850;
 const ORIGINAL_PRICE = 4500;
+const DEFAULT_LONGEVITY = '8–10 hours';
+const DEFAULT_HOW_TO_USE = 'Apply your fragrance to clean, moisturized skin and pulse points such as the wrists, neck, and behind the ears. Avoid rubbing the fragrance after application.';
+const DEFAULT_DELIVERY_INFO = 'We deliver across Pakistan through our trusted courier partners. Orders are typically delivered within 2–6 business days, depending on your location.';
+const DEFAULT_RETURN_POLICY = 'Returns or exchanges are only accepted if you receive the wrong product or if the item arrives damaged or defective. Requests must be made within 48 hours of delivery.';
+const STAR_CHARS = '★★★★★☆☆☆☆☆';
+const starsFor = (rating) => STAR_CHARS.slice(5 - rating, 10 - rating);
+
+// "Grapefruit, Bergamot, Ginger" -> [{ name }, ...]. Also splits on the "·"
+// some older hardcoded copy used, for backward compatibility.
+const noteList = (str) => (str || '').split(/[,·]/).map((s) => s.trim()).filter(Boolean).map((name) => ({ name }));
+
 const { loadStoredCart, persistCart, fbTrack, defaultCheckoutForm, computeDiscount, validateVoucher, validateCheckoutForm, placeOrder } = window.InfusoCart;
 
 // Trimmed, self-contained copy of the same hardcoded fallback content used on
@@ -312,22 +475,22 @@ const { loadStoredCart, persistCart, fbTrack, defaultCheckoutForm, computeDiscou
 // editorial/boxes sections already keep independent copies of this data.
 const CATALOG = [
   { id: 'aether', name: 'AETHER', no: 'No. 01', category: 'UNISEX',
-    accent: 'rgba(150,220,235,0.85)', img: '/products/aether.webp', box: '/products/aether_box.webp',
+    accent: 'rgba(150,220,235,0.85)', bg: 'radial-gradient(120% 90% at 22% 42%, #14262c 0%, #0a0e11 60%, #08090b 100%)', img: '/products/aether.webp', box: '/products/aether_box.webp',
     editorialTall: '/products/aether_dark.webp', editorialWide: '/products/aether_slate.webp',
-    tagline: 'cold air over stone', top: 'Sea Mineral', heart: 'Iris · Smoke', base: 'Amber Resin',
-    desc: 'Clear and mineral at the first breath, warming through iris and a wisp of smoke, drying to a quiet resin that stays close to the skin.',
+    tagline: 'citrus air over warm stone', top: 'Grapefruit, Bergamot, Ginger', heart: 'Rosemary, Sage, Geranium, Water Notes', base: 'Ambroxan, Amber, Labdanum',
+    desc: 'A bright burst of grapefruit and bergamot sharpened with ginger, easing into an herbal heart of rosemary, sage and geranium lifted by cool water notes, before settling into a warm, mineral base of ambroxan, amber and labdanum.',
     inspired: 'INSPIRED BY L’IMMENSITÉ · LOUIS VUITTON' },
   { id: 'aria', name: 'ARIA', no: 'No. 02', category: 'WOMEN',
-    accent: 'rgba(195,170,235,0.9)', img: '/products/aria.webp', box: '/products/aria_box.webp',
+    accent: 'rgba(195,170,235,0.9)', bg: 'radial-gradient(120% 90% at 78% 42%, #1b1a26 0%, #0d0c12 60%, #08090b 100%)', img: '/products/aria.webp', box: '/products/aria_box.webp',
     editorialTall: '/products/aria_hands.webp', editorialWide: '/products/aria_citrus.webp',
-    tagline: 'light through open air', top: 'Bergamot', heart: 'White Fruit', base: 'Soft Musk',
-    desc: 'A bright, luminous fruit accord suspended over clean musk — airy and effortless, the scent of light moving through an open window.',
+    tagline: 'sicilian light, held in musk', top: 'Sicilian Orange, Calabrian Bergamot, Sicilian Lemon', heart: 'Mediterranean Orchard Fruits', base: 'White Musk, Madagascar Vanilla, Amber',
+    desc: 'Bright Sicilian orange, Calabrian bergamot and lemon open into a sun-ripened Mediterranean fruit heart, settling into a soft, creamy base of white musk, Madagascar vanilla and amber.',
     inspired: 'INSPIRED BY ERBA PURA · XERJOFF' },
   { id: 'oudor', name: 'OUDOR', no: 'No. 03', category: 'MEN',
-    accent: 'rgba(220,175,120,0.9)', img: '/products/oudor.webp', box: '/products/oudor_box.webp',
+    accent: 'rgba(220,175,120,0.9)', bg: 'radial-gradient(120% 90% at 22% 42%, #241e17 0%, #12100b 60%, #08090b 100%)', img: '/products/oudor.webp', box: '/products/oudor_box.webp',
     editorialTall: '/products/oudor_wood.webp', editorialWide: '/products/oudor_rocks.webp',
-    tagline: 'warmth after dark', top: 'Saffron', heart: 'Oud · Incense', base: 'Amber · Woods',
-    desc: 'Deep and resinous — saffron over smoked oud and incense, settling into warm amber and woods. The house at its most opulent.',
+    tagline: 'raspberry over molten earth', top: 'Raspberry', heart: 'Birch, Amber, Benzoin', base: 'Guaiac Wood, Vetiver, Cedar, Musk, Moss, Patchouli, Tonka Bean, Vanilla',
+    desc: 'A dark raspberry opening gives way to smoky birch, amber and benzoin, grounded in a dense, earthy base of guaiac wood, vetiver, cedar, musk, moss, patchouli, tonka bean and vanilla — dense, volcanic and long-lasting.',
     inspired: 'INSPIRED BY TERRONI · ORTO PARISI' },
 ];
 
@@ -338,7 +501,7 @@ class Component extends DCLogic {
     liveSettings: {},
     cart: loadStoredCart(),
     justAdded: false,
-    activeImageIdx: 0,
+    activeImageIdx: null, // null = not yet chosen by user; falls back to the product's admin-set featuredImage
     cartOpen: false,
     checkoutStep: 'cart', // 'cart' | 'form' | 'placing' | 'done' | 'bankinfo'
     checkoutForm: defaultCheckoutForm(),
@@ -347,6 +510,11 @@ class Component extends DCLogic {
     appliedVoucher: null, // { code, discountPercent } | null
     voucherStatus: 'idle', // 'idle' | 'checking' | 'error'
     voucherError: null,
+    detailOpen: null, // 'howToUse' | 'ingredients' | 'delivery' | null
+    reviewsData: { average: null, count: 0, reviews: [] },
+    reviewForm: { customerName: '', orderNumber: '', rating: 5, comment: '' },
+    reviewStatus: 'idle', // 'idle' | 'sending' | 'done' | 'error'
+    reviewError: null,
   };
 
   componentDidMount() {
@@ -372,6 +540,8 @@ class Component extends DCLogic {
         const map = {};
         for (const p of list) map[p.slug] = p;
         this.setState({ liveProducts: map });
+        const current = map[slug];
+        if (current) this.loadReviews(current.id);
       })
       .catch(() => {});
 
@@ -402,6 +572,7 @@ class Component extends DCLogic {
     const category = live.category || p.category;
     return {
       ...p,
+      dbId: live.id || null,
       img: live.imageUrl || p.img,
       box: live.hoverImageUrl || p.box,
       editorialTall: live.editorialTallImageUrl || p.editorialTall,
@@ -410,8 +581,17 @@ class Component extends DCLogic {
       top: live.topNote || p.top,
       heart: live.heartNote || p.heart,
       base: live.baseNote || p.base,
+      topList: noteList(live.topNote || p.top),
+      heartList: noteList(live.heartNote || p.heart),
+      baseList: noteList(live.baseNote || p.base),
+      accordLabel: noteList(live.baseNote || p.base).slice(0, 2).map((n) => n.name).join(' & '),
       desc: live.description || p.desc,
       inspired: live.inspiredBy || p.inspired,
+      concentration: live.concentration || null,
+      longevity: live.longevity || DEFAULT_LONGEVITY,
+      howToUse: live.howToUse || DEFAULT_HOW_TO_USE,
+      ingredients: live.ingredients || null,
+      featuredImage: live.featuredImage || 'imageUrl',
       category,
       categoryLabel: { MEN: 'Men', WOMEN: 'Women', UNISEX: 'Unisex' }[category] || 'Unisex',
     };
@@ -443,6 +623,46 @@ class Component extends DCLogic {
   }
   setCheckoutField(field, value) {
     this.setState((s) => ({ checkoutForm: { ...s.checkoutForm, [field]: value } }));
+  }
+  toggleDetail(key) {
+    this.setState((s) => ({ detailOpen: s.detailOpen === key ? null : key }));
+  }
+  loadReviews(productId) {
+    fetch('/api/reviews/product/' + productId)
+      .then((r) => (r.ok ? r.json() : { average: null, count: 0, reviews: [] }))
+      .then((data) => this.setState({ reviewsData: data }))
+      .catch(() => {});
+  }
+  setReviewField(field, value) {
+    this.setState((s) => ({ reviewForm: { ...s.reviewForm, [field]: value } }));
+  }
+  async submitReview() {
+    const { customerName, orderNumber, rating, comment } = this.state.reviewForm;
+    if (!customerName.trim() || !orderNumber.trim() || !comment.trim()) {
+      this.setState({ reviewStatus: 'error', reviewError: 'Please fill in all fields.' });
+      return;
+    }
+    const productId = (this.state.liveProducts[this.state.slug] || {}).id;
+    if (!productId) {
+      this.setState({ reviewStatus: 'error', reviewError: 'Please try again in a moment.' });
+      return;
+    }
+    this.setState({ reviewStatus: 'sending', reviewError: null });
+    try {
+      const res = await fetch('/api/reviews', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          productId, orderNumber: orderNumber.trim(), customerName: customerName.trim(),
+          rating: Number(rating), comment: comment.trim(),
+        }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || 'Failed to submit review.');
+      this.setState({ reviewStatus: 'done', reviewForm: { customerName: '', orderNumber: '', rating: 5, comment: '' } });
+    } catch (err) {
+      this.setState({ reviewStatus: 'error', reviewError: err.message });
+    }
   }
   async applyVoucher() {
     const code = this.state.voucherInput.trim();
@@ -503,6 +723,12 @@ class Component extends DCLogic {
     const merged = CATALOG.map((p) => this._mergeProduct(p));
     const current = merged.find((p) => p.id === this.state.slug) || merged[0];
     const gallery = [current.img, current.box, current.editorialTall, current.editorialWide];
+    // Bottle/hover shots are isolated product photos on transparent backgrounds
+    // (need "contain" so the bottle isn't cropped); editorial shots are full-bleed
+    // lifestyle photography (need "cover" so they fill the frame with no letterboxing).
+    const GALLERY_FITS = ['contain', 'contain', 'cover', 'cover'];
+    const featuredIdx = { imageUrl: 0, hoverImageUrl: 1, editorialTallImageUrl: 2, editorialWideImageUrl: 3 }[current.featuredImage] || 0;
+    const activeImageIdx = this.state.activeImageIdx != null ? this.state.activeImageIdx : featuredIdx;
     const cart = this.state.cart;
     const cartCount = cart.aether + cart.aria + cart.oudor;
     const cartSubtotal = merged.reduce((sum, p) => sum + (cart[p.id] || 0) * this.priceFor(p.id), 0);
@@ -516,6 +742,14 @@ class Component extends DCLogic {
     const { discountPercent, discountAmount } = computeDiscount(cartSubtotal, this.state.appliedVoucher);
     const grandTotal = Math.max(0, cartSubtotal - discountAmount) + deliveryChargeVal;
 
+    const { average, count: reviewCount, reviews: reviewList } = this.state.reviewsData;
+    const reviewsList = reviewList.map((r) => ({
+      customerName: r.customerName,
+      starsDisplay: starsFor(r.rating),
+      comment: r.comment,
+      dateDisplay: new Date(r.createdAt).toLocaleDateString('en-PK', { year: 'numeric', month: 'short', day: 'numeric' }),
+    }));
+
     return {
       logoSrc: S.logoUrl || '/products/infuso-logo.png',
       waLink: 'https://wa.me/' + (S.whatsappNumber || '923316841320'),
@@ -524,6 +758,43 @@ class Component extends DCLogic {
       instagramUrl: S.instagramUrl || 'https://www.instagram.com/infuso.pk?igsh=MXYyaDh2bnM5em01cA%3D%3D&utm_source=qr',
       contactMailto: 'mailto:' + (S.contactEmail || 'sales@infuso.pk'),
       footerCopyright: S.footerCopyright || '© 2026 INFUSO',
+      deliveryInfo: S.deliveryInfo || DEFAULT_DELIVERY_INFO,
+      returnPolicy: S.returnPolicy || DEFAULT_RETURN_POLICY,
+      notesOpen: this.state.detailOpen === 'notes',
+      notesSign: this.state.detailOpen === 'notes' ? '−' : '+',
+      toggleNotes: () => this.toggleDetail('notes'),
+      howToUseOpen: this.state.detailOpen === 'howToUse',
+      howToUseSign: this.state.detailOpen === 'howToUse' ? '−' : '+',
+      toggleHowToUse: () => this.toggleDetail('howToUse'),
+      ingredientsOpen: this.state.detailOpen === 'ingredients',
+      ingredientsSign: this.state.detailOpen === 'ingredients' ? '−' : '+',
+      toggleIngredients: () => this.toggleDetail('ingredients'),
+      showIngredients: !!current.ingredients,
+      deliveryOpen: this.state.detailOpen === 'delivery',
+      deliverySign: this.state.detailOpen === 'delivery' ? '−' : '+',
+      toggleDelivery: () => this.toggleDetail('delivery'),
+
+      reviewsCount: reviewCount,
+      reviewsHasAny: reviewCount > 0,
+      reviewsAverageDisplay: average != null ? average.toFixed(1) : '—',
+      reviewsAverageStars: average != null ? starsFor(Math.round(average)) : '',
+      reviewsList,
+      reviewForm: this.state.reviewForm,
+      ratingOptions: [1, 2, 3, 4, 5].map((n) => ({
+        select: () => this.setReviewField('rating', n),
+        star: n <= this.state.reviewForm.rating ? '★' : '☆',
+        color: n <= this.state.reviewForm.rating ? current.accent : 'rgba(240,235,226,0.3)',
+      })),
+      onReviewName: (e) => this.setReviewField('customerName', e.target.value),
+      onReviewOrderNumber: (e) => this.setReviewField('orderNumber', e.target.value),
+      onReviewComment: (e) => this.setReviewField('comment', e.target.value),
+      submitReview: () => this.submitReview(),
+      showReviewForm: this.state.reviewStatus !== 'done',
+      showReviewDone: this.state.reviewStatus === 'done',
+      reviewError: this.state.reviewStatus === 'error' ? this.state.reviewError : null,
+      reviewSubmitLabel: this.state.reviewStatus === 'sending' ? 'SUBMITTING…' : 'SUBMIT REVIEW',
+      reviewSubmitPointer: this.state.reviewStatus === 'sending' ? 'none' : 'auto',
+
       bankQrSrc: S.bankQrImageUrl || '/products/bank-qr.png',
       bankAccountName: S.bankAccountName || 'Minahil Asim',
       bankName: S.bankName || 'Bank Al Habib',
@@ -593,15 +864,24 @@ class Component extends DCLogic {
       submitOrder: () => this.submitOrder(),
 
       product: {
-        name: current.name, noNum: current.no.replace('No. ', ''), base: current.base,
+        name: current.name, noNum: current.no.replace('No. ', ''), base: current.accordLabel,
         accent: current.accent, categoryLabel: current.categoryLabel,
         taglineCased: current.tagline.charAt(0).toUpperCase() + current.tagline.slice(1) + '.',
-        desc: current.desc, top: current.top, heart: current.heart,
+        desc: current.desc,
+        topList: current.topList, heartList: current.heartList, baseList: current.baseList,
+        hasHeartNotes: current.heartList.length > 0,
         inspired: current.inspired,
-        mainImg: gallery[this.state.activeImageIdx] || current.img,
+        concentration: current.concentration,
+        hasConcentration: !!current.concentration,
+        noConcentration: !current.concentration,
+        longevity: current.longevity,
+        howToUse: current.howToUse,
+        ingredients: current.ingredients,
+        mainImg: gallery[activeImageIdx] || current.img,
+        mainImgFit: GALLERY_FITS[activeImageIdx] || 'contain',
         gallery: gallery.map((src, i) => ({
           src,
-          activeClass: this.state.activeImageIdx === i ? 'active' : '',
+          activeClass: activeImageIdx === i ? 'active' : '',
           select: () => this.setState({ activeImageIdx: i }),
         })),
         price: PKR(this.priceFor(current.id)),
@@ -612,7 +892,9 @@ class Component extends DCLogic {
       },
 
       otherProducts: merged.filter((p) => p.id !== current.id).map((p) => ({
-        name: p.name, img: p.img, categoryLabel: p.categoryLabel,
+        name: p.name, img: p.img, hoverImg: p.box || p.img, bg: p.bg, categoryLabel: p.categoryLabel, tagline: p.tagline,
+        price: PKR(this.priceFor(p.id)),
+        priceOld: this.priceOldFor(p.id) != null ? PKR(this.priceOldFor(p.id)) : null,
         href: '/product/' + p.id,
       })),
     };

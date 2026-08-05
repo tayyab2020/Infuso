@@ -31,6 +31,9 @@ model Product {
   hoverImageUrl          String?
   editorialTallImageUrl  String?
   editorialWideImageUrl  String?
+  // Which of the 4 image fields above is shown as the default image on the
+  // storefront product page — one of 'imageUrl' | 'hoverImageUrl' | 'editorialTallImageUrl' | 'editorialWideImageUrl'.
+  featuredImage           String          @default("imageUrl")
 
   // Text content — all optional; storefront falls back to its hardcoded copy when null/empty.
   tagline        String?
@@ -42,9 +45,17 @@ model Product {
   editorialLine  String?
   editorialStory String? @db.Text
 
+  // Product-page detail content — all optional; falls back to generic
+  // storefront copy when null/empty, same as the other text fields above.
+  concentration String?          // e.g. "Eau de Parfum · 20% oil concentration"
+  longevity     String?          // e.g. "8–10 hours"
+  howToUse      String? @db.Text
+  ingredients   String? @db.Text
+
   createdAt  DateTime    @default(now())
   updatedAt  DateTime    @updatedAt
   orderItems OrderItem[]
+  reviews    Review[]
 }
 
 model Faq {
@@ -102,6 +113,10 @@ model SiteSettings {
 
   // Footer
   footerCopyright String?
+
+  // Product-page policy copy — store-wide, shown on every product.
+  deliveryInfo String? @db.Text
+  returnPolicy String? @db.Text
 
   updatedAt DateTime @updatedAt
 }
@@ -175,4 +190,32 @@ model Subscriber {
   id        String   @id @default(cuid())
   email     String   @unique
   createdAt DateTime @default(now())
+}
+
+model Review {
+  id           String  @id @default(cuid())
+  product      Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId    String
+  // The order this review was verified against — required for public
+  // submissions (checked to actually contain this product), optional for
+  // reviews the admin enters directly (e.g. imported from social media).
+  orderNumber  String?
+  customerName String
+  rating       Int
+  comment      String  @db.Text
+  // How many of this product the customer's order included — admin-entered
+  // record-keeping only (e.g. an order of 2x AETHER + 1x ARIA becomes two
+  // review rows, one per product, each carrying its own quantity).
+  quantity     Int      @default(1)
+  // Ties together the multiple review rows created from one multi-product
+  // admin submission (same customer/rating/comment, different products) so
+  // the homepage's cross-product feed can show them as a single card instead
+  // of one duplicate card per product. Null for single-product reviews.
+  batchId      String?
+  // Gates public visibility — nothing submitted through the public form is
+  // shown until an admin approves it.
+  approved     Boolean  @default(false)
+  createdAt    DateTime @default(now())
+
+  @@index([productId, approved])
 }

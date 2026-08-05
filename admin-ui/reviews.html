@@ -1,0 +1,81 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>INFUSO Admin · Reviews</title>
+<link rel="icon" type="image/png" href="/products/favicon.png">
+<link rel="stylesheet" href="admin.css">
+</head>
+<body>
+  <div class="admin-main">
+    <h1>Reviews</h1>
+    <p class="page-sub">Customer reviews submitted on product pages, order-verified. New submissions need approval before they show on the storefront.</p>
+
+    <div class="card">
+      <div class="table-scroll">
+      <table>
+        <thead>
+          <tr>
+            <th>Product</th>
+            <th>Qty</th>
+            <th>Customer</th>
+            <th>Rating</th>
+            <th>Review</th>
+            <th>Order #</th>
+            <th>Approved</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="reviews-body">
+          <tr><td colspan="8" class="hint">Loading…</td></tr>
+        </tbody>
+      </table>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2 id="form-title">Add review</h2>
+      <p class="hint">For reviews collected elsewhere (WhatsApp, social media) — goes live immediately unless you uncheck Approved.</p>
+      <form id="add-form">
+        <div class="form-grid cols-1">
+          <div class="field" id="product-multi-field">
+            <label>Products (select all this order included, with quantity)</label>
+            <div id="product-checklist"></div>
+          </div>
+          <div class="field" id="product-single-field" style="display:none;">
+            <label>Product</label>
+            <select id="edit-productId"></select>
+          </div>
+          <div class="field" id="edit-quantity-field" style="display:none; max-width:160px;">
+            <label>Quantity</label>
+            <input id="edit-quantity" type="number" min="1" value="1" />
+          </div>
+          <div class="field"><label>Customer name</label><input id="new-customerName" required /></div>
+          <div class="field" style="max-width:160px;">
+            <label>Rating</label>
+            <select id="new-rating">
+              <option value="5">5 — Excellent</option>
+              <option value="4">4 — Good</option>
+              <option value="3">3 — Average</option>
+              <option value="2">2 — Poor</option>
+              <option value="1">1 — Bad</option>
+            </select>
+          </div>
+          <div class="field"><label>Review</label><textarea id="new-comment" required></textarea></div>
+          <div class="field"><label>Order number (optional)</label><input id="new-orderNumber" /></div>
+          <div class="field"><label style="display:flex; align-items:center; gap:8px; text-transform:none; font-weight:400; font-size:13px;"><input type="checkbox" id="new-approved" style="width:auto;" checked /> Approved (visible on storefront)</label></div>
+        </div>
+        <div class="btn-row" style="margin-top:6px;">
+          <button type="submit" class="btn" id="form-submit-btn">Add</button>
+          <span id="cancel-edit-review" class="hint" style="display:none; cursor:pointer;">Cancel edit</span>
+        </div>
+      </form>
+      <div id="add-error" class="error-msg" style="display:none;"></div>
+    </div>
+  </div>
+
+  <script src="admin.js"></script>
+  <script src="reviews.js"></script>
+</body>
+</html>

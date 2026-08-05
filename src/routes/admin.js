@@ -1,11 +1,16 @@
 const express = require('express');
+const crypto = require('crypto');
 const bcrypt = require('bcryptjs');
 const prisma = require('../db');
 const requireAdmin = require('../middleware/requireAdmin');
 const upload = require('../middleware/upload');
 const { sendMail } = require('../mailer');
-const { orderStatusEmail } = require('../orderEmails');
+const { orderStatusEmail, codConfirmationEmail, bankTransferEmail } = require('../orderEmails');
 const { normalizeCode } = require('../lib/voucher');
+const { generateOrderNumber } = require('../lib/orderNumber');
+
+const ORDER_STATUSES = ['PENDING', 'CONFIRMED', 'SHIPPED', 'DELIVERED', 'PAYMENT_RECEIVED', 'CANCELLED'];
+const DEFAULT_DELIVERY_CHARGE = 280;
 
 const router = express.Router();
 
@@ -76,11 +81,117 @@ router.get('/orders', requireAdmin, async (req, res) => {
   res.json(orders);
 });
 
+// Admin-created order — e.g. one taken over WhatsApp/phone. Unlike the public
+// checkout endpoint, customerEmail and phone are optional (a phone order may
+// only have one of the two) and the admin picks the initial status directly
+// instead of it always starting at PENDING. Stock is still decremented like a
+// real sale, but no Meta Conversions event is sent (this never happened on
+// the storefront, so it isn't a real ad-attributable conversion) and a
+// confirmation email only goes out if an email address was actually given.
+router.post('/orders', requireAdmin, async (req, res) => {
+  const { customerName, customerEmail, phone, address, city, notes, items, paymentMethod, status } = req.body || {};
+
+  if (!isNonEmptyString(customerName) || !isNonEmptyString(address) || !isNonEmptyString(city)) {
+    return res.status(400).json({ error: 'customerName, address, and city are required.' });
+  }
+  if (isNonEmptyString(customerEmail) && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(customerEmail.trim())) {
+    return res.status(400).json({ error: 'customerEmail must be a valid email address.' });
+  }
+  if (paymentMethod !== undefined && paymentMethod !== 'COD' && paymentMethod !== 'BANK_TRANSFER') {
+    return res.status(400).json({ error: 'paymentMethod must be COD or BANK_TRANSFER.' });
+  }
+  if (status !== undefined && !ORDER_STATUSES.includes(status)) {
+    return res.status(400).json({ error: `status must be one of: ${ORDER_STATUSES.join(', ')}` });
+  }
+  if (!Array.isArray(items) || items.length === 0) {
+    return res.status(400).json({ error: 'items must be a non-empty array of { slug, quantity }.' });
+  }
+  for (const it of items) {
+    if (!isNonEmptyString(it && it.slug) || !Number.isInteger(it.quantity) || it.quantity < 1) {
+      return res.status(400).json({ error: 'Each item needs a valid slug and a positive integer quantity.' });
+    }
+  }
+
+  try {
+    const settings = (await prisma.siteSettings.findUnique({ where: { id: 'singleton' } })) || {};
+    const deliveryCharge = Number.isInteger(settings.deliveryCharge) ? settings.deliveryCharge : DEFAULT_DELIVERY_CHARGE;
+
+    let order;
+    const MAX_ATTEMPTS = 5;
+    for (let attempt = 1; ; attempt++) {
+      try {
+        order = await prisma.$transaction(async (tx) => {
+          let totalAmount = 0;
+          const itemsData = [];
+
+          for (const it of items) {
+            const product = await tx.product.findUnique({ where: { slug: it.slug } });
+            if (!product) throw Object.assign(new Error(`Unknown product: ${it.slug}`), { status: 400 });
+            if (product.stock < it.quantity) {
+              throw Object.assign(new Error(`Not enough stock for ${product.name}.`), { status: 409 });
+            }
+            const { count } = await tx.product.updateMany({
+              where: { id: product.id, stock: { gte: it.quantity } },
+              data: { stock: { decrement: it.quantity } },
+            });
+            if (count === 0) {
+              throw Object.assign(new Error(`Not enough stock for ${product.name}.`), { status: 409 });
+            }
+            totalAmount += product.price * it.quantity;
+            itemsData.push({
+              productId: product.id,
+              productName: product.name,
+              quantity: it.quantity,
+              unitPrice: product.price,
+            });
+          }
+
+          return tx.order.create({
+            data: {
+              orderNumber: generateOrderNumber(),
+              customerName: customerName.trim(),
+              customerEmail: isNonEmptyString(customerEmail) ? customerEmail.trim() : '',
+              phone: isNonEmptyString(phone) ? phone.trim() : '',
+              address: address.trim(),
+              city: city.trim(),
+              notes: isNonEmptyString(notes) ? notes.trim() : null,
+              status: status || 'PENDING',
+              paymentMethod: paymentMethod === 'BANK_TRANSFER' ? 'BANK_TRANSFER' : 'COD',
+              deliveryCharge,
+              totalAmount: totalAmount + deliveryCharge,
+              items: { create: itemsData },
+            },
+            include: { items: true },
+          });
+        });
+        break;
+      } catch (err) {
+        const isOrderNumberClash = err.code === 'P2002' && err.meta && err.meta.target && err.meta.target.includes('orderNumber');
+        if (isOrderNumberClash && attempt < MAX_ATTEMPTS) continue;
+        throw err;
+      }
+    }
+
+    res.status(201).json(order);
+
+    if (isNonEmptyString(order.customerEmail)) {
+      const email = order.paymentMethod === 'BANK_TRANSFER' ? bankTransferEmail(order, settings) : codConfirmationEmail(order, settings);
+      const from = settings.mailFromName || settings.mailFromAddress
+        ? `"${settings.mailFromName || 'INFUSO'}" <${settings.mailFromAddress || 'sales@infuso.pk'}>`
+        : undefined;
+      sendMail({ to: order.customerEmail, from, ...email });
+    }
+  } catch (err) {
+    const status = err.status || 500;
+    if (status === 500) console.error(err);
+    res.status(status).json({ error: err.message || 'Failed to create order.' });
+  }
+});
+
 router.patch('/orders/:id', requireAdmin, async (req, res) => {
   const { status } = req.body || {};
-  const validStatuses = ['PENDING', 'CONFIRMED', 'SHIPPED', 'DELIVERED', 'PAYMENT_RECEIVED', 'CANCELLED'];
-  if (!validStatuses.includes(status)) {
-    return res.status(400).json({ error: `status must be one of: ${validStatuses.join(', ')}` });
+  if (!ORDER_STATUSES.includes(status)) {
+    return res.status(400).json({ error: `status must be one of: ${ORDER_STATUSES.join(', ')}` });
   }
   try {
     const order = await prisma.order.update({
@@ -203,11 +314,15 @@ router.delete('/orders/:id', requireAdmin, async (req, res) => {
 const PRODUCT_TEXT_FIELDS = [
   'tagline', 'topNote', 'heartNote', 'baseNote', 'description', 'inspiredBy',
   'editorialLine', 'editorialStory',
+  'concentration', 'longevity', 'howToUse', 'ingredients',
 ];
 const PRODUCT_IMAGE_FIELDS = [
   'imageUrl', 'hoverImageUrl', 'editorialTallImageUrl', 'editorialWideImageUrl',
 ];
 const PRODUCT_CATEGORIES = ['MEN', 'WOMEN', 'UNISEX'];
+// featuredImage names which of PRODUCT_IMAGE_FIELDS is the default image shown
+// on the storefront product page.
+const FEATURED_IMAGE_VALUES = PRODUCT_IMAGE_FIELDS;
 
 router.get('/products', requireAdmin, async (req, res) => {
   const products = await prisma.product.findMany({ orderBy: { createdAt: 'asc' } });
@@ -226,6 +341,9 @@ router.post('/products', requireAdmin, async (req, res) => {
   if (category !== undefined && !PRODUCT_CATEGORIES.includes(category)) {
     return res.status(400).json({ error: `category must be one of: ${PRODUCT_CATEGORIES.join(', ')}` });
   }
+  if (req.body.featuredImage !== undefined && !FEATURED_IMAGE_VALUES.includes(req.body.featuredImage)) {
+    return res.status(400).json({ error: `featuredImage must be one of: ${FEATURED_IMAGE_VALUES.join(', ')}` });
+  }
 
   const data = {
     slug: slug.trim(),
@@ -235,6 +353,7 @@ router.post('/products', requireAdmin, async (req, res) => {
     stock: Number.isInteger(stock) && stock >= 0 ? stock : 0,
     active: active !== false,
     category: category || 'UNISEX',
+    featuredImage: req.body.featuredImage || 'imageUrl',
   };
   for (const key of PRODUCT_TEXT_FIELDS) {
     const v = optionalText(req.body[key]);
@@ -283,6 +402,12 @@ router.put('/products/:id', requireAdmin, async (req, res) => {
     data.stock = stock;
   }
   if (active !== undefined) data.active = !!active;
+  if (req.body.featuredImage !== undefined) {
+    if (!FEATURED_IMAGE_VALUES.includes(req.body.featuredImage)) {
+      return res.status(400).json({ error: `featuredImage must be one of: ${FEATURED_IMAGE_VALUES.join(', ')}` });
+    }
+    data.featuredImage = req.body.featuredImage;
+  }
 
   for (const key of [...PRODUCT_TEXT_FIELDS, ...PRODUCT_IMAGE_FIELDS]) {
     const v = optionalText(req.body[key]);
@@ -377,6 +502,7 @@ const SETTINGS_FIELDS = [
   'editorialEyebrow', 'editorialHeading', 'editorialBody',
   'discoveryEyebrow', 'discoveryHeading', 'discoveryBody',
   'faqEyebrow', 'faqHeading', 'footerCopyright',
+  'deliveryInfo', 'returnPolicy',
 ];
 
 router.get('/settings', requireAdmin, async (req, res) => {
@@ -502,6 +628,120 @@ router.delete('/vouchers/:id', requireAdmin, async (req, res) => {
     res.json({ ok: true });
   } catch (err) {
     res.status(404).json({ error: 'Voucher not found.' });
+  }
+});
+
+// ---- Reviews ----
+
+router.get('/reviews', requireAdmin, async (req, res) => {
+  const reviews = await prisma.review.findMany({
+    include: { product: { select: { name: true, slug: true } } },
+    orderBy: { createdAt: 'desc' },
+  });
+  res.json(reviews);
+});
+
+// Admin-authored review (e.g. imported from social media/WhatsApp) — unlike
+// the public submission endpoint, this doesn't require a matching order and
+// is approved (publicly visible) by default. A single order can include
+// several products, so this accepts a list of { productId, quantity } items
+// and creates one review row per item — same customer/rating/comment/order#
+// on each — so the review shows up correctly on every product's own page.
+router.post('/reviews', requireAdmin, async (req, res) => {
+  const { items, orderNumber, customerName, rating, comment, approved } = req.body || {};
+  if (!Array.isArray(items) || items.length === 0) {
+    return res.status(400).json({ error: 'items must be a non-empty array of { productId, quantity }.' });
+  }
+  for (const item of items) {
+    if (!isNonEmptyString(item && item.productId)) {
+      return res.status(400).json({ error: 'Each item requires a productId.' });
+    }
+    if (item.quantity !== undefined && (!Number.isInteger(item.quantity) || item.quantity < 1)) {
+      return res.status(400).json({ error: 'quantity must be a positive integer.' });
+    }
+  }
+  if (!isNonEmptyString(customerName)) return res.status(400).json({ error: 'customerName is required.' });
+  if (!Number.isInteger(rating) || rating < 1 || rating > 5) {
+    return res.status(400).json({ error: 'rating must be an integer between 1 and 5.' });
+  }
+  if (!isNonEmptyString(comment)) return res.status(400).json({ error: 'comment is required.' });
+
+  // Multiple products in one submission share a batchId so the homepage's
+  // cross-product feed can render them as a single card; a lone product
+  // needs no grouping.
+  const batchId = items.length > 1 ? crypto.randomUUID() : null;
+
+  try {
+    const reviews = await prisma.$transaction(items.map((item) => prisma.review.create({
+      data: {
+        productId: item.productId,
+        quantity: Number.isInteger(item.quantity) ? item.quantity : 1,
+        batchId,
+        orderNumber: isNonEmptyString(orderNumber) ? orderNumber.trim().toUpperCase() : null,
+        customerName: customerName.trim(),
+        rating,
+        comment: comment.trim(),
+        approved: approved !== false,
+      },
+      include: { product: { select: { name: true, slug: true } } },
+    })));
+    res.status(201).json(reviews);
+  } catch (err) {
+    if (err.code === 'P2003') return res.status(400).json({ error: 'Unknown product.' });
+    console.error(err);
+    res.status(500).json({ error: 'Failed to create review.' });
+  }
+});
+
+router.patch('/reviews/:id', requireAdmin, async (req, res) => {
+  const { productId, orderNumber, customerName, rating, comment, quantity, approved } = req.body || {};
+  const data = {};
+  if (productId !== undefined) {
+    if (!isNonEmptyString(productId)) return res.status(400).json({ error: 'productId must be a non-empty string.' });
+    data.productId = productId;
+  }
+  if (orderNumber !== undefined) {
+    data.orderNumber = isNonEmptyString(orderNumber) ? orderNumber.trim().toUpperCase() : null;
+  }
+  if (customerName !== undefined) {
+    if (!isNonEmptyString(customerName)) return res.status(400).json({ error: 'customerName must be a non-empty string.' });
+    data.customerName = customerName.trim();
+  }
+  if (rating !== undefined) {
+    if (!Number.isInteger(rating) || rating < 1 || rating > 5) {
+      return res.status(400).json({ error: 'rating must be an integer between 1 and 5.' });
+    }
+    data.rating = rating;
+  }
+  if (comment !== undefined) {
+    if (!isNonEmptyString(comment)) return res.status(400).json({ error: 'comment must be a non-empty string.' });
+    data.comment = comment.trim();
+  }
+  if (quantity !== undefined) {
+    if (!Number.isInteger(quantity) || quantity < 1) return res.status(400).json({ error: 'quantity must be a positive integer.' });
+    data.quantity = quantity;
+  }
+  if (approved !== undefined) data.approved = !!approved;
+
+  try {
+    const review = await prisma.review.update({
+      where: { id: req.params.id },
+      data,
+      include: { product: { select: { name: true, slug: true } } },
+    });
+    res.json(review);
+  } catch (err) {
+    if (err.code === 'P2003') return res.status(400).json({ error: 'Unknown product.' });
+    res.status(404).json({ error: 'Review not found.' });
+  }
+});
+
+router.delete('/reviews/:id', requireAdmin, async (req, res) => {
+  try {
+    await prisma.review.delete({ where: { id: req.params.id } });
+    res.json({ ok: true });
+  } catch (err) {
+    res.status(404).json({ error: 'Review not found.' });
   }
 });
 

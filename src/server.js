@@ -10,6 +10,7 @@ const faqsRouter = require('./routes/faqs');
 const settingsRouter = require('./routes/settings');
 const newsletterRouter = require('./routes/newsletter');
 const vouchersRouter = require('./routes/vouchers');
+const reviewsRouter = require('./routes/reviews');
 
 const app = express();
 
@@ -38,6 +39,7 @@ app.use('/api/faqs', faqsRouter);
 app.use('/api/settings', settingsRouter);
 app.use('/api/newsletter', newsletterRouter);
 app.use('/api/vouchers', vouchersRouter);
+app.use('/api/reviews', reviewsRouter);
 
 // ---- Static sites ----
 // HTML/JS/CSS must always revalidate so a deploy is visible on next load

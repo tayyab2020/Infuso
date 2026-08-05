@@ -248,10 +248,21 @@ src="https://www.facebook.com/tr?id=1703900774196311&ev=PageView&noscript=1"
           <div onClick="{{ p.viewProduct }}" class="linkline" style="cursor:pointer; display:inline-block; margin-top:4px; font-family:'Jost'; font-weight:300; font-size:clamp(46px,5vw,80px); letter-spacing:0.08em; color:#f0ebe2;">{{ p.name }}</div>
           <div style="margin-top:10px; font-family:'Cormorant Garamond', serif; font-style:italic; font-size:19px; color:rgba(230,226,218,0.6);">{{ p.tagline }}</div>
           <div style="margin-top:22px; font-family:'Jost'; font-weight:300; font-size:16px; line-height:1.75; color:rgba(230,226,218,0.62);">{{ p.desc }}</div>
-          <div style="margin-top:28px; display:flex; gap:34px;">
-            <div><div style="font-size:11px; letter-spacing:0.22em; color:{{ p.accent }};">TOP</div><div style="margin-top:6px; font-family:'Cormorant Garamond',serif; font-size:19px;">{{ p.top }}</div></div>
-            <div><div style="font-size:11px; letter-spacing:0.22em; color:{{ p.accent }};">HEART</div><div style="margin-top:6px; font-family:'Cormorant Garamond',serif; font-size:19px;">{{ p.heart }}</div></div>
-            <div><div style="font-size:11px; letter-spacing:0.22em; color:{{ p.accent }};">BASE</div><div style="margin-top:6px; font-family:'Cormorant Garamond',serif; font-size:19px;">{{ p.base }}</div></div>
+          <div style="margin-top:26px; display:flex; flex-wrap:wrap; gap:36px;">
+            <div>
+              <div style="font-size:11px; letter-spacing:0.22em; color:{{ p.accent }};">TOP</div>
+              <div style="margin-top:8px; font-family:'Jost'; font-weight:300; font-size:15px; color:rgba(230,226,218,0.85);">{{ p.topJoined }}</div>
+            </div>
+            <sc-if value="{{ p.heartJoined }}">
+              <div>
+                <div style="font-size:11px; letter-spacing:0.22em; color:{{ p.accent }};">HEART</div>
+                <div style="margin-top:8px; font-family:'Jost'; font-weight:300; font-size:15px; color:rgba(230,226,218,0.85);">{{ p.heartJoined }}</div>
+              </div>
+            </sc-if>
+            <div>
+              <div style="font-size:11px; letter-spacing:0.22em; color:{{ p.accent }};">BASE</div>
+              <div style="margin-top:8px; font-family:'Jost'; font-weight:300; font-size:15px; color:rgba(230,226,218,0.85);">{{ p.baseJoined }}</div>
+            </div>
           </div>
           <div style="margin-top:22px; font-size:12px; letter-spacing:0.16em; color:rgba(230,226,218,0.5);">{{ p.inspired }}</div>
           <div style="margin-top:34px; display:flex; align-items:center; flex-wrap:wrap; gap:20px;">
@@ -395,8 +406,30 @@ src="https://www.facebook.com/tr?id=1703900774196311&ev=PageView&noscript=1"
       </div>
     </section>
 
+    <!-- ══ REVIEWS ══ -->
+    <section data-role="sec" data-idx="9" data-label="Reviews" style="position:relative; padding:5vw 8vw 10vw 8vw; background:#0a0c0f; overflow:hidden;">
+      <div class="reveal" data-reveal style="max-width:800px; margin:0 auto; text-align:center;">
+        <div style="font-family:'Jost'; font-size:12px; letter-spacing:0.4em; color:rgba(219,204,166,0.7);">WHAT CUSTOMERS SAY</div>
+        <div style="margin-top:18px; font-family:'Cormorant Garamond', serif; font-weight:300; font-size:clamp(30px,4vw,50px); color:#f0ebe2;">Reviews</div>
+      </div>
+      <sc-if value="{{ hasLatestReviews }}" hint-placeholder-val="{{ false }}">
+        <div class="reveal" data-reveal style="margin:3vh auto 0; max-width:1200px; display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:24px;">
+          <sc-for list="{{ latestReviewsList }}" as="r" hint-placeholder-count="3">
+            <div style="padding:28px; border:1px solid rgba(240,235,226,0.1); border-radius:10px; background:rgba(255,255,255,0.02);">
+              <div style="font-size:14px; letter-spacing:0.05em; color:rgba(219,204,166,0.85);">{{ r.starsDisplay }}</div>
+              <div style="margin-top:14px; font-size:14px; line-height:1.75; color:rgba(230,226,218,0.8);">"{{ r.comment }}"</div>
+              <div style="margin-top:18px; display:flex; align-items:center; justify-content:space-between; gap:10px;">
+                <div style="font-family:'Jost'; font-size:13px; letter-spacing:0.06em; color:#f0ebe2;">{{ r.customerName }}</div>
+                <div style="font-size:10px; letter-spacing:0.1em; color:rgba(230,226,218,0.4);">{{ r.productName }}</div>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+      </sc-if>
+    </section>
+
     <!-- ══ NEWSLETTER + FOOTER ══ -->
-    <section data-role="sec" data-idx="9" data-label="Contact" style="position:relative; padding:16vh 8vw 56px; background:#08090b; border-top:1px solid rgba(240,235,226,0.1);">
+    <section data-role="sec" data-idx="10" data-label="Contact" style="position:relative; padding:16vh 8vw 56px; background:#08090b; border-top:1px solid rgba(240,235,226,0.1);">
       <div class="reveal" data-reveal style="max-width:760px; margin:0 auto; text-align:center;">
         <div style="font-family:'Jost'; font-size:12px; letter-spacing:0.4em; color:rgba(219,204,166,0.7);">STAY IN THE LIGHT</div>
         <div style="margin-top:20px; font-family:'Cormorant Garamond', serif; font-weight:300; font-size:clamp(28px,3.6vw,46px); color:#f0ebe2;">First access to new compositions.</div>
@@ -573,6 +606,12 @@ src="https://www.facebook.com/tr?id=1703900774196311&ev=PageView&noscript=1"
 const PKR = (n) => 'PKR ' + n.toLocaleString('en-PK');
 const PRICE = 3850;
 const ORIGINAL_PRICE = 4500;
+const STAR_CHARS = '★★★★★☆☆☆☆☆';
+const starsFor = (rating) => STAR_CHARS.slice(5 - rating, 10 - rating);
+
+// "Grapefruit, Bergamot, Ginger" -> [{ name }, ...].
+const noteList = (str) => (str || '').split(/[,·]/).map((s) => s.trim()).filter(Boolean).map((name) => ({ name }));
+
 // Shared with product.dc.html via public/cart.js — single source of truth
 // for cart persistence, voucher validation, and order submission so a
 // checkout bug fix or rule change never has to be made twice.
@@ -585,6 +624,7 @@ class Component extends DCLogic {
     liveProducts: {},
     liveFaqs: [],
     liveSettings: {},
+    latestReviews: [],
     checkoutStep: 'cart', // 'cart' | 'form' | 'placing' | 'done' | 'bankinfo'
     checkoutForm: defaultCheckoutForm(),
     checkoutError: null,
@@ -614,20 +654,20 @@ class Component extends DCLogic {
       { id: 'aether', name: 'AETHER', no: 'No. 01', idx: 2, img: 'products/aether.webp', box: 'products/aether_box.webp', category: 'UNISEX',
         accent: 'rgba(150,220,235,0.85)', bg: 'radial-gradient(120% 90% at 22% 42%, #14262c 0%, #0a0e11 60%, #08090b 100%)',
         heroBg: 'linear-gradient(180deg, #17323a 0%, #08090b 78%)',
-        tagline: 'cold air over stone', top: 'Sea Mineral', heart: 'Iris · Smoke', base: 'Amber Resin',
-        desc: 'Clear and mineral at the first breath, warming through iris and a wisp of smoke, drying to a quiet resin that stays close to the skin.',
+        tagline: 'citrus air over warm stone', top: 'Grapefruit, Bergamot, Ginger', heart: 'Rosemary, Sage, Geranium, Water Notes', base: 'Ambroxan, Amber, Labdanum',
+        desc: 'A bright burst of grapefruit and bergamot sharpened with ginger, easing into an herbal heart of rosemary, sage and geranium lifted by cool water notes, before settling into a warm, mineral base of ambroxan, amber and labdanum.',
         inspired: 'INSPIRED BY L’IMMENSITÉ · LOUIS VUITTON', floatDur: '8s', par: '20px' },
       { id: 'aria', name: 'ARIA', no: 'No. 02', idx: 3, img: 'products/aria.webp', box: 'products/aria_box.webp', category: 'WOMEN',
         accent: 'rgba(195,170,235,0.9)', bg: 'radial-gradient(120% 90% at 78% 42%, #1b1a26 0%, #0d0c12 60%, #08090b 100%)',
         heroBg: 'linear-gradient(180deg, #251f38 0%, #08090b 78%)',
-        tagline: 'light through open air', top: 'Bergamot', heart: 'White Fruit', base: 'Soft Musk',
-        desc: 'A bright, luminous fruit accord suspended over clean musk — airy and effortless, the scent of light moving through an open window.',
+        tagline: 'sicilian light, held in musk', top: 'Sicilian Orange, Calabrian Bergamot, Sicilian Lemon', heart: 'Mediterranean Orchard Fruits', base: 'White Musk, Madagascar Vanilla, Amber',
+        desc: 'Bright Sicilian orange, Calabrian bergamot and lemon open into a sun-ripened Mediterranean fruit heart, settling into a soft, creamy base of white musk, Madagascar vanilla and amber.',
         inspired: 'INSPIRED BY ERBA PURA · XERJOFF', floatDur: '9s', par: '-18px' },
       { id: 'oudor', name: 'OUDOR', no: 'No. 03', idx: 4, img: 'products/oudor.webp', box: 'products/oudor_box.webp', category: 'MEN',
         accent: 'rgba(220,175,120,0.9)', bg: 'radial-gradient(120% 90% at 22% 42%, #241e17 0%, #12100b 60%, #08090b 100%)',
         heroBg: 'linear-gradient(180deg, #342414 0%, #08090b 78%)',
-        tagline: 'warmth after dark', top: 'Saffron', heart: 'Oud · Incense', base: 'Amber · Woods',
-        desc: 'Deep and resinous — saffron over smoked oud and incense, settling into warm amber and woods. The house at its most opulent.',
+        tagline: 'raspberry over molten earth', top: 'Raspberry', heart: 'Birch, Amber, Benzoin', base: 'Guaiac Wood, Vetiver, Cedar, Musk, Moss, Patchouli, Tonka Bean, Vanilla',
+        desc: 'A dark raspberry opening gives way to smoky birch, amber and benzoin, grounded in a dense, earthy base of guaiac wood, vetiver, cedar, musk, moss, patchouli, tonka bean and vanilla — dense, volcanic and long-lasting.',
         inspired: 'INSPIRED BY TERRONI · ORTO PARISI', floatDur: '8.5s', par: '20px' },
     ];
   }
@@ -665,6 +705,10 @@ class Component extends DCLogic {
       top: live.topNote || p.top,
       heart: live.heartNote || p.heart,
       base: live.baseNote || p.base,
+      topList: noteList(live.topNote || p.top),
+      heartList: noteList(live.heartNote || p.heart),
+      baseList: noteList(live.baseNote || p.base),
+      accordLabel: noteList(live.baseNote || p.base).slice(0, 2).map((n) => n.name).join(' & '),
       desc: live.description || p.desc,
       inspired: live.inspiredBy || p.inspired,
       category: live.category || p.category,
@@ -682,14 +726,14 @@ class Component extends DCLogic {
       lineTotal: PKR(cart[p.id] * this.priceFor(p.id)),
       inc: () => this.setQty(p.id, 1), dec: () => this.setQty(p.id, -1),
     }));
-    const sections = ['Hero','House','Aether','Aria','Oudor','Editorial','Film','Set','FAQ','Contact'];
+    const sections = ['Hero','House','Aether','Aria','Oudor','Editorial','Film','Set','FAQ','Reviews','Contact'];
     const editorial = [
       { id: 'aether', name: 'AETHER', no: 'No. 01', accent: 'rgba(150,220,235,0.85)', tall: 'products/aether_dark.webp', wide: 'products/aether_slate.webp',
-        line: 'Cold air over stone.', story: 'Shot on wet slate under a single shaft of light — mineral, cool and clean, the way it opens on skin.', tallOrder: 1, sideOrder: 2 },
+        line: 'Citrus air over warm stone.', story: 'Shot on wet slate under a bright shaft of light — citrus-lit and herbal, warming to amber at the base.', tallOrder: 1, sideOrder: 2 },
       { id: 'aria', name: 'ARIA', no: 'No. 02', accent: 'rgba(195,170,235,0.9)', tall: 'products/aria_hands.webp', wide: 'products/aria_citrus.webp',
         line: 'Light through open air.', story: 'Held in warm daylight beside cut citrus and marble — luminous, weightless, effortlessly bright.', tallOrder: 2, sideOrder: 1 },
       { id: 'oudor', name: 'OUDOR', no: 'No. 03', accent: 'rgba(220,175,120,0.9)', tall: 'products/oudor_wood.webp', wide: 'products/oudor_rocks.webp',
-        line: 'Warmth after dark.', story: 'Laid among agarwood, ember and resin against black stone — deep, smoky and opulent.', tallOrder: 1, sideOrder: 2 },
+        line: 'Raspberry over molten earth.', story: 'Laid among raw amber, ember and volcanic stone — dense, dark and long-lasting.', tallOrder: 1, sideOrder: 2 },
     ].map((e) => {
       const live = this.state.liveProducts[e.id] || {};
       const merged = D.find((p) => p.id === e.id) || {};
@@ -743,7 +787,7 @@ class Component extends DCLogic {
       heroActive: (() => {
         const p = D[this.state.heroSlide] || D[0];
         return {
-          accent: p.accent, noNum: p.no.replace('No. ', ''), note: p.base, name: p.name,
+          accent: p.accent, noNum: p.no.replace('No. ', ''), note: p.accordLabel, name: p.name,
           tagline: p.tagline.charAt(0).toUpperCase() + p.tagline.slice(1) + '.',
           desc: p.desc, categoryLabel: p.categoryLabel,
           price: PKR(this.priceFor(p.id)), priceOld: this.priceOldFor(p.id) != null ? PKR(this.priceOldFor(p.id)) : null,
@@ -769,6 +813,14 @@ class Component extends DCLogic {
           toggle: () => this.toggleFaq(i),
         };
       }),
+
+      hasLatestReviews: this.state.latestReviews.length > 0,
+      latestReviewsList: this.state.latestReviews.map((r) => ({
+        customerName: r.customerName,
+        starsDisplay: starsFor(r.rating),
+        comment: r.comment,
+        productName: r.productName,
+      })),
 
       // Settings-driven content — every value falls back to the site's
       // original hardcoded copy while liveSettings is empty/unresolved.
@@ -822,7 +874,7 @@ class Component extends DCLogic {
         { label: 'Collection', go: () => { this.navTo(2); this.setState({ mobileMenuOpen: false }); } },
         { label: 'Editorial', go: () => { this.navTo(5); this.setState({ mobileMenuOpen: false }); } },
         { label: 'The Set', go: () => { this.navTo(7); this.setState({ mobileMenuOpen: false }); } },
-        { label: 'Film', go: () => { this.navTo(6); this.setState({ mobileMenuOpen: false }); } },
+        { label: 'Reviews', go: () => { this.navTo(9); this.setState({ mobileMenuOpen: false }); } },
       ],
       dots: sections.map((_, i) => ({
         go: () => this.navTo(i),
@@ -832,6 +884,9 @@ class Component extends DCLogic {
 
       products: D.map((p) => ({
         ...p, price: PKR(this.priceFor(p.id)), priceOld: this.priceOldFor(p.id) != null ? PKR(this.priceOldFor(p.id)) : null,
+        topJoined: p.topList.map((n) => n.name).join(' · '),
+        heartJoined: p.heartList.map((n) => n.name).join(' · '),
+        baseJoined: p.baseList.map((n) => n.name).join(' · '),
         copyOrder: p.id === 'aria' ? 2 : 1,
         imgOrder: p.id === 'aria' ? 1 : 2,
         copyJustify: p.id === 'aria' ? 'end' : 'start',
@@ -1083,6 +1138,11 @@ class Component extends DCLogic {
       .then((r) => (r.ok ? r.json() : {}))
       .then((s) => { if (s && Object.keys(s).length) this.setState({ liveSettings: s }); })
       .catch(() => {});
+
+    fetch('/api/reviews/latest?limit=6')
+      .then((r) => (r.ok ? r.json() : []))
+      .then((list) => this.setState({ latestReviews: list }))
+      .catch(() => {});
   }
 
   _hidePageLoader() {
@@ -1193,7 +1253,16 @@ class Component extends DCLogic {
       this._io = new IntersectionObserver((ents) => {
         ents.forEach((en) => { if (en.isIntersecting) { en.target.classList.add('in'); this._maybeCount(en.target); } });
       }, { root: sc, threshold: 0.2 });
-      root.querySelectorAll('[data-reveal]').forEach((el) => this._io.observe(el));
+    }
+    if (this._io) {
+      // Some [data-reveal] elements (e.g. the Reviews cards) only enter the
+      // DOM once an async fetch resolves, after this first scan — re-check
+      // every tick for any not yet observed, cheap once things settle since
+      // the data-reveal-bound marker skips everything already tracked.
+      root.querySelectorAll('[data-reveal]:not([data-reveal-bound])').forEach((el) => {
+        el.setAttribute('data-reveal-bound', '');
+        this._io.observe(el);
+      });
     }
     // Layout metrics (offsetTop/offsetHeight) force a synchronous reflow to
     // read. Reading them fresh every frame for every section/parallax

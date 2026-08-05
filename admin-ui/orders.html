@@ -12,6 +12,9 @@
     <h1>Orders</h1>
     <p class="page-sub">All customer orders, newest first.</p>
     <div class="card">
+      <div class="btn-row" style="margin-bottom:16px;">
+        <button type="button" class="btn accent" id="add-order-btn">+ Create order</button>
+      </div>
       <div class="table-scroll">
       <table>
         <thead>
@@ -32,6 +35,39 @@
         </tbody>
       </table>
       </div>
+    </div>
+
+    <div class="card" id="add-order-panel" style="display:none;">
+      <h2>Create order</h2>
+      <p class="page-sub">For orders taken over WhatsApp/phone or otherwise placed on a customer's behalf. Email and phone are both optional — fill in whichever you have.</p>
+      <form id="add-order-form">
+        <div class="form-grid">
+          <div class="field"><label>Customer name</label><input id="new-order-customerName" required /></div>
+          <div class="field"><label>Email (optional)</label><input id="new-order-customerEmail" type="email" /></div>
+          <div class="field"><label>Phone (optional)</label><input id="new-order-phone" /></div>
+          <div class="field">
+            <label>Status</label>
+            <select id="new-order-status"></select>
+          </div>
+          <div class="field span-2"><label>Address</label><input id="new-order-address" required /></div>
+          <div class="field"><label>City</label><input id="new-order-city" required /></div>
+          <div class="field">
+            <label>Payment method</label>
+            <select id="new-order-paymentMethod">
+              <option value="COD">Cash on Delivery</option>
+              <option value="BANK_TRANSFER">Bank Transfer</option>
+            </select>
+          </div>
+          <div class="field span-2"><label>Notes (optional)</label><textarea id="new-order-notes"></textarea></div>
+        </div>
+        <h3 style="margin-top:18px;">Items</h3>
+        <div id="add-order-rows" class="form-grid cols-1"></div>
+        <div class="btn-row" style="margin-top:14px;">
+          <button type="submit" class="btn accent" id="add-order-save-btn">Create order</button>
+          <span id="add-order-cancel" class="hint" style="cursor:pointer;">Cancel</span>
+        </div>
+        <div id="add-order-error" class="error-msg" style="display:none;"></div>
+      </form>
     </div>
 
     <div class="card" id="items-edit-panel" style="display:none;">

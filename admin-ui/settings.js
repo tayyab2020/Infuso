@@ -7,6 +7,7 @@ const SETTINGS_TEXT_FIELDS = [
   'editorialEyebrow', 'editorialHeading', 'editorialBody',
   'discoveryEyebrow', 'discoveryHeading', 'discoveryBody',
   'faqEyebrow', 'faqHeading', 'footerCopyright',
+  'deliveryInfo', 'returnPolicy',
 ];
 const SETTINGS_IMAGE_FIELDS = ['logoUrl', 'bankQrImageUrl'];
 

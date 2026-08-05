@@ -67,10 +67,20 @@
           <div class="form-grid">
             <div class="field"><label>Tagline</label><input id="edit-tagline" placeholder="e.g. cold air over stone" /></div>
             <div class="field"><label>Inspired by</label><input id="edit-inspiredBy" placeholder="e.g. INSPIRED BY L'IMMENSITÉ · LOUIS VUITTON" /></div>
-            <div class="field"><label>Top note</label><input id="edit-topNote" /></div>
-            <div class="field"><label>Heart note</label><input id="edit-heartNote" /></div>
-            <div class="field"><label>Base note</label><input id="edit-baseNote" /></div>
+            <div class="field"><label>Top notes</label><input id="edit-topNote" placeholder="Comma-separated, e.g. Grapefruit, Bergamot, Ginger" /></div>
+            <div class="field"><label>Heart notes</label><input id="edit-heartNote" placeholder="Comma-separated, e.g. Rosemary, Sage, Geranium" /></div>
+            <div class="field"><label>Base notes</label><input id="edit-baseNote" placeholder="Comma-separated, e.g. Ambroxan, Amber, Labdanum" /></div>
             <div class="field span-2"><label>Description</label><textarea id="edit-description"></textarea></div>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>Product page details</legend>
+          <div class="form-grid">
+            <div class="field"><label>Concentration</label><input id="edit-concentration" placeholder="e.g. Eau de Parfum · 20% oil concentration" /></div>
+            <div class="field"><label>Longevity</label><input id="edit-longevity" placeholder="e.g. 8–10 hours" /></div>
+            <div class="field span-2"><label>How to use</label><textarea id="edit-howToUse"></textarea></div>
+            <div class="field span-2"><label>Ingredients</label><textarea id="edit-ingredients"></textarea></div>
           </div>
         </fieldset>
 
@@ -84,6 +94,7 @@
 
         <fieldset>
           <legend>Images</legend>
+          <p class="hint" style="margin-top:-4px;">Pick which image shows as the default image on the storefront product page.</p>
           <div class="form-grid">
             <div class="field">
               <label>Bottle image (hero &amp; collection)</label>
@@ -91,6 +102,7 @@
                 <img class="thumb-lg" id="preview-imageUrl" src="" />
                 <input type="file" accept="image/png,image/jpeg,image/webp" data-target="imageUrl" />
               </div>
+              <label style="display:flex; align-items:center; gap:8px; margin-top:8px; text-transform:none; font-weight:400; font-size:13px;"><input type="radio" name="featured-image" value="imageUrl" id="featured-imageUrl" style="width:auto;" /> Featured on product page</label>
             </div>
             <div class="field">
               <label>Hover image (discovery set)</label>
@@ -98,6 +110,7 @@
                 <img class="thumb-lg" id="preview-hoverImageUrl" src="" />
                 <input type="file" accept="image/png,image/jpeg,image/webp" data-target="hoverImageUrl" />
               </div>
+              <label style="display:flex; align-items:center; gap:8px; margin-top:8px; text-transform:none; font-weight:400; font-size:13px;"><input type="radio" name="featured-image" value="hoverImageUrl" id="featured-hoverImageUrl" style="width:auto;" /> Featured on product page</label>
             </div>
             <div class="field">
               <label>Editorial tall image</label>
@@ -105,6 +118,7 @@
                 <img class="thumb-lg" id="preview-editorialTallImageUrl" src="" />
                 <input type="file" accept="image/png,image/jpeg,image/webp" data-target="editorialTallImageUrl" />
               </div>
+              <label style="display:flex; align-items:center; gap:8px; margin-top:8px; text-transform:none; font-weight:400; font-size:13px;"><input type="radio" name="featured-image" value="editorialTallImageUrl" id="featured-editorialTallImageUrl" style="width:auto;" /> Featured on product page</label>
             </div>
             <div class="field">
               <label>Editorial wide image</label>
@@ -112,6 +126,7 @@
                 <img class="thumb-lg" id="preview-editorialWideImageUrl" src="" />
                 <input type="file" accept="image/png,image/jpeg,image/webp" data-target="editorialWideImageUrl" />
               </div>
+              <label style="display:flex; align-items:center; gap:8px; margin-top:8px; text-transform:none; font-weight:400; font-size:13px;"><input type="radio" name="featured-image" value="editorialWideImageUrl" id="featured-editorialWideImageUrl" style="width:auto;" /> Featured on product page</label>
             </div>
           </div>
         </fieldset>

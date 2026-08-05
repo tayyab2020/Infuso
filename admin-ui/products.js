@@ -2,6 +2,7 @@ const IMAGE_FIELDS = ['imageUrl', 'hoverImageUrl', 'editorialTallImageUrl', 'edi
 const TEXT_FIELDS = [
   'name', 'tagline', 'inspiredBy', 'topNote', 'heartNote', 'baseNote',
   'description', 'editorialLine', 'editorialStory',
+  'concentration', 'longevity', 'howToUse', 'ingredients',
 ];
 
 let productsById = {};
@@ -89,6 +90,7 @@ function resetPanelFields() {
     img.style.visibility = 'hidden';
     document.querySelector(`input[type="file"][data-target="${field}"]`).value = '';
   });
+  document.getElementById('featured-imageUrl').checked = true;
   document.getElementById('edit-error').style.display = 'none';
   document.getElementById('edit-success').style.display = 'none';
 }
@@ -135,6 +137,7 @@ function openEditPanel(p) {
     img.style.visibility = p[field] ? 'visible' : 'hidden';
     document.querySelector(`input[type="file"][data-target="${field}"]`).value = '';
   });
+  document.getElementById('featured-' + (p.featuredImage || 'imageUrl')).checked = true;
 
   document.getElementById('edit-error').style.display = 'none';
   document.getElementById('edit-success').style.display = 'none';
@@ -180,6 +183,7 @@ document.getElementById('edit-form').addEventListener('submit', async (e) => {
       stock: Number(document.getElementById('edit-stock').value),
       active: document.getElementById('edit-active').checked,
       category: document.getElementById('edit-category').value,
+      featuredImage: document.querySelector('input[name="featured-image"]:checked').value,
     };
     const priceOldRaw = document.getElementById('edit-priceOld').value;
     payload.priceOld = priceOldRaw === '' ? null : Number(priceOldRaw);
