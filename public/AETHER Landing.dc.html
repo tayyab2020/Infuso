@@ -65,10 +65,19 @@ src="https://www.facebook.com/tr?id=1703900774196311&ev=PageView&noscript=1"
       padding:4px 12px; background:rgba(8,9,11,0.45); backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px);
     }
 
+    .reviews-track { scrollbar-width:none; }
+    .reviews-track::-webkit-scrollbar { display:none; }
+    .reviews-card { flex:0 0 calc(33.333% - 16px); scroll-snap-align:start; }
+    .reviews-arrow { transition:background .2s ease; }
+    .reviews-arrow:hover { background:rgba(8,9,11,0.9) !important; }
+
     /* ── Responsive ── */
     .nav-hamburger { flex-shrink:0; }
     .boxes-arrows { display:none; }
     @media (max-width:880px) {
+      .reviews-card { flex:0 0 100% !important; }
+      .reviews-wrap { gap:8px !important; }
+      .reviews-arrow { flex-basis:34px !important; width:34px !important; height:34px !important; }
       .nav-links { display:none !important; }
       .nav-hamburger { display:flex !important; }
       .progress-dots { display:none !important; }
@@ -413,17 +422,29 @@ src="https://www.facebook.com/tr?id=1703900774196311&ev=PageView&noscript=1"
         <div style="margin-top:18px; font-family:'Cormorant Garamond', serif; font-weight:300; font-size:clamp(30px,4vw,50px); color:#f0ebe2;">Reviews</div>
       </div>
       <sc-if value="{{ hasLatestReviews }}" hint-placeholder-val="{{ false }}">
-        <div class="reveal" data-reveal style="margin:3vh auto 0; max-width:1200px; display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:24px;">
-          <sc-for list="{{ latestReviewsList }}" as="r" hint-placeholder-count="3">
-            <div style="padding:28px; border:1px solid rgba(240,235,226,0.1); border-radius:10px; background:rgba(255,255,255,0.02);">
-              <div style="font-size:14px; letter-spacing:0.05em; color:rgba(219,204,166,0.85);">{{ r.starsDisplay }}</div>
-              <div style="margin-top:14px; font-size:14px; line-height:1.75; color:rgba(230,226,218,0.8);">"{{ r.comment }}"</div>
-              <div style="margin-top:18px; display:flex; align-items:center; justify-content:space-between; gap:10px;">
-                <div style="font-family:'Jost'; font-size:13px; letter-spacing:0.06em; color:#f0ebe2;">{{ r.customerName }}</div>
-                <div style="font-size:10px; letter-spacing:0.1em; color:rgba(230,226,218,0.4);">{{ r.productName }}</div>
-              </div>
+        <div class="reveal reviews-wrap" data-reveal style="margin:3vh auto 0; max-width:1200px; display:flex; align-items:center; gap:16px;">
+          <sc-if value="{{ reviewsShowArrows }}">
+            <div onClick="{{ scrollReviewsPrev }}" class="reviews-arrow" style="cursor:pointer; flex:0 0 44px; width:44px; height:44px; border-radius:50%; background:rgba(8,9,11,0.65); backdrop-filter:blur(4px); border:1px solid rgba(240,235,226,0.3); display:flex; align-items:center; justify-content:center;">
+              <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="#f0ebe2" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="12,4 6,10 12,16"></polyline></svg>
             </div>
-          </sc-for>
+          </sc-if>
+          <div class="reviews-track" ref="{{ setReviewsTrack }}" style="flex:1; min-width:0; display:flex; overflow-x:auto; overflow-y:hidden; scroll-snap-type:x mandatory; -webkit-overflow-scrolling:touch; gap:24px; padding:4px 2px;">
+            <sc-for list="{{ latestReviewsList }}" as="r" hint-placeholder-count="3">
+              <div class="reviews-card" style="padding:28px; border:1px solid rgba(240,235,226,0.1); border-radius:10px; background:rgba(255,255,255,0.02);">
+                <div style="font-size:14px; letter-spacing:0.05em; color:rgba(219,204,166,0.85);">{{ r.starsDisplay }}</div>
+                <div style="margin-top:14px; font-size:14px; line-height:1.75; color:rgba(230,226,218,0.8);">"{{ r.comment }}"</div>
+                <div style="margin-top:18px; display:flex; align-items:center; justify-content:space-between; gap:10px;">
+                  <div style="font-family:'Jost'; font-size:13px; letter-spacing:0.06em; color:#f0ebe2;">{{ r.customerName }}</div>
+                  <div style="font-size:10px; letter-spacing:0.1em; color:rgba(230,226,218,0.4);">{{ r.productName }}</div>
+                </div>
+              </div>
+            </sc-for>
+          </div>
+          <sc-if value="{{ reviewsShowArrows }}">
+            <div onClick="{{ scrollReviewsNext }}" class="reviews-arrow" style="cursor:pointer; flex:0 0 44px; width:44px; height:44px; border-radius:50%; background:rgba(8,9,11,0.65); backdrop-filter:blur(4px); border:1px solid rgba(240,235,226,0.3); display:flex; align-items:center; justify-content:center;">
+              <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="#f0ebe2" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="8,4 14,10 8,16"></polyline></svg>
+            </div>
+          </sc-if>
         </div>
       </sc-if>
     </section>
@@ -815,6 +836,10 @@ class Component extends DCLogic {
       }),
 
       hasLatestReviews: this.state.latestReviews.length > 0,
+      reviewsShowArrows: this.state.latestReviews.length > 1,
+      setReviewsTrack: (el) => { if (el) this.reviewsTrack = el; },
+      scrollReviewsPrev: () => { this._scrollReviews(-1); this._startReviewsTimer(); },
+      scrollReviewsNext: () => { this._scrollReviews(1); this._startReviewsTimer(); },
       latestReviewsList: this.state.latestReviews.map((r) => ({
         customerName: r.customerName,
         starsDisplay: starsFor(r.rating),
@@ -1115,6 +1140,7 @@ class Component extends DCLogic {
     const loop = () => { try { this._tick(); } catch (e) {} this._raf = requestAnimationFrame(loop); };
     this._raf = requestAnimationFrame(loop);
     this._startHeroTimer();
+    this._startReviewsTimer();
     this._preloadCriticalAssets();
 
     // Live product content from the backend (price/stock/images/copy) — falls
@@ -1139,7 +1165,7 @@ class Component extends DCLogic {
       .then((s) => { if (s && Object.keys(s).length) this.setState({ liveSettings: s }); })
       .catch(() => {});
 
-    fetch('/api/reviews/latest?limit=6')
+    fetch('/api/reviews/latest?limit=12')
       .then((r) => (r.ok ? r.json() : []))
       .then((list) => this.setState({ latestReviews: list }))
       .catch(() => {});
@@ -1205,6 +1231,33 @@ class Component extends DCLogic {
   goHeroSlide(i) {
     this._changeHeroSlide(i);
     this._startHeroTimer();
+  }
+
+  _startReviewsTimer() {
+    if (this._reviewsTimer) clearInterval(this._reviewsTimer);
+    this._reviewsTimer = setInterval(() => this._scrollReviews(1), 4500);
+  }
+
+  // Advances the reviews carousel by one card (dir: 1 = next/left, -1 = prev)
+  // and loops back around at either end — the track element only exists once
+  // the async reviews fetch resolves, so this is a harmless no-op until then.
+  // Clamping to maxScroll (rather than jumping straight back to 0) matters
+  // whenever there's only one card's worth of overflow — e.g. 4 cards on a
+  // 3-per-view desktop layout — otherwise a single step already overshoots
+  // past the "near the end" threshold and resets to 0 before ever visibly
+  // moving, since it started at 0 and "wraps" right back to 0.
+  _scrollReviews(dir) {
+    const el = this.reviewsTrack; if (!el) return;
+    const card = el.firstElementChild; if (!card) return;
+    const step = card.getBoundingClientRect().width + 24;
+    const maxScroll = el.scrollWidth - el.clientWidth;
+    if (maxScroll <= 1) return;
+    const atEnd = el.scrollLeft >= maxScroll - 4;
+    const atStart = el.scrollLeft <= 4;
+    let next;
+    if (dir > 0) next = atEnd ? 0 : Math.min(el.scrollLeft + step, maxScroll);
+    else next = atStart ? maxScroll : Math.max(el.scrollLeft - step, 0);
+    el.scrollTo({ left: next, behavior: 'smooth' });
   }
 
   _rootEl() {
@@ -1478,6 +1531,7 @@ class Component extends DCLogic {
   componentWillUnmount() {
     if (this._raf) cancelAnimationFrame(this._raf);
     if (this._heroTimer) clearInterval(this._heroTimer);
+    if (this._reviewsTimer) clearInterval(this._reviewsTimer);
     if (this._heroFadeTimeout) clearTimeout(this._heroFadeTimeout);
     if (this._loaderFallback) clearTimeout(this._loaderFallback);
     if (this._onMove) document.removeEventListener('mousemove', this._onMove);

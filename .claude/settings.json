@@ -380,7 +380,12 @@
       "Bash(curl -s -b \"C:/Users/hp/AppData/Local/Temp/infuso_cookies3.txt\" -X POST http://localhost:3001/api/admin/orders -H \"Content-Type: application/json\" -d '{\"customerName\":\"x\",\"address\":\"x\",\"city\":\"y\",\"items\":[]}' --max-time 5)",
       "Bash(curl -s -b \"C:/Users/hp/AppData/Local/Temp/infuso_cookies3.txt\" http://localhost:3001/api/admin/orders --max-time 5)",
       "Bash(curl -s -b \"C:/Users/hp/AppData/Local/Temp/infuso_cookies3.txt\" -X DELETE http://localhost:3001/api/admin/orders/cmsgniuh60003vqbokwc6fz1j --max-time 5)",
-      "Bash(curl -s -b \"C:/Users/hp/AppData/Local/Temp/infuso_cookies3.txt\" -X DELETE http://localhost:3001/api/admin/orders/cmsgnii7t0000vqbos2cphe9r --max-time 5)"
+      "Bash(curl -s -b \"C:/Users/hp/AppData/Local/Temp/infuso_cookies3.txt\" -X DELETE http://localhost:3001/api/admin/orders/cmsgnii7t0000vqbos2cphe9r --max-time 5)",
+      "Bash(cd \"/c/Users/hp/Downloads/Claude Design v2 \\(Infuso\\)\" && ls -la | head -30 && echo \"---\" && find . -maxdepth 2 -iname \"*deploy*\" -o -iname \"ecosystem*\" -o -iname \"*.pm2*\" 2>/dev/null | grep -v node_modules)",
+      "Bash(cd \"/c/Users/hp/Downloads/Claude Design v2 \\(Infuso\\)\" && cat deploy.sh && echo \"---README---\" && cat README.md)",
+      "Bash(node --check \"C:/Users/hp/AppData/Local/Temp/home_check4.js\")",
+      "Bash(node --check \"C:/Users/hp/AppData/Local/Temp/home_check5.js\")",
+      "Bash(node --check \"C:/Users/hp/AppData/Local/Temp/home_check6.js\")"
     ],
     "additionalDirectories": [
       "C:\\Users\\hp\\.ssh",
