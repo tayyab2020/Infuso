@@ -57,9 +57,10 @@ src="https://www.facebook.com/tr?id=1703900774196311&ev=PageView&noscript=1"
     .pd-thumbs { display:flex; gap:12px; margin-top:30px; }
     .pd-main-imgwrap { position:relative; height:64vh; min-height:420px; border-radius:12px; overflow:hidden; background:radial-gradient(120% 90% at 50% 40%, rgba(255,255,255,0.04) 0%, transparent 70%); }
     .pd-main-img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; display:block; }
+    .collect-card-container { grid-template-columns:repeat(auto-fit,minmax(320px,0fr)); }
     .collect-card { display:block; border:1px solid rgba(240,235,226,0.12); border-radius:14px; overflow:hidden; background:rgba(255,255,255,0.02); transition:border-color .35s ease, transform .35s ease; }
     .collect-card:hover { border-color:rgba(150,220,235,0.4); transform:translateY(-4px); }
-    .collect-imgwrap { position:relative; height:400px; overflow:hidden; }
+    .collect-imgwrap { position:relative; height:200px; overflow:hidden; }
     .collect-img-main, .collect-img-hover { position:absolute; inset:0; width:100%; height:100%; object-fit:contain; padding:5% 12%; display:block; transition:opacity 1.1s ease, transform 6s cubic-bezier(.16,1,.3,1); }
     .collect-img-hover { opacity:0; }
     .collect-card:hover .collect-img-main { opacity:0; transform:scale(1.05); }
@@ -69,6 +70,7 @@ src="https://www.facebook.com/tr?id=1703900774196311&ev=PageView&noscript=1"
       .pd-nav-label { display:none !important; }
       .pd-main-imgwrap { height:44vh !important; min-height:320px !important; }
       .collect-imgwrap { height:300px !important; }
+      .collect-card-container { grid-template-columns:repeat(auto-fit,minmax(320px,1fr)); }
     }
   </style>
 </helmet>
@@ -231,7 +233,7 @@ src="https://www.facebook.com/tr?id=1703900774196311&ev=PageView&noscript=1"
     </sc-if>
   </div>
 
-  <div style="max-width:1200px; margin:0 auto; padding:150px 6vw 100px;">
+  <div style="margin:0 auto; padding:150px 6vw 100px;">
     <div class="pd-grid">
       <div>
         <div class="pd-main-imgwrap">
@@ -358,7 +360,7 @@ src="https://www.facebook.com/tr?id=1703900774196311&ev=PageView&noscript=1"
 
     <div style="margin-top:14vh; border-top:1px solid rgba(240,235,226,0.1); padding-top:6vh;">
       <div style="font-family:'Jost'; font-size:14px; letter-spacing:0.32em; color:rgba(150,220,235,0.7);">EXPLORE THE COLLECTION</div>
-      <div style="margin-top:4vh; display:grid; grid-template-columns:repeat(auto-fit,minmax(320px,1fr)); gap:3vw;">
+      <div class="collect-card-container" style="display:grid; margin-top:4vh; gap:3vw;">
         <sc-for list="{{ otherProducts }}" as="o" hint-placeholder-count="2">
           <a href="{{ o.href }}" class="collect-card">
             <div class="collect-imgwrap" style="background:{{ o.bg }};">
