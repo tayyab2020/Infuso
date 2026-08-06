@@ -36,6 +36,7 @@ src="https://www.facebook.com/tr?id=1703900774196311&ev=PageView&noscript=1"
     * { box-sizing:border-box; }
     body { font-family:'Jost', system-ui, sans-serif; color:#f0ebe2; }
     a { text-decoration:none; }
+    @keyframes loaderPulse { 0%,100% { opacity:.32; transform:scale(.94); } 50% { opacity:1; transform:scale(1); } }
     .btn { transition:background .35s, color .35s, border-color .35s, transform .2s; }
     .btn:hover { transform:translateY(-2px); }
     .linkline { position:relative; }
@@ -75,6 +76,13 @@ src="https://www.facebook.com/tr?id=1703900774196311&ev=PageView&noscript=1"
   </style>
 </helmet>
 <div style="position:relative; min-height:100vh; background:#08090b;">
+
+  <!-- page loader — stays up until live product/review data has loaded, so
+       visitors never see hardcoded fallback price/image/notes flash into the
+       real ones a moment later. -->
+  <div style="position:fixed; inset:0; z-index:300; background:#08090b; display:flex; align-items:center; justify-content:center; opacity:{{ pageLoadingOpacity }}; pointer-events:{{ pageLoadingPointer }}; transition:opacity 0.5s ease;">
+    <img src="{{ logoSrc }}" alt="INFUSO" style="height:40px; width:auto; animation:loaderPulse 1.6s ease-in-out infinite;" />
+  </div>
 
   <div style="position:fixed; top:0; left:0; right:0; z-index:60; display:flex; align-items:center; justify-content:space-between; padding:18px 44px; background:rgba(8,9,11,0.85); backdrop-filter:blur(18px) saturate(1.2); -webkit-backdrop-filter:blur(18px) saturate(1.2); border-bottom:1px solid rgba(240,235,226,0.12);">
     <a href="/">
@@ -501,6 +509,7 @@ class Component extends DCLogic {
     slug: 'aether',
     liveProducts: {},
     liveSettings: {},
+    pageLoading: true,
     cart: loadStoredCart(),
     justAdded: false,
     activeImageIdx: null, // null = not yet chosen by user; falls back to the product's admin-set featuredImage
@@ -543,14 +552,23 @@ class Component extends DCLogic {
         for (const p of list) map[p.slug] = p;
         this.setState({ liveProducts: map });
         const current = map[slug];
-        if (current) this.loadReviews(current.id);
+        return current ? this.loadReviews(current.id) : null;
       })
-      .catch(() => {});
+      .catch(() => {})
+      .then(() => this._hidePageLoader());
 
     fetch('/api/settings')
       .then((r) => (r.ok ? r.json() : {}))
       .then((s) => { if (s && Object.keys(s).length) this.setState({ liveSettings: s }); })
       .catch(() => {});
+
+    // Safety net: never let the loader get stuck on a stalled/failed request.
+    this._loaderFallback = setTimeout(() => this._hidePageLoader(), 6000);
+  }
+
+  _hidePageLoader() {
+    if (this._loaderFallback) { clearTimeout(this._loaderFallback); this._loaderFallback = null; }
+    if (this.state.pageLoading) this.setState({ pageLoading: false });
   }
 
   priceFor(id) {
@@ -630,7 +648,7 @@ class Component extends DCLogic {
     this.setState((s) => ({ detailOpen: s.detailOpen === key ? null : key }));
   }
   loadReviews(productId) {
-    fetch('/api/reviews/product/' + productId)
+    return fetch('/api/reviews/product/' + productId)
       .then((r) => (r.ok ? r.json() : { average: null, count: 0, reviews: [] }))
       .then((data) => this.setState({ reviewsData: data }))
       .catch(() => {});
@@ -753,6 +771,8 @@ class Component extends DCLogic {
     }));
 
     return {
+      pageLoadingOpacity: this.state.pageLoading ? 1 : 0,
+      pageLoadingPointer: this.state.pageLoading ? 'auto' : 'none',
       logoSrc: S.logoUrl || '/products/infuso-logo.png',
       waLink: 'https://wa.me/' + (S.whatsappNumber || '923316841320'),
       waDisplay: '+' + (S.whatsappNumber || '923316841320').replace(/(\d{2})(\d{3})(\d{7})/, '$1 $2 $3'),
