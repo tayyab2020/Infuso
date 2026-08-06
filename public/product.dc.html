@@ -66,10 +66,21 @@ src="https://www.facebook.com/tr?id=1703900774196311&ev=PageView&noscript=1"
     .collect-img-hover { opacity:0; }
     .collect-card:hover .collect-img-main { opacity:0; transform:scale(1.05); }
     .collect-card:hover .collect-img-hover { opacity:1; transform:scale(1.14); }
-    .nav-with-campaign { top:35px !important; }
+    /* --campaign-bar-offset is set in JS from the bar's real measured
+       height (getBoundingClientRect) plus a fixed gap — not a guessed pixel
+       number — so this stays correct no matter how long the banner text is
+       or how many lines it wraps to at a given viewport width. The literal
+       fallback only matters for the first paint tick before JS measures. */
+    .nav-with-campaign { top:var(--campaign-bar-offset, 38px) !important; }
     .campaign-bar-html p { margin:0; display:inline; }
     .campaign-bar-html .ql-font-serif { font-family:Georgia,'Times New Roman',serif; }
     .campaign-bar-html .ql-font-monospace { font-family:Monaco,'Courier New',monospace; }
+    /* The nav shifts down by the campaign bar's height via .nav-with-campaign,
+       but the page content below it doesn't know that on its own — without
+       this, its fixed padding-top stays put and the nav (now lower) overlaps
+       the title/badges underneath it. Same --campaign-bar-offset as above,
+       stacked on top of the normal (no-banner) content padding. */
+    .pd-content-shift { padding-top:calc(150px + var(--campaign-bar-offset, 38px)) !important; }
     @media (max-width:880px) {
       .pd-grid { grid-template-columns:1fr !important; gap:8vw !important; }
       .pd-nav-label { display:none !important; }
@@ -77,7 +88,6 @@ src="https://www.facebook.com/tr?id=1703900774196311&ev=PageView&noscript=1"
       .collect-imgwrap { height:300px !important; }
       .collect-card-container { grid-template-columns:repeat(auto-fit,minmax(320px,1fr)); }
       .campaign-bar { font-size:10px !important; line-height:1.6 !important; padding:7px 12px !important; }
-      .nav-with-campaign { top:47px !important; }
     }
   </style>
 </helmet>
@@ -254,7 +264,7 @@ src="https://www.facebook.com/tr?id=1703900774196311&ev=PageView&noscript=1"
     </sc-if>
   </div>
 
-  <div style="margin:0 auto; padding:150px 6vw 100px;">
+  <div class="{{ contentTopClass }}" style="margin:0 auto; padding:150px 6vw 100px;">
     <div class="pd-grid">
       <div>
         <div class="pd-main-imgwrap">
@@ -621,10 +631,18 @@ class Component extends DCLogic {
     this._loaderFallback = setTimeout(() => this._hidePageLoader(), 6000);
 
     this._syncCampaignBannerHtml();
+    this._syncCampaignBarLayout();
+    this._onCampaignBarResize = () => this._syncCampaignBarLayout();
+    window.addEventListener('resize', this._onCampaignBarResize);
   }
 
   componentDidUpdate() {
     this._syncCampaignBannerHtml();
+    this._syncCampaignBarLayout();
+  }
+
+  componentWillUnmount() {
+    if (this._onCampaignBarResize) window.removeEventListener('resize', this._onCampaignBarResize);
   }
 
   // The campaign banner's rich-text override is pre-sanitized HTML that this
@@ -639,6 +657,22 @@ class Component extends DCLogic {
       el.innerHTML = html;
       el.setAttribute('data-html-sig', html);
     }
+  }
+
+  // Measures the campaign bar's real rendered height — however many lines it
+  // wraps to at the current viewport width, whatever font-size the current
+  // breakpoint uses — instead of a hardcoded pixel guess that breaks the
+  // moment the banner text or screen width changes. Drives --campaign-bar-
+  // offset, which .nav-with-campaign and .pd-content-shift both read.
+  _syncCampaignBarLayout() {
+    const bar = document.querySelector('.campaign-bar');
+    // No gap here on purpose: the bar and nav share the same near-black
+    // background, so any dead space between them reads as a stray seam, not
+    // spacing — nav starts exactly where the bar's box ends. The "more
+    // breathing room" asks were actually about content *below* the nav
+    // (.pd-content-shift / .product-section's own padding), not this seam.
+    const offset = bar ? Math.round(bar.getBoundingClientRect().height) : 0;
+    document.documentElement.style.setProperty('--campaign-bar-offset', offset + 'px');
   }
 
   _hidePageLoader() {
@@ -910,6 +944,7 @@ class Component extends DCLogic {
       campaignBannerLine,
       campaignColor,
       navTopClass: (campaignBannerHasOverride || campaignBannerLine) ? 'nav-with-campaign' : '',
+      contentTopClass: (campaignBannerHasOverride || campaignBannerLine) ? 'pd-content-shift' : '',
       logoSrc: S.logoUrl || '/products/infuso-logo.png',
       waLink: 'https://wa.me/' + (S.whatsappNumber || '923316841320'),
       waDisplay: '+' + (S.whatsappNumber || '923316841320').replace(/(\d{2})(\d{3})(\d{7})/, '$1 $2 $3'),

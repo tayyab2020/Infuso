@@ -74,7 +74,30 @@ src="https://www.facebook.com/tr?id=1703900774196311&ev=PageView&noscript=1"
     /* ── Responsive ── */
     .nav-hamburger { flex-shrink:0; }
     .boxes-arrows { display:none; }
-    .nav-with-campaign { top:35px !important; }
+    /* --campaign-bar-offset is set in JS from the bar's real measured
+       height (getBoundingClientRect) — not a guessed pixel number — so this
+       stays correct no matter how long the banner text is or how many lines
+       it wraps to at a given viewport width. The literal fallback only
+       matters for the first paint tick before JS measures. */
+    .nav-with-campaign { top:var(--campaign-bar-offset, 38px) !important; }
+    /* Every section (hero, product panels, discovery set, etc.) lives inside
+       this one scroller and none of them individually reserve space for the
+       nav — they just rely on it floating over generous natural whitespace.
+       Pushing the whole scroller down by the same measured offset clears the
+       nav for all of them at once, instead of patching each section. */
+    .scroller-with-campaign { top:var(--campaign-bar-offset, 38px) !important; bottom:0 !important; }
+    /* Hero's text block is bottom-anchored (grows upward as content grows),
+       so the campaign badge/timer additions push its top edge closer to the
+       nav — pulling the anchor down compensates for the extra height on
+       desktop as well, not just the mobile breakpoints below. */
+    .hero-text-block.hero-has-timer { bottom:150px !important; }
+    /* .progress-dots is fixed at right:34px, independent of page content.
+       .product-imgwrap centers the bottle within its own grid column, and
+       at plenty of ordinary desktop widths that centered bottle reaches far
+       enough right to sit under the dots. Reserving space on that side keeps
+       the centered bottle clear of them without touching the dots' own
+       position (only hidden below 880px, where this isn't needed anyway). */
+    .product-imgwrap { padding-right:70px; }
     .campaign-bar-html p { margin:0; display:inline; }
     .campaign-bar-html .ql-font-serif { font-family:Georgia,'Times New Roman',serif; }
     .campaign-bar-html .ql-font-monospace { font-family:Monaco,'Courier New',monospace; }
@@ -86,10 +109,9 @@ src="https://www.facebook.com/tr?id=1703900774196311&ev=PageView&noscript=1"
       .nav-hamburger { display:flex !important; }
       .progress-dots { display:none !important; }
       .campaign-bar { font-size:10px !important; line-height:1.6 !important; padding:7px 12px !important; }
-      .nav-with-campaign { top:47px !important; }
 
       .product-section { grid-template-columns:1fr !important; padding-top:70px !important; padding-bottom:90px !important; }
-      .product-imgwrap { height:46vh !important; min-height:320px !important; order:1 !important; }
+      .product-imgwrap { height:46vh !important; min-height:320px !important; order:1 !important; padding-right:0 !important; }
       .product-bottle-img { height:40vh !important; max-height:340px !important; }
       .product-section > .reveal { order:2 !important; justify-self:stretch !important; max-width:none !important; }
 
@@ -113,20 +135,41 @@ src="https://www.facebook.com/tr?id=1703900774196311&ev=PageView&noscript=1"
       .discovery-section { padding: 9vh 6vw !important; }
       .faq-section { padding: 9vh 8vw !important; }
     }
+    /* Tablet range: the bottle sits dead-center by default (left:50%), which
+       is fine on wide desktops where there's room on both sides, but on a
+       ~700-1024px viewport the text block (left-anchored, up to 440px wide)
+       runs straight into it. Anchoring the bottle to the right instead of
+       center keeps a clear column for the text at these widths. */
+    @media (min-width:681px) and (max-width:1024px) {
+      .hero-bottle-img { height:52vh !important; max-height:440px !important; }
+      .hero-text-block { max-width:435px !important; left: 55px !important; }
+      .hero-bottle-wrap { left:70% !important; }
+    }
+    @media (min-width:681px) and (max-width:780px) {
+      .hero-text-block { max-width: 340px !important; }
+    }
     @media (max-width:680px) {
       [data-nav="1"] { padding-left:15px !important; padding-right:15px !important; }
 
-      .hero-bottle-wrap { top:34% !important; }
+      .hero-bottle-wrap { top:34% !important; left: 50% !important; }
       .hero-bottle-img { height:36vh !important; max-height:310px !important; }
-      .hero-text-block { left:6vw !important; right:6vw !important; max-width:none !important; bottom:140px !important; }
-      .hero-text-block > div:nth-child(2) { font-size:clamp(30px,9vw,40px) !important; margin-top:8px !important; }
-      .hero-text-block > div:nth-child(3) { font-size:13px !important; line-height:1.6 !important; margin-top:12px !important; }
-      .hero-text-block > div:nth-child(4) { margin-top:18px !important; gap:14px !important; }
+      .hero-text-block { left:15px !important; right:15px !important; max-width:none !important; bottom:140px !important; min-height: auto !important; }
+      .hero-title-row { font-size:clamp(30px,9vw,40px) !important; margin-top:8px !important; }
+      .hero-desc-row { font-size:13px !important; line-height:1.6 !important; margin-top:12px !important; }
+      .hero-timer-row { margin-top:12px !important; padding:7px 14px !important; gap:9px !important; }
+      .hero-price-row { margin-top:18px !important; gap:14px !important; }
       .hero-add-btn { width:54px !important; height:54px !important; padding:0 !important; border-radius:50% !important; flex-shrink:0; }
       .hero-add-icon { display:block !important; }
       .hero-add-label { display:none !important; }
       .film-scrollcue { left:6vw !important; right:auto !important; bottom:70px !important; transform:none !important; opacity:1 !important; animation:filmcuepulse 2.2s ease-in-out infinite !important; }
       .film-scrollcue > div:first-child { font-size:13px !important; }
+      /* The countdown row (.hero-timer-row) adds a whole extra line to the
+         bottom-anchored text block, so it reaches further up than the layout
+         above assumes — pull the bottle back further and tighten the text
+         block's own bottom offset whenever that row is actually present. */
+      .hero-has-timer .hero-bottle-wrap { top:26% !important; }
+      .hero-has-timer .hero-bottle-img { height:28vh !important; max-height:240px !important; }
+      .hero-text-block.hero-has-timer { bottom:118px !important; }
     }
     @media (max-width:680px) and (max-height:720px) {
       /* Shorter phones (e.g. iPhone SE): pull the bigger/lower bottle back in so
@@ -134,6 +177,9 @@ src="https://www.facebook.com/tr?id=1703900774196311&ev=PageView&noscript=1"
       .hero-bottle-wrap { top:30% !important; }
       .hero-bottle-img { height:30vh !important; max-height:260px !important; }
       .hero-text-block { bottom:128px !important; }
+      .hero-has-timer .hero-bottle-wrap { top:20% !important; }
+      .hero-has-timer .hero-bottle-img { height:22vh !important; max-height:190px !important; }
+      .hero-text-block.hero-has-timer { bottom:106px !important; }
     }
     @media (max-width:420px) {
       .add-set-btn { padding:16px 28px !important; font-size:11px !important; letter-spacing:0.18em !important; }
@@ -198,37 +244,37 @@ src="https://www.facebook.com/tr?id=1703900774196311&ev=PageView&noscript=1"
     <svg width="30" height="30" viewBox="0 0 24 24" fill="#fff"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.29.173-1.414-.074-.124-.272-.198-.57-.347z"></path><path d="M12.001 2.003c-5.514 0-9.997 4.483-9.997 9.997 0 1.763.464 3.483 1.346 4.997L2 22l5.11-1.34a9.96 9.96 0 0 0 4.891 1.247h.004c5.514 0 9.997-4.483 9.997-9.997 0-2.67-1.04-5.18-2.928-7.07a9.935 9.935 0 0 0-7.073-2.837zm0 18.174h-.003a8.19 8.19 0 0 1-4.166-1.14l-.299-.177-3.033.795.81-2.955-.195-.304a8.166 8.166 0 0 1-1.253-4.4c0-4.518 3.678-8.196 8.202-8.196a8.14 8.14 0 0 1 5.798 2.404 8.14 8.14 0 0 1 2.399 5.795c-.001 4.518-3.679 8.197-8.26 8.197z"></path></svg>
   </a>
 
-  <div class="scroller" ref="{{ setScroller }}" style="position:absolute; inset:0; overflow-y:scroll; scroll-behavior:smooth;">
+  <div class="scroller {{ scrollerTopClass }}" ref="{{ setScroller }}" style="position:absolute; inset:0; overflow-y:scroll; scroll-behavior:smooth;">
 
     <!-- ══ HERO ══ -->
-    <section data-role="sec" data-idx="0" data-label="Hero" style="position:relative; height:100vh; overflow:hidden; background:#08090b;">
+    <section data-role="sec" data-idx="0" data-label="Hero" class="{{ heroActive.heroTextClass }}" style="position:relative; height:100vh; overflow:hidden; background:#08090b;">
       <sc-for list="{{ heroSlides }}" as="h" hint-placeholder-count="3">
         <div style="position:absolute; inset:0; background:{{ h.bg }}; opacity:{{ h.opacity }}; transition:opacity 900ms ease;"></div>
       </sc-for>
       <sc-for list="{{ heroSlides }}" as="h" hint-placeholder-count="3">
         <div style="position:absolute; inset:0; opacity:{{ h.opacity }}; pointer-events:{{ h.pointer }}; transition:opacity 900ms ease;">
-          <div data-fx="hero-bottle" class="hero-bottle-wrap" style="position:absolute; left:50%; top:50%; transform:translate(-50%,-50%) translate(calc(var(--mx)*28px), calc(var(--my)*20px));">
+          <div data-fx="hero-bottle" class="hero-bottle-wrap" style="position:absolute; left:65%; top:50%; transform:translate(-50%,-50%) translate(calc(var(--mx)*28px), calc(var(--my)*20px));">
             <div style="animation:floaty 7s ease-in-out infinite;">
-              <img src="{{ h.img }}" alt="{{ h.name }} bottle" class="hero-bottle-img" style="height:70vh; max-height:640px; display:block;" />
+              <img src="{{ h.img }}" alt="{{ h.name }} bottle" class="hero-bottle-img" style="height:65vh; max-height:640px; display:block;" />
             </div>
             <div style="position:absolute; left:0; right:0; top:100%; transform:scaleY(-1); opacity:0.16; filter:blur(4px); -webkit-mask-image:linear-gradient(to bottom, rgba(0,0,0,0.8), rgba(0,0,0,0) 55%); mask-image:linear-gradient(to bottom, rgba(0,0,0,0.8), rgba(0,0,0,0) 55%);">
-              <img src="{{ h.img }}" alt="" class="hero-bottle-img" style="height:70vh; max-height:640px; display:block;" />
+              <img src="{{ h.img }}" alt="" class="hero-bottle-img" style="height:65vh; max-height:640px; display:block;" />
             </div>
           </div>
         </div>
       </sc-for>
-      <div class="hero-text-block" style="position:absolute; left:6vw; bottom:200px; max-width:440px; opacity:{{ heroTextOpacity }}; transition:opacity 320ms ease;">
-        <div style="display:flex; align-items:center; gap:14px; flex-wrap:wrap;">
+      <div class="hero-text-block {{ heroActive.heroTextClass }}" style="position:absolute; left:100px; bottom:150px; min-height: 52vh; max-width:515px; opacity:{{ heroTextOpacity }}; transition:opacity 320ms ease;">
+        <div class="hero-badges-row" style="display:flex; align-items:center; gap:14px; flex-wrap:wrap;">
           <div style="font-family:'Jost'; font-size:12px; letter-spacing:0.22em; color:{{ heroActive.accent }};">{{ heroActive.noNum }} — {{ heroActive.note }}</div>
           <div class="category-badge">{{ heroActive.categoryLabel }}</div>
           <sc-if value="{{ heroActive.hasCampaignBadge }}">
             <div style="font-size:10px; letter-spacing:0.16em; white-space:nowrap; color:{{ heroActive.campaignColor }}; border:1px solid {{ heroActive.campaignColor }}; background:{{ heroActive.campaignBadgeBg }}; border-radius:20px; padding:4px 12px;">{{ heroActive.campaignLabel }}</div>
           </sc-if>
         </div>
-        <div onClick="{{ heroActive.viewProduct }}" class="linkline" style="cursor:pointer; display:inline-block; margin-top:10px; font-family:'Jost'; font-weight:300; font-size:clamp(38px,4.2vw,58px); letter-spacing:0.06em; color:#f0ebe2;">{{ heroActive.name }}</div>
-        <div style="margin-top:16px; font-family:'Jost'; font-weight:300; font-size:15px; line-height:1.7;"><span style="color:{{ heroActive.accent }};">{{ heroActive.tagline }}</span> <span style="color:rgba(240,235,226,0.85);">{{ heroActive.desc }}</span></div>
+        <div onClick="{{ heroActive.viewProduct }}" class="linkline hero-title-row" style="cursor:pointer; display:inline-block; margin-top:10px; font-family:'Jost'; font-weight:300; font-size:clamp(38px,4.2vw,58px); letter-spacing:0.06em; color:#f0ebe2;">{{ heroActive.name }}</div>
+        <div class="hero-desc-row" style="margin-top:16px; font-family:'Jost'; font-weight:300; font-size:15px; line-height:1.7;"><span style="color:{{ heroActive.accent }};">{{ heroActive.tagline }}</span> <span style="color:rgba(240,235,226,0.85);">{{ heroActive.desc }}</span></div>
         <sc-if value="{{ heroActive.hasCampaignTimer }}">
-          <div style="margin-top:18px; display:inline-flex; align-items:center; gap:12px; padding:10px 18px; border-radius:10px; border:1px solid {{ heroActive.campaignColor }};">
+          <div class="hero-timer-row" style="margin-top:18px; display:inline-flex; align-items:center; gap:12px; padding:10px 18px; border-radius:10px; border:1px solid {{ heroActive.campaignColor }};">
             <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="{{ heroActive.campaignColor }}" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><circle cx="12" cy="13" r="8"></circle><path d="M12 9v4l3 2"></path><path d="M9 2h6"></path></svg>
             <div>
               <div style="font-size:9.5px; letter-spacing:0.16em; color:{{ heroActive.campaignColor }};">SALE ENDS IN</div>
@@ -236,7 +282,7 @@ src="https://www.facebook.com/tr?id=1703900774196311&ev=PageView&noscript=1"
             </div>
           </div>
         </sc-if>
-        <div style="margin-top:26px; display:flex; align-items:center; flex-wrap:wrap; gap:20px;">
+        <div class="hero-price-row" style="margin-top:26px; display:flex; align-items:center; flex-wrap:wrap; gap:20px;">
           <div style="display:flex; align-items:baseline; gap:12px;">
             <sc-if value="{{ heroActive.priceOld }}">
               <span style="font-family:'Jost'; font-weight:300; font-size:14px; text-decoration:line-through; color:rgba(230,226,218,0.4);">{{ heroActive.priceOld }}</span>
@@ -277,7 +323,7 @@ src="https://www.facebook.com/tr?id=1703900774196311&ev=PageView&noscript=1"
 
     <!-- ══ PRODUCT SECTIONS ══ -->
     <sc-for list="{{ products }}" as="p" hint-placeholder-count="3">
-      <section data-role="sec" data-idx="{{ p.idx }}" data-label="{{ p.name }}" class="product-section" style="position:relative; min-height:100vh; display:grid; grid-template-columns:1fr 1fr; align-items:center; overflow:hidden; background:{{ p.bg }};">
+      <section data-role="sec" data-idx="{{ p.idx }}" data-label="{{ p.name }}" class="product-section" style="position:relative; min-height:100vh; display:grid; grid-template-columns:1fr 1fr; align-items:center; overflow:hidden; background:{{ p.bg }}; padding: 10vh 0;">
         <div class="reveal" data-reveal style="order:{{ p.copyOrder }}; padding:0 6vw; max-width:700px; justify-self:{{ p.copyJustify }}; position:relative; z-index:2;">
           <div style="display:flex; align-items:center; gap:14px; flex-wrap:wrap;">
             <div style="font-family:'Cormorant Garamond', serif; font-style:italic; font-size:20px; color:{{ p.accent }};">{{ p.no }}</div>
@@ -329,7 +375,7 @@ src="https://www.facebook.com/tr?id=1703900774196311&ev=PageView&noscript=1"
           </div>
           <div style="margin-top:12px; font-size:11px; letter-spacing:0.14em; color:rgba(230,226,218,0.4);">60 ml · eau de parfum</div>
         </div>
-        <div class="product-imgwrap" style="order:{{ p.imgOrder }}; position:relative; height:100vh; display:flex; align-items:center; justify-content:center;">
+        <div class="product-imgwrap" style="order:{{ p.imgOrder }}; position:relative; height:100vh; display:flex; align-items:center; justify-content:center; margin-bottom: 2vh;">
           <div data-fx="par-bottle" style="position:relative;">
             <div style="animation:floaty2 {{ p.floatDur }} ease-in-out infinite; transform:translate(calc(var(--mx)*{{ p.par }}), calc(var(--my)*14px));">
               <img src="{{ p.img }}" alt="{{ p.name }}" class="product-bottle-img" style="height:66vh; max-height:600px; display:block;" />
@@ -890,6 +936,7 @@ class Component extends DCLogic {
       campaignBannerLine,
       campaignColor,
       navTopClass: campaignBarShow ? 'nav-with-campaign' : '',
+      scrollerTopClass: campaignBarShow ? 'scroller-with-campaign' : '',
       setRoot: (el) => { if (el) this.root = el; },
       setScroller: (el) => { if (el) this.scroller = el; },
       // Deliberately does NOT set el.src here — the pre-rendered frame images
@@ -940,6 +987,7 @@ class Component extends DCLogic {
           campaignColor,
           hasCampaignTimer: campaignRunning && !!campaignCountdown,
           campaignCountdown,
+          heroTextClass: (campaignRunning && !!campaignCountdown) ? 'hero-has-timer' : '',
         };
       })(),
       heroTextOpacity: this.state.heroTextOn ? 1 : 0,
@@ -1310,10 +1358,14 @@ class Component extends DCLogic {
       .catch(() => {});
 
     this._syncCampaignBannerHtml();
+    this._syncCampaignBarLayout();
+    this._onCampaignBarResize = () => this._syncCampaignBarLayout();
+    window.addEventListener('resize', this._onCampaignBarResize);
   }
 
   componentDidUpdate() {
     this._syncCampaignBannerHtml();
+    this._syncCampaignBarLayout();
   }
 
   // The campaign banner's rich-text override is pre-sanitized HTML that this
@@ -1328,6 +1380,22 @@ class Component extends DCLogic {
       el.innerHTML = html;
       el.setAttribute('data-html-sig', html);
     }
+  }
+
+  // Measures the campaign bar's real rendered height — however many lines it
+  // wraps to at the current viewport width, whatever font-size the current
+  // breakpoint uses — instead of a hardcoded pixel guess that breaks the
+  // moment the banner text or screen width changes. Drives --campaign-bar-
+  // offset, which .nav-with-campaign reads.
+  _syncCampaignBarLayout() {
+    const bar = document.querySelector('.campaign-bar');
+    // No gap here on purpose: the bar and nav share the same near-black
+    // background, so any dead space between them reads as a stray seam, not
+    // spacing — nav starts exactly where the bar's box ends. The "more
+    // breathing room" asks were actually about content *below* the nav
+    // (.product-section's own padding), not this seam.
+    const offset = bar ? Math.round(bar.getBoundingClientRect().height) : 0;
+    document.documentElement.style.setProperty('--campaign-bar-offset', offset + 'px');
   }
 
   _hidePageLoader() {
@@ -1696,6 +1764,7 @@ class Component extends DCLogic {
     if (this._loaderFallback) clearTimeout(this._loaderFallback);
     if (this._onMove) document.removeEventListener('mousemove', this._onMove);
     if (this._onGeomResize) window.removeEventListener('resize', this._onGeomResize);
+    if (this._onCampaignBarResize) window.removeEventListener('resize', this._onCampaignBarResize);
     if (this._io) this._io.disconnect();
   }
 }
