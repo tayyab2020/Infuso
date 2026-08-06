@@ -323,7 +323,7 @@ src="https://www.facebook.com/tr?id=1703900774196311&ev=PageView&noscript=1"
 
     <!-- ══ PRODUCT SECTIONS ══ -->
     <sc-for list="{{ products }}" as="p" hint-placeholder-count="3">
-      <section data-role="sec" data-idx="{{ p.idx }}" data-label="{{ p.name }}" class="product-section" style="position:relative; min-height:100vh; display:grid; grid-template-columns:1fr 1fr; align-items:center; overflow:hidden; background:{{ p.bg }}; padding: 10vh 0;">
+      <section data-role="sec" data-idx="{{ p.idx }}" data-label="{{ p.name }}" class="product-section" style="position:relative; min-height:100vh; display:grid; grid-template-columns:1fr 1fr; align-items:center; overflow:hidden; background:{{ p.bg }}; padding: 20px 0;">
         <div class="reveal" data-reveal style="order:{{ p.copyOrder }}; padding:0 6vw; max-width:700px; justify-self:{{ p.copyJustify }}; position:relative; z-index:2;">
           <div style="display:flex; align-items:center; gap:14px; flex-wrap:wrap;">
             <div style="font-family:'Cormorant Garamond', serif; font-style:italic; font-size:20px; color:{{ p.accent }};">{{ p.no }}</div>
