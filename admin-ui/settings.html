@@ -6,6 +6,7 @@
 <title>INFUSO Admin · Settings</title>
 <link rel="icon" type="image/png" href="/products/favicon.png">
 <link rel="stylesheet" href="admin.css">
+<link rel="stylesheet" href="vendor/quill/quill.snow.css">
 </head>
 <body>
   <div class="admin-main">
@@ -28,9 +29,46 @@
         </fieldset>
 
         <fieldset>
+          <legend>Sales campaign</legend>
+          <div class="form-grid">
+            <div class="field span-2">
+              <label style="display:flex; align-items:center; gap:8px; text-transform:none; font-weight:400; font-size:13px;"><input type="checkbox" id="s-campaignActive" style="width:auto;" /> Campaign active (shows the announcement bar + badges site-wide)</label>
+            </div>
+            <div class="field"><label>Campaign label</label><input id="s-campaignLabel" placeholder="AZADI SALE" /></div>
+            <div class="field"><label>Theme color</label><input id="s-campaignThemeColor" type="color" style="height:42px; padding:4px;" /></div>
+            <div class="field"><label>Price label</label><input id="s-campaignPriceLabel" placeholder="AZADI PRICE" /></div>
+            <div class="field"><label>Campaign ends at</label><input id="s-campaignEndsAt" type="datetime-local" /></div>
+            <div class="field span-2">
+              <label>Banner content (optional override)</label>
+              <div class="rte">
+                <div id="rte-color-bar" class="ql-formats rte-color-bar">
+                  <label class="rte-color" title="Text color">
+                    <span class="rte-color-swatch" id="rte-color-swatch">A</span>
+                    <input type="color" id="rte-color-input" value="#4ade80" />
+                  </label>
+                  <label class="rte-color" title="Highlight color">
+                    <span class="rte-color-swatch rte-color-swatch-bg" id="rte-bgcolor-swatch">▧</span>
+                    <input type="color" id="rte-bgcolor-input" value="#000000" />
+                  </label>
+                  <button type="button" class="rte-btn" id="rte-bgcolor-clear" title="Remove highlight from selection">No fill</button>
+                </div>
+                <div id="s-campaignBannerContent-quill" data-placeholder="AZADI SALE — FLAT 14% OFF SITEWIDE · CODE AZADI14 · ENDS 14 AUGUST MIDNIGHT"></div>
+              </div>
+              <p class="hint">Leave blank to auto-build the banner from the label and end date above. Select text and use the toolbar (bold, italic, underline, strikethrough, clear) and the two color swatches to style it exactly as it should appear — shown verbatim on the storefront.</p>
+            </div>
+            <div class="field span-2 hint">Shows an announcement bar above the nav on every page, a "{{campaignLabel}}" badge and countdown next to each product's category badge, and a "{{campaignPriceLabel}}" label beside any product already showing a discounted price. This is purely a marketing layer — it doesn't change any actual prices, which are still set per-product.</div>
+          </div>
+        </fieldset>
+
+        <fieldset>
           <legend>Checkout</legend>
           <div class="form-grid">
             <div class="field"><label>Delivery charge (PKR)</label><input id="s-deliveryCharge" type="number" min="0" placeholder="280" /></div>
+            <div class="field">
+              <label>Low stock badge threshold</label>
+              <input id="s-lowStockThreshold" type="number" min="0" placeholder="5" />
+              <p class="hint">Product pages show "Only N left in stock!" when stock is at or below this. Leave blank to turn the badge off site-wide.</p>
+            </div>
           </div>
         </fieldset>
 
@@ -119,6 +157,7 @@
     </form>
   </div>
 
+  <script src="vendor/quill/quill.js"></script>
   <script src="admin.js"></script>
   <script src="settings.js"></script>
 </body>

@@ -1,6 +1,7 @@
 const express = require('express');
 const crypto = require('crypto');
 const bcrypt = require('bcryptjs');
+const sanitizeHtml = require('sanitize-html');
 const prisma = require('../db');
 const requireAdmin = require('../middleware/requireAdmin');
 const upload = require('../middleware/upload');
@@ -344,6 +345,8 @@ router.post('/products', requireAdmin, async (req, res) => {
   if (req.body.featuredImage !== undefined && !FEATURED_IMAGE_VALUES.includes(req.body.featuredImage)) {
     return res.status(400).json({ error: `featuredImage must be one of: ${FEATURED_IMAGE_VALUES.join(', ')}` });
   }
+  const saleEndsAt = optionalDate(req.body.saleEndsAt);
+  if (Number.isNaN(saleEndsAt)) return res.status(400).json({ error: 'saleEndsAt must be a valid date/time or empty.' });
 
   const data = {
     slug: slug.trim(),
@@ -354,6 +357,7 @@ router.post('/products', requireAdmin, async (req, res) => {
     active: active !== false,
     category: category || 'UNISEX',
     featuredImage: req.body.featuredImage || 'imageUrl',
+    saleEndsAt: saleEndsAt || null,
   };
   for (const key of PRODUCT_TEXT_FIELDS) {
     const v = optionalText(req.body[key]);
@@ -407,6 +411,11 @@ router.put('/products/:id', requireAdmin, async (req, res) => {
       return res.status(400).json({ error: `featuredImage must be one of: ${FEATURED_IMAGE_VALUES.join(', ')}` });
     }
     data.featuredImage = req.body.featuredImage;
+  }
+  if (req.body.saleEndsAt !== undefined) {
+    const saleEndsAt = optionalDate(req.body.saleEndsAt);
+    if (Number.isNaN(saleEndsAt)) return res.status(400).json({ error: 'saleEndsAt must be a valid date/time or empty.' });
+    data.saleEndsAt = saleEndsAt;
   }
 
   for (const key of [...PRODUCT_TEXT_FIELDS, ...PRODUCT_IMAGE_FIELDS]) {
@@ -503,7 +512,43 @@ const SETTINGS_FIELDS = [
   'discoveryEyebrow', 'discoveryHeading', 'discoveryBody',
   'faqEyebrow', 'faqHeading', 'footerCopyright',
   'deliveryInfo', 'returnPolicy',
+  'campaignLabel', 'campaignPriceLabel', 'campaignThemeColor',
 ];
+
+// The campaign banner is the one settings field rendered as raw HTML on the
+// public storefront (so admins can color/bold individual words), so it goes
+// through an allowlist sanitizer rather than the plain-text handling every
+// other field gets — everything outside this allowlist is stripped, not
+// escaped, since the goal is safe HTML, not a visible tag soup.
+const CAMPAIGN_BANNER_COLOR_PATTERNS = [/^#[0-9a-fA-F]{3,8}$/, /^rgb\(\s*\d{1,3}\s*,\s*\d{1,3}\s*,\s*\d{1,3}\s*\)$/];
+// Quill doesn't always wrap color/highlight in a dedicated <span> — when a
+// run of text already has another format (e.g. bold), it puts the style
+// attribute directly on that tag instead (<strong style="color: ...">,
+// <u style="background-color: ...">), confirmed against Quill's actual
+// output. So every formatting tag needs the same style allowlist, not just span.
+const CAMPAIGN_BANNER_STYLABLE_TAGS = ['b', 'strong', 'i', 'em', 'u', 's', 'strike', 'span'];
+const CAMPAIGN_BANNER_STYLE_RULES = {
+  color: CAMPAIGN_BANNER_COLOR_PATTERNS,
+  'background-color': CAMPAIGN_BANNER_COLOR_PATTERNS,
+  'font-weight': [/^bold$/, /^[1-9]00$/],
+  'font-style': [/^italic$/],
+  'text-decoration': [/^(underline|line-through)(\sline-through|\sunderline)?$/],
+};
+// The font-family picker applies as a class, not inline style (Quill's
+// default font whitelist is just these two — sans-serif is the unset
+// default) — confirmed against Quill's actual output, same as the styles above.
+const CAMPAIGN_BANNER_FONT_CLASSES = ['ql-font-serif', 'ql-font-monospace'];
+const CAMPAIGN_BANNER_SANITIZE_OPTIONS = {
+  // The admin editor is Quill, which always wraps its content in <p> — this
+  // allowlist matches its real output (verified directly, not assumed).
+  // Quill's own HTML is trusted for editing convenience only, not security:
+  // this sanitizer is what actually keeps the public storefront safe.
+  allowedTags: ['p', ...CAMPAIGN_BANNER_STYLABLE_TAGS, 'br'],
+  allowedAttributes: Object.fromEntries(CAMPAIGN_BANNER_STYLABLE_TAGS.map((tag) => [tag, ['style', 'class']])),
+  allowedStyles: Object.fromEntries(CAMPAIGN_BANNER_STYLABLE_TAGS.map((tag) => [tag, CAMPAIGN_BANNER_STYLE_RULES])),
+  allowedClasses: Object.fromEntries(CAMPAIGN_BANNER_STYLABLE_TAGS.map((tag) => [tag, CAMPAIGN_BANNER_FONT_CLASSES])),
+  disallowedTagsMode: 'discard',
+};
 
 router.get('/settings', requireAdmin, async (req, res) => {
   const settings = await prisma.siteSettings.upsert({
@@ -526,6 +571,24 @@ router.put('/settings', requireAdmin, async (req, res) => {
       return res.status(400).json({ error: 'deliveryCharge must be a non-negative integer.' });
     }
     data.deliveryCharge = dc === null || dc === '' ? null : dc;
+  }
+  if (req.body.lowStockThreshold !== undefined) {
+    const lst = req.body.lowStockThreshold;
+    if (lst !== null && lst !== '' && (!Number.isInteger(lst) || lst < 0)) {
+      return res.status(400).json({ error: 'lowStockThreshold must be a non-negative integer.' });
+    }
+    data.lowStockThreshold = lst === null || lst === '' ? null : lst;
+  }
+  if (req.body.campaignBannerContent !== undefined) {
+    const raw = req.body.campaignBannerContent;
+    const cleaned = typeof raw === 'string' ? sanitizeHtml(raw, CAMPAIGN_BANNER_SANITIZE_OPTIONS).trim() : '';
+    data.campaignBannerContent = cleaned || null;
+  }
+  if (req.body.campaignActive !== undefined) data.campaignActive = !!req.body.campaignActive;
+  if (req.body.campaignEndsAt !== undefined) {
+    const campaignEndsAt = optionalDate(req.body.campaignEndsAt);
+    if (Number.isNaN(campaignEndsAt)) return res.status(400).json({ error: 'campaignEndsAt must be a valid date/time or empty.' });
+    data.campaignEndsAt = campaignEndsAt;
   }
   const settings = await prisma.siteSettings.upsert({
     where: { id: 'singleton' },

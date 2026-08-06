@@ -5,6 +5,13 @@ const TEXT_FIELDS = [
   'concentration', 'longevity', 'howToUse', 'ingredients',
 ];
 
+function toDateTimeLocalValue(d) {
+  if (!d) return '';
+  const dt = new Date(d);
+  const pad = (n) => String(n).padStart(2, '0');
+  return `${dt.getFullYear()}-${pad(dt.getMonth() + 1)}-${pad(dt.getDate())}T${pad(dt.getHours())}:${pad(dt.getMinutes())}`;
+}
+
 let productsById = {};
 let pendingUploads = {};
 let currentMode = null; // 'create' | 'edit'
@@ -78,6 +85,7 @@ function resetPanelFields() {
   document.getElementById('edit-name').value = '';
   document.getElementById('edit-price').value = '';
   document.getElementById('edit-priceOld').value = '';
+  document.getElementById('edit-saleEndsAt').value = '';
   document.getElementById('edit-stock').value = 100;
   document.getElementById('edit-category').value = 'UNISEX';
   document.getElementById('edit-active').checked = true;
@@ -118,6 +126,7 @@ function openEditPanel(p) {
   document.getElementById('edit-name').value = p.name || '';
   document.getElementById('edit-price').value = p.price;
   document.getElementById('edit-priceOld').value = p.priceOld != null ? p.priceOld : '';
+  document.getElementById('edit-saleEndsAt').value = toDateTimeLocalValue(p.saleEndsAt);
   document.getElementById('edit-stock').value = p.stock;
   document.getElementById('edit-category').value = p.category || 'UNISEX';
   document.getElementById('edit-active').checked = !!p.active;
@@ -187,6 +196,8 @@ document.getElementById('edit-form').addEventListener('submit', async (e) => {
     };
     const priceOldRaw = document.getElementById('edit-priceOld').value;
     payload.priceOld = priceOldRaw === '' ? null : Number(priceOldRaw);
+    const saleEndsAtRaw = document.getElementById('edit-saleEndsAt').value;
+    payload.saleEndsAt = saleEndsAtRaw === '' ? null : new Date(saleEndsAtRaw).toISOString();
 
     TEXT_FIELDS.filter((f) => f !== 'name').forEach((field) => {
       payload[field] = document.getElementById('edit-' + field).value;

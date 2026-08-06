@@ -166,3 +166,34 @@ fieldset legend { font-size: 12.5px; font-weight: 600; letter-spacing: 0.03em; c
 }
 
 .table-scroll { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
+/* ---- Rich text editor (campaign banner content, Quill) ---- */
+.rte { border-radius: 6px; }
+.rte .ql-toolbar.ql-snow { background: #f8f9fb; border-color: #d5d8dd; border-radius: 6px 6px 0 0; display: flex; align-items: center; flex-wrap: wrap; }
+/* Quill's own CSS sizes container/editor at height:100% of their parent,
+   which only resolves against a parent with an explicit height — inside this
+   auto-height form layout that collapses to 0, leaving the border sitting
+   right under the toolbar while the actual text renders outside it. Setting
+   a real height here (via min/max + scroll) breaks that chain. */
+.rte .ql-container.ql-snow { border-color: #d5d8dd; border-radius: 0 0 6px 6px; height: auto; }
+.rte .ql-editor {
+  height: auto; min-height: 90px; max-height: 240px; overflow-y: auto;
+  font-size: 13px; font-family: inherit;
+}
+.rte .ql-editor.ql-blank::before { color: #9aa0a8; font-style: normal; }
+.rte-color-bar { display: inline-flex; align-items: center; gap: 6px; }
+.rte-color { display: inline-flex; align-items: center; cursor: pointer; position: relative; }
+.rte-color-swatch {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 24px; height: 24px; border-radius: 5px; font-size: 11px; font-weight: 700;
+  border: 1px solid #d5d8dd; background: #4ade80; color: #08090b;
+}
+.rte-color-swatch-bg { background: #000; color: #fff; }
+.rte-color input[type="color"] {
+  position: absolute; inset: 0; opacity: 0; width: 24px; height: 24px; padding: 0; border: none; cursor: pointer;
+}
+.rte-btn {
+  font: inherit; font-size: 12px; padding: 5px 9px; border-radius: 5px;
+  border: 1px solid #d5d8dd; background: #fff; color: var(--text); cursor: pointer;
+}
+.rte-btn:hover { background: #f0f1f3; }

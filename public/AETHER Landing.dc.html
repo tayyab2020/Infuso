@@ -74,6 +74,10 @@ src="https://www.facebook.com/tr?id=1703900774196311&ev=PageView&noscript=1"
     /* ── Responsive ── */
     .nav-hamburger { flex-shrink:0; }
     .boxes-arrows { display:none; }
+    .nav-with-campaign { top:35px !important; }
+    .campaign-bar-html p { margin:0; display:inline; }
+    .campaign-bar-html .ql-font-serif { font-family:Georgia,'Times New Roman',serif; }
+    .campaign-bar-html .ql-font-monospace { font-family:Monaco,'Courier New',monospace; }
     @media (max-width:880px) {
       .reviews-card { flex:0 0 100% !important; }
       .reviews-wrap { gap:8px !important; }
@@ -81,6 +85,8 @@ src="https://www.facebook.com/tr?id=1703900774196311&ev=PageView&noscript=1"
       .nav-links { display:none !important; }
       .nav-hamburger { display:flex !important; }
       .progress-dots { display:none !important; }
+      .campaign-bar { font-size:10px !important; line-height:1.6 !important; padding:7px 12px !important; }
+      .nav-with-campaign { top:47px !important; }
 
       .product-section { grid-template-columns:1fr !important; padding-top:70px !important; padding-bottom:90px !important; }
       .product-imgwrap { height:46vh !important; min-height:320px !important; order:1 !important; }
@@ -141,8 +147,16 @@ src="https://www.facebook.com/tr?id=1703900774196311&ev=PageView&noscript=1"
     <img src="{{ logoSrc }}" alt="INFUSO" style="height:40px; width:auto; animation:loaderPulse 1.6s ease-in-out infinite;" />
   </div>
 
+  <!-- campaign bar -->
+  <sc-if value="{{ campaignBarShowHtml }}">
+    <div class="campaign-bar campaign-bar-html" style="position:fixed; top:0; left:0; right:0; z-index:61; text-align:center; padding:9px 16px; background:#08090b; border-bottom:1px solid {{ campaignColor }}; font-size:15px; letter-spacing:0.1em; color:{{ campaignColor }};"></div>
+  </sc-if>
+  <sc-if value="{{ campaignBarShowText }}">
+    <div class="campaign-bar" style="position:fixed; top:0; left:0; right:0; z-index:61; text-align:center; padding:9px 16px; background:#08090b; border-bottom:1px solid {{ campaignColor }}; font-size:11px; letter-spacing:0.1em; color:{{ campaignColor }};">{{ campaignBannerLine }}</div>
+  </sc-if>
+
   <!-- top bar -->
-  <div data-nav="1" style="position:fixed; top:0; left:0; right:0; z-index:60; display:flex; align-items:center; justify-content:space-between; padding:18px 44px; transition:padding .45s ease;">
+  <div data-nav="1" class="{{ navTopClass }}" style="position:fixed; top:0; left:0; right:0; z-index:60; display:flex; align-items:center; justify-content:space-between; padding:18px 44px; transition:padding .45s ease;">
     <div style="position:absolute; inset:0; background:rgba(8,9,11,0.72); backdrop-filter:blur(18px) saturate(1.2); -webkit-backdrop-filter:blur(18px) saturate(1.2); border-bottom:1px solid rgba(240,235,226,0.12); opacity:{{ navFrost }}; transition:opacity .5s ease; pointer-events:none;"></div>
     <div onClick="{{ toTop }}" style="position:relative; cursor:pointer; display:flex; align-items:center;">
       <img src="{{ logoSrc }}" alt="INFUSO" style="height:36px; width:auto; display:block;" />
@@ -204,18 +218,33 @@ src="https://www.facebook.com/tr?id=1703900774196311&ev=PageView&noscript=1"
         </div>
       </sc-for>
       <div class="hero-text-block" style="position:absolute; left:6vw; bottom:200px; max-width:440px; opacity:{{ heroTextOpacity }}; transition:opacity 320ms ease;">
-        <div style="display:flex; align-items:center; gap:14px;">
+        <div style="display:flex; align-items:center; gap:14px; flex-wrap:wrap;">
           <div style="font-family:'Jost'; font-size:12px; letter-spacing:0.22em; color:{{ heroActive.accent }};">{{ heroActive.noNum }} — {{ heroActive.note }}</div>
           <div class="category-badge">{{ heroActive.categoryLabel }}</div>
+          <sc-if value="{{ heroActive.hasCampaignBadge }}">
+            <div style="font-size:10px; letter-spacing:0.16em; white-space:nowrap; color:{{ heroActive.campaignColor }}; border:1px solid {{ heroActive.campaignColor }}; background:{{ heroActive.campaignBadgeBg }}; border-radius:20px; padding:4px 12px;">{{ heroActive.campaignLabel }}</div>
+          </sc-if>
         </div>
         <div onClick="{{ heroActive.viewProduct }}" class="linkline" style="cursor:pointer; display:inline-block; margin-top:10px; font-family:'Jost'; font-weight:300; font-size:clamp(38px,4.2vw,58px); letter-spacing:0.06em; color:#f0ebe2;">{{ heroActive.name }}</div>
         <div style="margin-top:16px; font-family:'Jost'; font-weight:300; font-size:15px; line-height:1.7;"><span style="color:{{ heroActive.accent }};">{{ heroActive.tagline }}</span> <span style="color:rgba(240,235,226,0.85);">{{ heroActive.desc }}</span></div>
+        <sc-if value="{{ heroActive.hasCampaignTimer }}">
+          <div style="margin-top:18px; display:inline-flex; align-items:center; gap:12px; padding:10px 18px; border-radius:10px; border:1px solid {{ heroActive.campaignColor }};">
+            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="{{ heroActive.campaignColor }}" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><circle cx="12" cy="13" r="8"></circle><path d="M12 9v4l3 2"></path><path d="M9 2h6"></path></svg>
+            <div>
+              <div style="font-size:9.5px; letter-spacing:0.16em; color:{{ heroActive.campaignColor }};">SALE ENDS IN</div>
+              <div style="margin-top:2px; font-family:'Jost'; font-weight:500; font-size:14px; letter-spacing:0.03em; color:#f0ebe2;">{{ heroActive.campaignCountdown }}</div>
+            </div>
+          </div>
+        </sc-if>
         <div style="margin-top:26px; display:flex; align-items:center; flex-wrap:wrap; gap:20px;">
           <div style="display:flex; align-items:baseline; gap:12px;">
             <sc-if value="{{ heroActive.priceOld }}">
               <span style="font-family:'Jost'; font-weight:300; font-size:14px; text-decoration:line-through; color:rgba(230,226,218,0.4);">{{ heroActive.priceOld }}</span>
             </sc-if>
             <span style="font-family:'Jost'; font-weight:500; font-size:22px; color:#f0ebe2;">{{ heroActive.price }}</span>
+            <sc-if value="{{ heroActive.hasCampaignPrice }}">
+              <span style="font-size:10.5px; letter-spacing:0.13em; color:{{ heroActive.campaignColor }};">{{ heroActive.campaignPriceLabel }}</span>
+            </sc-if>
           </div>
           <div onClick="{{ heroActive.add }}" class="btn hero-add-btn" style="cursor:pointer; padding:14px 36px; border-radius:40px; border:1px solid {{ heroActive.accent }}; background:{{ heroActive.btnBg }}; color:#f0ebe2; font-size:11px; letter-spacing:0.24em; white-space:nowrap; display:flex; align-items:center; justify-content:center; gap:10px;">
             <svg class="hero-add-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#f0ebe2" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="display:none; flex-shrink:0;"><path d="M6 8h12l1 12a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2z"></path><path d="M9 8V6a3 3 0 0 1 6 0v2"></path></svg>
@@ -250,9 +279,12 @@ src="https://www.facebook.com/tr?id=1703900774196311&ev=PageView&noscript=1"
     <sc-for list="{{ products }}" as="p" hint-placeholder-count="3">
       <section data-role="sec" data-idx="{{ p.idx }}" data-label="{{ p.name }}" class="product-section" style="position:relative; min-height:100vh; display:grid; grid-template-columns:1fr 1fr; align-items:center; overflow:hidden; background:{{ p.bg }};">
         <div class="reveal" data-reveal style="order:{{ p.copyOrder }}; padding:0 6vw; max-width:700px; justify-self:{{ p.copyJustify }}; position:relative; z-index:2;">
-          <div style="display:flex; align-items:center; gap:14px;">
+          <div style="display:flex; align-items:center; gap:14px; flex-wrap:wrap;">
             <div style="font-family:'Cormorant Garamond', serif; font-style:italic; font-size:20px; color:{{ p.accent }};">{{ p.no }}</div>
             <div class="category-badge">{{ p.categoryLabel }}</div>
+            <sc-if value="{{ p.hasCampaignBadge }}">
+              <div style="font-size:10px; letter-spacing:0.16em; white-space:nowrap; color:{{ p.campaignColor }}; border:1px solid {{ p.campaignColor }}; background:{{ p.campaignBadgeBg }}; border-radius:20px; padding:4px 12px;">{{ p.campaignLabel }}</div>
+            </sc-if>
           </div>
           <div onClick="{{ p.viewProduct }}" class="linkline" style="cursor:pointer; display:inline-block; margin-top:4px; font-family:'Jost'; font-weight:300; font-size:clamp(46px,5vw,80px); letter-spacing:0.08em; color:#f0ebe2;">{{ p.name }}</div>
           <div style="margin-top:10px; font-family:'Cormorant Garamond', serif; font-style:italic; font-size:19px; color:rgba(230,226,218,0.6);">{{ p.tagline }}</div>
@@ -274,12 +306,24 @@ src="https://www.facebook.com/tr?id=1703900774196311&ev=PageView&noscript=1"
             </div>
           </div>
           <div style="margin-top:22px; font-size:12px; letter-spacing:0.16em; color:rgba(230,226,218,0.5);">{{ p.inspired }}</div>
-          <div style="margin-top:34px; display:flex; align-items:center; flex-wrap:wrap; gap:20px;">
+          <sc-if value="{{ p.hasCampaignTimer }}">
+            <div style="margin-top:26px; display:inline-flex; align-items:center; gap:14px; padding:12px 20px; border-radius:10px; border:1px solid {{ p.campaignColor }};">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="{{ p.campaignColor }}" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><circle cx="12" cy="13" r="8"></circle><path d="M12 9v4l3 2"></path><path d="M9 2h6"></path></svg>
+              <div>
+                <div style="font-size:10.5px; letter-spacing:0.16em; color:{{ p.campaignColor }};">SALE ENDS IN</div>
+                <div style="margin-top:3px; font-family:'Jost'; font-weight:500; font-size:16px; letter-spacing:0.03em; color:#f0ebe2;">{{ p.campaignCountdown }}</div>
+              </div>
+            </div>
+          </sc-if>
+          <div style="margin-top:22px; display:flex; align-items:center; flex-wrap:wrap; gap:20px;">
             <div style="display:flex; align-items:baseline; gap:12px;">
               <sc-if value="{{ p.priceOld }}">
                 <span style="font-family:'Jost'; font-weight:300; font-size:15px; text-decoration:line-through; color:rgba(230,226,218,0.4);">{{ p.priceOld }}</span>
               </sc-if>
               <span style="font-family:'Jost'; font-weight:500; font-size:24px; color:#f0ebe2;">{{ p.price }}</span>
+              <sc-if value="{{ p.hasCampaignPrice }}">
+                <span style="font-size:11px; letter-spacing:0.14em; color:{{ p.campaignColor }};">{{ p.campaignPriceLabel }}</span>
+              </sc-if>
             </div>
             <div onClick="{{ p.add }}" class="btn" style="cursor:pointer; padding:15px 40px; border-radius:40px; border:1px solid {{ p.accent }}; background:{{ p.btnBg }}; color:#f0ebe2; font-size:12px; letter-spacing:0.26em; white-space:nowrap;">{{ p.btnLabel }}</div>
           </div>
@@ -363,14 +407,22 @@ src="https://www.facebook.com/tr?id=1703900774196311&ev=PageView&noscript=1"
                 <img class="boxcard-boxed" src="{{ b.boxed }}" alt="{{ b.name }} boxed" style="position:absolute; inset:0; width:100%; height:100%; object-fit:contain; padding:2% 0%; display:block;" />
               </div>
               <div onClick="{{ b.viewProduct }}" class="linkline" style="cursor:pointer; display:inline-block; margin-top:20px; font-family:'Jost'; font-weight:300; font-size:24px; letter-spacing:0.1em;">{{ b.name }}</div>
-              <div style="margin-top:8px; display:flex; justify-content:center;"><div class="category-badge">{{ b.categoryLabel }}</div></div>
+              <div style="margin-top:8px; display:flex; justify-content:center; align-items:center; gap:8px; flex-wrap:wrap;">
+                <div class="category-badge">{{ b.categoryLabel }}</div>
+                <sc-if value="{{ b.hasCampaignBadge }}">
+                  <div style="font-size:9px; letter-spacing:0.14em; white-space:nowrap; color:{{ b.campaignColor }}; border:1px solid {{ b.campaignColor }}; background:{{ b.campaignBadgeBg }}; border-radius:20px; padding:3px 10px;">{{ b.campaignLabel }}</div>
+                </sc-if>
+              </div>
               <div style="margin-top:8px; font-family:'Jost'; font-weight:300; font-size:15px; color:{{ b.accent }};">{{ b.tagline }}</div>
-              <div style="margin-top:16px; display:flex; align-items:center; justify-content:center; gap:18px;">
+              <div style="margin-top:16px; display:flex; align-items:center; justify-content:center; gap:18px; flex-wrap:wrap;">
                 <div style="display:flex; align-items:baseline; gap:10px;">
                   <sc-if value="{{ b.priceOld }}">
                     <span style="font-family:'Jost'; font-weight:300; font-size:12px; text-decoration:line-through; color:rgba(230,226,218,0.4);">{{ b.priceOld }}</span>
                   </sc-if>
                   <span style="font-family:'Jost'; font-weight:500; font-size:18px; color:#f0ebe2;">{{ b.price }}</span>
+                  <sc-if value="{{ b.hasCampaignPrice }}">
+                    <span style="font-size:10px; letter-spacing:0.12em; color:{{ b.campaignColor }};">{{ b.campaignPriceLabel }}</span>
+                  </sc-if>
                 </div>
                 <div onClick="{{ b.add }}" class="btn" style="cursor:pointer; padding:11px 26px; border-radius:30px; border:1px solid rgba(240,235,226,0.3); font-size:11px; letter-spacing:0.22em;">ADD</div>
               </div>
@@ -627,6 +679,23 @@ src="https://www.facebook.com/tr?id=1703900774196311&ev=PageView&noscript=1"
 const PKR = (n) => 'PKR ' + n.toLocaleString('en-PK');
 const PRICE = 3850;
 const ORIGINAL_PRICE = 4500;
+const DEFAULT_CAMPAIGN_COLOR = '#4ADE80';
+function withAlpha(color, alpha) {
+  if (!color) return 'transparent';
+  if (color[0] === '#') {
+    const hex = color.length === 4
+      ? color.slice(1).split('').map((c) => c + c).join('')
+      : color.slice(1);
+    const r = parseInt(hex.slice(0, 2), 16), g = parseInt(hex.slice(2, 4), 16), b = parseInt(hex.slice(4, 6), 16);
+    return `rgba(${r},${g},${b},${alpha})`;
+  }
+  const m = color.match(/rgba?\(([^)]+)\)/);
+  if (m) {
+    const [r, g, b] = m[1].split(',').map((n) => n.trim());
+    return `rgba(${r},${g},${b},${alpha})`;
+  }
+  return color;
+}
 const STAR_CHARS = '★★★★★☆☆☆☆☆';
 const starsFor = (rating) => STAR_CHARS.slice(5 - rating, 10 - rating);
 
@@ -646,6 +715,7 @@ class Component extends DCLogic {
     liveFaqs: [],
     liveSettings: {},
     latestReviews: [],
+    now: Date.now(), // ticks every second while a campaign countdown is showing
     checkoutStep: 'cart', // 'cart' | 'form' | 'placing' | 'done' | 'bankinfo'
     checkoutForm: defaultCheckoutForm(),
     checkoutError: null,
@@ -773,7 +843,53 @@ class Component extends DCLogic {
     const { discountPercent, discountAmount } = computeDiscount(total, this.state.appliedVoucher);
     const grandTotal = Math.max(0, total - discountAmount) + deliveryChargeVal;
 
+    // Site-wide campaign — see the matching comment in product.dc.html for
+    // the full design rationale; this is a duplicate of that same logic
+    // since these two pages don't share any JS.
+    const campaignEndsAtMs = S.campaignEndsAt ? new Date(S.campaignEndsAt).getTime() : null;
+    const campaignRunning = !!S.campaignActive && (!campaignEndsAtMs || campaignEndsAtMs > this.state.now);
+    const campaignColor = S.campaignThemeColor || DEFAULT_CAMPAIGN_COLOR;
+    const campaignLabel = S.campaignLabel || 'SALE';
+    let campaignCountdown = '';
+    if (campaignRunning && campaignEndsAtMs) {
+      const diff = campaignEndsAtMs - this.state.now;
+      const days = Math.floor(diff / 86400000);
+      const hours = Math.floor((diff % 86400000) / 3600000);
+      const mins = Math.floor((diff % 3600000) / 60000);
+      const secs = Math.floor((diff % 60000) / 1000);
+      const pad = (n) => String(n).padStart(2, '0');
+      campaignCountdown = days > 0 ? `${days}d : ${pad(hours)}h : ${pad(mins)}m : ${pad(secs)}s` : `${pad(hours)}h : ${pad(mins)}m : ${pad(secs)}s`;
+    }
+    // The banner's rich-text override (campaignBannerContent) is HTML that's
+    // already sanitized server-side, but this template engine only supports
+    // escaped-text bindings, so it can't be dropped into {{ }} — it's synced
+    // into a plain, un-bound div's innerHTML imperatively instead (see
+    // _syncCampaignBannerHtml). The two cases render via separate divs so the
+    // auto-composed fallback (built from plain admin fields) always stays on
+    // the safe, auto-escaping {{ }} text path.
+    const campaignBannerHasOverride = campaignRunning && !!(S.campaignBannerContent && S.campaignBannerContent.trim());
+    let campaignBannerLine = '';
+    if (campaignRunning && !campaignBannerHasOverride) {
+      const parts = [campaignLabel];
+      if (campaignEndsAtMs) {
+        const endDate = new Date(campaignEndsAtMs);
+        const isMidnight = endDate.getHours() === 0 && endDate.getMinutes() === 0;
+        const dateStr = endDate.toLocaleDateString('en-PK', { day: 'numeric', month: 'long' }).toUpperCase();
+        parts.push('· ENDS ' + dateStr + (isMidnight ? ' MIDNIGHT' : ' ' + endDate.toLocaleTimeString('en-PK', { hour: 'numeric', minute: '2-digit' }).toUpperCase()));
+      }
+      campaignBannerLine = parts.join(' ');
+    }
+    this._pendingCampaignBannerHtml = campaignBannerHasOverride ? S.campaignBannerContent.trim() : '';
+    const campaignBadgeBg = withAlpha(campaignColor, 0.14);
+    const campaignBarShow = campaignBannerHasOverride || !!campaignBannerLine;
+
     return {
+      campaignBarShow,
+      campaignBarShowHtml: campaignBannerHasOverride,
+      campaignBarShowText: !campaignBannerHasOverride && !!campaignBannerLine,
+      campaignBannerLine,
+      campaignColor,
+      navTopClass: campaignBarShow ? 'nav-with-campaign' : '',
       setRoot: (el) => { if (el) this.root = el; },
       setScroller: (el) => { if (el) this.scroller = el; },
       // Deliberately does NOT set el.src here — the pre-rendered frame images
@@ -816,6 +932,14 @@ class Component extends DCLogic {
           btnLabel: this.state.justAdded === p.id ? 'ADDED ✓' : 'ADD TO CART',
           add: () => this.add(p.id),
           viewProduct: () => this.goToProduct(p.id),
+          hasCampaignBadge: campaignRunning,
+          campaignLabel,
+          campaignBadgeBg,
+          hasCampaignPrice: campaignRunning && this.priceOldFor(p.id) != null,
+          campaignPriceLabel: S.campaignPriceLabel || 'SALE PRICE',
+          campaignColor,
+          hasCampaignTimer: campaignRunning && !!campaignCountdown,
+          campaignCountdown,
         };
       })(),
       heroTextOpacity: this.state.heroTextOn ? 1 : 0,
@@ -919,6 +1043,14 @@ class Component extends DCLogic {
         btnLabel: this.state.justAdded === p.id ? 'ADDED ✓' : 'ADD TO CART',
         add: () => this.add(p.id),
         viewProduct: () => this.goToProduct(p.id),
+        hasCampaignBadge: campaignRunning,
+        campaignLabel,
+        campaignBadgeBg,
+        hasCampaignPrice: campaignRunning && this.priceOldFor(p.id) != null,
+        campaignPriceLabel: S.campaignPriceLabel || 'SALE PRICE',
+        campaignColor,
+        hasCampaignTimer: campaignRunning && !!campaignCountdown,
+        campaignCountdown,
       })),
 
       boxes: D.map((p, i) => ({
@@ -926,6 +1058,12 @@ class Component extends DCLogic {
         categoryLabel: p.categoryLabel,
         delay: 'd' + (i + 1), add: () => this.add(p.id),
         viewProduct: () => this.goToProduct(p.id),
+        hasCampaignBadge: campaignRunning,
+        campaignLabel,
+        campaignBadgeBg,
+        hasCampaignPrice: campaignRunning && this.priceOldFor(p.id) != null,
+        campaignPriceLabel: S.campaignPriceLabel || 'SALE PRICE',
+        campaignColor,
       })),
 
       setPrice: PKR(D.reduce((sum, p) => sum + this.priceFor(p.id), 0)),
@@ -1142,6 +1280,7 @@ class Component extends DCLogic {
     this._startHeroTimer();
     this._startReviewsTimer();
     this._preloadCriticalAssets();
+    this._clockTimer = setInterval(() => this.setState({ now: Date.now() }), 1000);
 
     // Live product content from the backend (price/stock/images/copy) — falls
     // back to the hardcoded _data()/editorial()/_faqs() values until this
@@ -1169,6 +1308,26 @@ class Component extends DCLogic {
       .then((r) => (r.ok ? r.json() : []))
       .then((list) => this.setState({ latestReviews: list }))
       .catch(() => {});
+
+    this._syncCampaignBannerHtml();
+  }
+
+  componentDidUpdate() {
+    this._syncCampaignBannerHtml();
+  }
+
+  // The campaign banner's rich-text override is pre-sanitized HTML that this
+  // template engine can't bind via {{ }} (it only does escaped text), so the
+  // .campaign-bar-html div is left empty in markup and synced here instead —
+  // see the comment above campaignBannerHasOverride in renderVals().
+  _syncCampaignBannerHtml() {
+    const el = document.querySelector('.campaign-bar-html');
+    if (!el) return;
+    const html = this._pendingCampaignBannerHtml || '';
+    if (el.getAttribute('data-html-sig') !== html) {
+      el.innerHTML = html;
+      el.setAttribute('data-html-sig', html);
+    }
   }
 
   _hidePageLoader() {
@@ -1532,6 +1691,7 @@ class Component extends DCLogic {
     if (this._raf) cancelAnimationFrame(this._raf);
     if (this._heroTimer) clearInterval(this._heroTimer);
     if (this._reviewsTimer) clearInterval(this._reviewsTimer);
+    if (this._clockTimer) clearInterval(this._clockTimer);
     if (this._heroFadeTimeout) clearTimeout(this._heroFadeTimeout);
     if (this._loaderFallback) clearTimeout(this._loaderFallback);
     if (this._onMove) document.removeEventListener('mousemove', this._onMove);

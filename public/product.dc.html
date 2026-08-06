@@ -66,12 +66,18 @@ src="https://www.facebook.com/tr?id=1703900774196311&ev=PageView&noscript=1"
     .collect-img-hover { opacity:0; }
     .collect-card:hover .collect-img-main { opacity:0; transform:scale(1.05); }
     .collect-card:hover .collect-img-hover { opacity:1; transform:scale(1.14); }
+    .nav-with-campaign { top:35px !important; }
+    .campaign-bar-html p { margin:0; display:inline; }
+    .campaign-bar-html .ql-font-serif { font-family:Georgia,'Times New Roman',serif; }
+    .campaign-bar-html .ql-font-monospace { font-family:Monaco,'Courier New',monospace; }
     @media (max-width:880px) {
       .pd-grid { grid-template-columns:1fr !important; gap:8vw !important; }
       .pd-nav-label { display:none !important; }
       .pd-main-imgwrap { height:44vh !important; min-height:320px !important; }
       .collect-imgwrap { height:300px !important; }
       .collect-card-container { grid-template-columns:repeat(auto-fit,minmax(320px,1fr)); }
+      .campaign-bar { font-size:10px !important; line-height:1.6 !important; padding:7px 12px !important; }
+      .nav-with-campaign { top:47px !important; }
     }
   </style>
 </helmet>
@@ -84,7 +90,14 @@ src="https://www.facebook.com/tr?id=1703900774196311&ev=PageView&noscript=1"
     <img src="{{ logoSrc }}" alt="INFUSO" style="height:40px; width:auto; animation:loaderPulse 1.6s ease-in-out infinite;" />
   </div>
 
-  <div style="position:fixed; top:0; left:0; right:0; z-index:60; display:flex; align-items:center; justify-content:space-between; padding:18px 44px; background:rgba(8,9,11,0.85); backdrop-filter:blur(18px) saturate(1.2); -webkit-backdrop-filter:blur(18px) saturate(1.2); border-bottom:1px solid rgba(240,235,226,0.12);">
+  <sc-if value="{{ campaignBarShowHtml }}">
+    <div class="campaign-bar campaign-bar-html" style="position:fixed; top:0; left:0; right:0; z-index:61; text-align:center; padding:9px 16px; background:#08090b; border-bottom:1px solid {{ campaignColor }}; font-size:15px; letter-spacing:0.1em; color:{{ campaignColor }};"></div>
+  </sc-if>
+  <sc-if value="{{ campaignBarShowText }}">
+    <div class="campaign-bar" style="position:fixed; top:0; left:0; right:0; z-index:61; text-align:center; padding:9px 16px; background:#08090b; border-bottom:1px solid {{ campaignColor }}; font-size:11px; letter-spacing:0.1em; color:{{ campaignColor }};">{{ campaignBannerLine }}</div>
+  </sc-if>
+
+  <div class="{{ navTopClass }}" style="position:fixed; top:0; left:0; right:0; z-index:60; display:flex; align-items:center; justify-content:space-between; padding:18px 44px; background:rgba(8,9,11,0.85); backdrop-filter:blur(18px) saturate(1.2); -webkit-backdrop-filter:blur(18px) saturate(1.2); border-bottom:1px solid rgba(240,235,226,0.12);">
     <a href="/">
       <img src="{{ logoSrc }}" alt="INFUSO" style="height:36px; width:auto; display:block;" />
     </a>
@@ -257,9 +270,12 @@ src="https://www.facebook.com/tr?id=1703900774196311&ev=PageView&noscript=1"
       </div>
 
       <div>
-        <div style="display:flex; align-items:center; gap:14px;">
+        <div style="display:flex; align-items:center; gap:14px; flex-wrap:wrap;">
           <div style="font-family:'Jost'; font-size:12px; letter-spacing:0.22em; color:{{ product.accent }};">{{ product.noNum }} — {{ product.base }}</div>
           <div class="category-badge">{{ product.categoryLabel }}</div>
+          <sc-if value="{{ product.hasCampaignBadge }}">
+            <div style="font-size:10px; letter-spacing:0.16em; white-space:nowrap; color:{{ product.campaignColor }}; border:1px solid {{ product.campaignColor }}; background:{{ product.campaignBadgeBg }}; border-radius:20px; padding:4px 12px;">{{ product.campaignLabel }}</div>
+          </sc-if>
         </div>
         <div style="margin-top:10px; font-family:'Jost'; font-weight:300; font-size:clamp(38px,4.2vw,58px); letter-spacing:0.06em; color:#f0ebe2;">{{ product.name }}</div>
         <sc-if value="{{ reviewsHasAny }}" hint-placeholder-val="{{ false }}">
@@ -283,12 +299,28 @@ src="https://www.facebook.com/tr?id=1703900774196311&ev=PageView&noscript=1"
           <div style="margin-top:6px; font-size:11px; letter-spacing:0.14em; color:rgba(230,226,218,0.4);">60 ml · eau de parfum</div>
         </sc-if>
 
-        <div style="margin-top:34px; display:flex; align-items:center; flex-wrap:wrap; gap:20px;">
+        <sc-if value="{{ product.hasSaleTimer }}">
+          <div style="margin-top:32px; display:inline-flex; align-items:center; gap:14px; padding:12px 20px; border-radius:10px; border:1px solid {{ product.saleColor }};">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="{{ product.saleColor }}" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><circle cx="12" cy="13" r="8"></circle><path d="M12 9v4l3 2"></path><path d="M9 2h6"></path></svg>
+            <div>
+              <div style="font-size:10.5px; letter-spacing:0.16em; color:{{ product.saleColor }};">SALE ENDS IN</div>
+              <div style="margin-top:3px; font-family:'Jost'; font-weight:500; font-size:16px; letter-spacing:0.03em; color:#f0ebe2;">{{ product.saleCountdown }}</div>
+            </div>
+          </div>
+        </sc-if>
+        <sc-if value="{{ product.hasLowStock }}">
+          <div style="margin-top:14px; font-size:12px; letter-spacing:0.08em; color:rgba(230,150,120,0.95);">⚠ {{ product.lowStockText }}</div>
+        </sc-if>
+
+        <div style="margin-top:22px; display:flex; align-items:center; flex-wrap:wrap; gap:20px;">
           <div style="display:flex; align-items:baseline; gap:12px;">
             <sc-if value="{{ product.priceOld }}">
               <span style="font-family:'Jost'; font-weight:300; font-size:15px; text-decoration:line-through; color:rgba(230,226,218,0.4);">{{ product.priceOld }}</span>
             </sc-if>
             <span style="font-family:'Jost'; font-weight:500; font-size:26px; color:#f0ebe2;">{{ product.price }}</span>
+            <sc-if value="{{ product.hasCampaignPrice }}">
+              <span style="font-size:11px; letter-spacing:0.14em; color:{{ product.campaignColor }};">{{ product.campaignPriceLabel }}</span>
+            </sc-if>
           </div>
           <div onClick="{{ product.add }}" class="btn" style="cursor:pointer; padding:15px 40px; border-radius:40px; border:1px solid {{ product.accent }}; background:{{ product.btnBg }}; color:#f0ebe2; font-size:12px; letter-spacing:0.26em; white-space:nowrap;">{{ product.btnLabel }}</div>
         </div>
@@ -358,6 +390,7 @@ src="https://www.facebook.com/tr?id=1703900774196311&ev=PageView&noscript=1"
             <sc-if value="{{ deliveryOpen }}" hint-placeholder-val="{{ false }}">
               <div style="padding:0 2px 20px; font-size:14.5px; line-height:1.85; color:rgba(230,226,218,0.75);">
                 <div>{{ deliveryInfo }}</div>
+                <div style="margin-top:10px;">{{ deliveryChargeLine }}</div>
                 <div style="margin-top:10px;">{{ returnPolicy }}</div>
               </div>
             </sc-if>
@@ -467,6 +500,25 @@ const PRICE = 3850;
 const ORIGINAL_PRICE = 4500;
 const DEFAULT_LONGEVITY = '8–10 hours';
 const DEFAULT_HOW_TO_USE = 'Apply your fragrance to clean, moisturized skin and pulse points such as the wrists, neck, and behind the ears. Avoid rubbing the fragrance after application.';
+const DEFAULT_DELIVERY_CHARGE = 280;
+const DEFAULT_LOW_STOCK_THRESHOLD = 5;
+const DEFAULT_CAMPAIGN_COLOR = '#4ADE80';
+function withAlpha(color, alpha) {
+  if (!color) return 'transparent';
+  if (color[0] === '#') {
+    const hex = color.length === 4
+      ? color.slice(1).split('').map((c) => c + c).join('')
+      : color.slice(1);
+    const r = parseInt(hex.slice(0, 2), 16), g = parseInt(hex.slice(2, 4), 16), b = parseInt(hex.slice(4, 6), 16);
+    return `rgba(${r},${g},${b},${alpha})`;
+  }
+  const m = color.match(/rgba?\(([^)]+)\)/);
+  if (m) {
+    const [r, g, b] = m[1].split(',').map((n) => n.trim());
+    return `rgba(${r},${g},${b},${alpha})`;
+  }
+  return color;
+}
 const DEFAULT_DELIVERY_INFO = 'We deliver across Pakistan through our trusted courier partners. Orders are typically delivered within 2–6 business days, depending on your location.';
 const DEFAULT_RETURN_POLICY = 'Returns or exchanges are only accepted if you receive the wrong product or if the item arrives damaged or defective. Requests must be made within 48 hours of delivery.';
 const STAR_CHARS = '★★★★★☆☆☆☆☆';
@@ -510,6 +562,7 @@ class Component extends DCLogic {
     liveProducts: {},
     liveSettings: {},
     pageLoading: true,
+    now: Date.now(), // ticks every second while a sale countdown is showing
     cart: loadStoredCart(),
     justAdded: false,
     activeImageIdx: null, // null = not yet chosen by user; falls back to the product's admin-set featuredImage
@@ -545,6 +598,8 @@ class Component extends DCLogic {
       value: this.priceFor(slug), currency: 'PKR',
     });
 
+    this._clockTimer = setInterval(() => this.setState({ now: Date.now() }), 1000);
+
     fetch('/api/products')
       .then((r) => (r.ok ? r.json() : []))
       .then((list) => {
@@ -564,6 +619,26 @@ class Component extends DCLogic {
 
     // Safety net: never let the loader get stuck on a stalled/failed request.
     this._loaderFallback = setTimeout(() => this._hidePageLoader(), 6000);
+
+    this._syncCampaignBannerHtml();
+  }
+
+  componentDidUpdate() {
+    this._syncCampaignBannerHtml();
+  }
+
+  // The campaign banner's rich-text override is pre-sanitized HTML that this
+  // template engine can't bind via {{ }} (it only does escaped text), so the
+  // .campaign-bar-html div is left empty in markup and synced here instead —
+  // see the comment above campaignBannerHasOverride in renderVals().
+  _syncCampaignBannerHtml() {
+    const el = document.querySelector('.campaign-bar-html');
+    if (!el) return;
+    const html = this._pendingCampaignBannerHtml || '';
+    if (el.getAttribute('data-html-sig') !== html) {
+      el.innerHTML = html;
+      el.setAttribute('data-html-sig', html);
+    }
   }
 
   _hidePageLoader() {
@@ -612,6 +687,7 @@ class Component extends DCLogic {
       howToUse: live.howToUse || DEFAULT_HOW_TO_USE,
       ingredients: live.ingredients || null,
       featuredImage: live.featuredImage || 'imageUrl',
+      saleEndsAt: live.saleEndsAt || null,
       category,
       categoryLabel: { MEN: 'Men', WOMEN: 'Women', UNISEX: 'Unisex' }[category] || 'Unisex',
     };
@@ -758,9 +834,64 @@ class Component extends DCLogic {
       inc: () => this.setQty(p.id, 1), dec: () => this.setQty(p.id, -1),
     }));
     const S = this.state.liveSettings;
-    const deliveryChargeVal = S.deliveryCharge != null ? S.deliveryCharge : 280;
+    const deliveryChargeVal = S.deliveryCharge != null ? S.deliveryCharge : DEFAULT_DELIVERY_CHARGE;
     const { discountPercent, discountAmount } = computeDiscount(cartSubtotal, this.state.appliedVoucher);
     const grandTotal = Math.max(0, cartSubtotal - discountAmount) + deliveryChargeVal;
+
+    // Low-stock badge: liveSettings.lowStockThreshold is explicitly null when
+    // an admin has turned the badge off site-wide (distinct from undefined,
+    // meaning settings just haven't loaded yet — in which case the hardcoded
+    // default applies, same as every other setting on this page).
+    const lowStockThreshold = S.lowStockThreshold !== undefined ? S.lowStockThreshold : DEFAULT_LOW_STOCK_THRESHOLD;
+    const stockLeft = this._stockFor(current.id);
+    const isLowStock = lowStockThreshold != null && stockLeft > 0 && stockLeft <= lowStockThreshold;
+
+    // Site-wide campaign — a single admin-configured promotion (banner +
+    // badge + countdown), purely presentational and layered on top of
+    // whatever pricing already exists. Its countdown takes priority over a
+    // product's own saleEndsAt; if the campaign isn't running, that
+    // per-product timer (if any) is used instead.
+    const campaignEndsAtMs = S.campaignEndsAt ? new Date(S.campaignEndsAt).getTime() : null;
+    const campaignRunning = !!S.campaignActive && (!campaignEndsAtMs || campaignEndsAtMs > this.state.now);
+    const campaignColor = S.campaignThemeColor || DEFAULT_CAMPAIGN_COLOR;
+    const campaignLabel = S.campaignLabel || 'SALE';
+
+    const saleEndsAtMs = campaignRunning && campaignEndsAtMs ? campaignEndsAtMs
+      : (current.saleEndsAt ? new Date(current.saleEndsAt).getTime() : null);
+    const saleActive = !!saleEndsAtMs && saleEndsAtMs > this.state.now;
+    const saleColor = campaignRunning ? campaignColor : current.accent;
+    let saleCountdown = '';
+    if (saleActive) {
+      const diff = saleEndsAtMs - this.state.now;
+      const days = Math.floor(diff / 86400000);
+      const hours = Math.floor((diff % 86400000) / 3600000);
+      const mins = Math.floor((diff % 3600000) / 60000);
+      const secs = Math.floor((diff % 60000) / 1000);
+      const pad = (n) => String(n).padStart(2, '0');
+      saleCountdown = days > 0 ? `${days}d : ${pad(hours)}h : ${pad(mins)}m : ${pad(secs)}s` : `${pad(hours)}h : ${pad(mins)}m : ${pad(secs)}s`;
+    }
+
+    // The banner's rich-text override (campaignBannerContent) is HTML that's
+    // already sanitized server-side, but this template engine only supports
+    // escaped-text bindings, so it can't be dropped into {{ }} — it's synced
+    // into a plain, un-bound div's innerHTML imperatively instead (see
+    // _syncCampaignBannerHtml). The two cases render via separate divs so the
+    // auto-composed fallback (built from plain admin fields) always stays on
+    // the safe, auto-escaping {{ }} text path.
+    const campaignBannerHasOverride = campaignRunning && !!(S.campaignBannerContent && S.campaignBannerContent.trim());
+    let campaignBannerLine = '';
+    if (campaignRunning && !campaignBannerHasOverride) {
+      const parts = [campaignLabel];
+      if (campaignEndsAtMs) {
+        const endDate = new Date(campaignEndsAtMs);
+        const isMidnight = endDate.getHours() === 0 && endDate.getMinutes() === 0;
+        const dateStr = endDate.toLocaleDateString('en-PK', { day: 'numeric', month: 'long' }).toUpperCase();
+        parts.push('· ENDS ' + dateStr + (isMidnight ? ' MIDNIGHT' : ' ' + endDate.toLocaleTimeString('en-PK', { hour: 'numeric', minute: '2-digit' }).toUpperCase()));
+      }
+      campaignBannerLine = parts.join(' ');
+    }
+    this._pendingCampaignBannerHtml = campaignBannerHasOverride ? S.campaignBannerContent.trim() : '';
+    const campaignBadgeBg = withAlpha(campaignColor, 0.14);
 
     const { average, count: reviewCount, reviews: reviewList } = this.state.reviewsData;
     const reviewsList = reviewList.map((r) => ({
@@ -773,6 +904,12 @@ class Component extends DCLogic {
     return {
       pageLoadingOpacity: this.state.pageLoading ? 1 : 0,
       pageLoadingPointer: this.state.pageLoading ? 'auto' : 'none',
+      campaignBarShow: campaignBannerHasOverride || !!campaignBannerLine,
+      campaignBarShowHtml: campaignBannerHasOverride,
+      campaignBarShowText: !campaignBannerHasOverride && !!campaignBannerLine,
+      campaignBannerLine,
+      campaignColor,
+      navTopClass: (campaignBannerHasOverride || campaignBannerLine) ? 'nav-with-campaign' : '',
       logoSrc: S.logoUrl || '/products/infuso-logo.png',
       waLink: 'https://wa.me/' + (S.whatsappNumber || '923316841320'),
       waDisplay: '+' + (S.whatsappNumber || '923316841320').replace(/(\d{2})(\d{3})(\d{7})/, '$1 $2 $3'),
@@ -781,6 +918,7 @@ class Component extends DCLogic {
       contactMailto: 'mailto:' + (S.contactEmail || 'sales@infuso.pk'),
       footerCopyright: S.footerCopyright || '© 2026 INFUSO',
       deliveryInfo: S.deliveryInfo || DEFAULT_DELIVERY_INFO,
+      deliveryChargeLine: deliveryChargeVal > 0 ? `Delivery charges are ${PKR(deliveryChargeVal)} all over Pakistan.` : 'Free delivery all over Pakistan.',
       returnPolicy: S.returnPolicy || DEFAULT_RETURN_POLICY,
       notesOpen: this.state.detailOpen === 'notes',
       notesSign: this.state.detailOpen === 'notes' ? '−' : '+',
@@ -911,6 +1049,17 @@ class Component extends DCLogic {
         btnBg: this.state.justAdded ? current.accent : 'rgba(255,255,255,0.02)',
         btnLabel: this.state.justAdded ? 'ADDED ✓' : 'ADD TO CART',
         add: () => this.add(current.id),
+        hasLowStock: isLowStock,
+        lowStockText: `Only ${stockLeft} left in stock!`,
+        hasSaleTimer: saleActive,
+        saleCountdown,
+        saleColor,
+        hasCampaignBadge: campaignRunning,
+        campaignLabel,
+        campaignBadgeBg,
+        hasCampaignPrice: campaignRunning && this.priceOldFor(current.id) != null,
+        campaignPriceLabel: S.campaignPriceLabel || 'SALE PRICE',
+        campaignColor,
       },
 
       otherProducts: merged.filter((p) => p.id !== current.id).map((p) => ({
