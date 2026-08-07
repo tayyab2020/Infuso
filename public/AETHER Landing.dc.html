@@ -352,7 +352,7 @@ src="https://www.facebook.com/tr?id=1703900774196311&ev=PageView&noscript=1"
 
     <!-- ══ PRODUCT SECTIONS ══ -->
     <sc-for list="{{ products }}" as="p" hint-placeholder-count="3">
-      <section data-role="sec" data-idx="{{ p.idx }}" data-label="{{ p.name }}" class="product-section" style="position:relative; min-height:100vh; display:grid; grid-template-columns:1fr 1fr; align-items:center; overflow:hidden; background:{{ p.bg }}; padding: 10vw 0;">
+      <section data-role="sec" data-idx="{{ p.idx }}" data-label="{{ p.name }}" class="product-section" style="position:relative; min-height:100vh; display:grid; grid-template-columns:1fr 1fr; align-items:center; overflow:hidden; background:{{ p.bg }};">
         <div class="reveal {{ p.copyLargeClass }}" data-reveal style="order:{{ p.copyOrder }}; padding:0 6vw; max-width:700px; justify-self:{{ p.copyJustify }}; position:relative; z-index:2;">
           <div style="display:flex; align-items:center; gap:14px; flex-wrap:wrap;">
             <div style="font-family:'Cormorant Garamond', serif; font-style:italic; font-size:20px; color:{{ p.accent }};">{{ p.no }}</div>
@@ -404,7 +404,7 @@ src="https://www.facebook.com/tr?id=1703900774196311&ev=PageView&noscript=1"
           </div>
           <div style="margin-top:12px; font-size:11px; letter-spacing:0.14em; color:rgba(230,226,218,0.4);">60 ml · eau de parfum</div>
         </div>
-        <div class="product-imgwrap" style="order:{{ p.imgOrder }}; position:relative; height:100vh; display:flex; align-items:center; justify-content:center; margin-bottom: 2vh;">
+        <div class="product-imgwrap" style="order:{{ p.imgOrder }}; position:relative; height:850px; display:flex; align-items:center; justify-content:center; margin-bottom: 2vh;">
           <div data-fx="par-bottle" style="position:relative;">
             <div style="animation:floaty2 {{ p.floatDur }} ease-in-out infinite; transform:translate(calc(var(--mx)*{{ p.par }}), calc(var(--my)*14px));">
               <img src="{{ p.img }}" alt="{{ p.name }}" class="product-bottle-img" style="height:66vh; max-height:600px; display:block;" />

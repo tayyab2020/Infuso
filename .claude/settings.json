@@ -502,7 +502,8 @@
       "Bash(curl -s https://infuso.pk/api/settings -o /dev/null -w \"https://infuso.pk/api/settings -> %{http_code}\\\\n\")",
       "Bash(curl -s -o /dev/null -w \"%{http_code}\" https://infuso.pk/)",
       "Bash(curl -s -o /dev/null -w \"%{http_code}\" https://infuso.pk/product/aether)",
-      "Bash(curl -s -o /dev/null -w \"%{http_code}\" https://infuso.pk/api/settings)"
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" https://infuso.pk/api/settings)",
+      "Bash(git checkout *)"
     ],
     "additionalDirectories": [
       "C:\\Users\\hp\\.ssh",
