@@ -98,6 +98,13 @@ src="https://www.facebook.com/tr?id=1703900774196311&ev=PageView&noscript=1"
        the centered bottle clear of them without touching the dots' own
        position (only hidden below 880px, where this isn't needed anyway). */
     .product-imgwrap { padding-right:70px; }
+    /* Taller image column to match the taller campaign copy (badge + timer +
+       price label) on desktop — same conditional-class pattern as hero's
+       hero-has-timer. Scoped to min-width so it can never fight the mobile
+       .product-imgwrap height override below (max-width:880px). */
+    @media (min-width:881px) {
+      .product-img-campaign-h { height:1050px !important; }
+    }
     /* Always-on larger sizing for the product-section copy block (title,
        tagline, description, price, add-to-cart), regardless of whether a
        campaign is live. Kept on a fluid clamp() like the base sizes, not a
@@ -404,7 +411,7 @@ src="https://www.facebook.com/tr?id=1703900774196311&ev=PageView&noscript=1"
           </div>
           <div style="margin-top:12px; font-size:11px; letter-spacing:0.14em; color:rgba(230,226,218,0.4);">60 ml · eau de parfum</div>
         </div>
-        <div class="product-imgwrap" style="order:{{ p.imgOrder }}; position:relative; height:850px; display:flex; align-items:center; justify-content:center; margin-bottom: 2vh;">
+        <div class="product-imgwrap {{ p.imgHeightClass }}" style="order:{{ p.imgOrder }}; position:relative; height:850px; display:flex; align-items:center; justify-content:center; margin-bottom: 2vh;">
           <div data-fx="par-bottle" style="position:relative;">
             <div style="animation:floaty2 {{ p.floatDur }} ease-in-out infinite; transform:translate(calc(var(--mx)*{{ p.par }}), calc(var(--my)*14px));">
               <img src="{{ p.img }}" alt="{{ p.name }}" class="product-bottle-img" style="height:66vh; max-height:600px; display:block;" />
@@ -1136,6 +1143,10 @@ class Component extends DCLogic {
         // copy block has a lot of empty space around it — always sized up
         // via .product-copy-large, regardless of whether a campaign is live.
         copyLargeClass: 'product-copy-large',
+        // Same conditional-class pattern as hero's heroTextClass/hero-has-timer:
+        // the taller campaign copy (badge + timer + price label) needs a
+        // taller image column to stay proportioned against it on desktop.
+        imgHeightClass: campaignRunning ? 'product-img-campaign-h' : '',
       })),
 
       boxes: D.map((p, i) => ({
